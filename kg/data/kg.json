@@ -1,0 +1,1176 @@
+{
+  "schema_version": 1,
+  "data_status": {
+    "drafted_by": "LLM 起草（deepseek-v4-flash）",
+    "draft_date": "2026-08-27",
+    "review_status": "待人工核对（LLM 起草 ≠ 定稿）",
+    "review_items": [
+      "20 类性味/归经/功效/主治/用量逐条对照《中国药典》2020 年版一部",
+      "扩展档案「菊花」「甘草」为演示需求补录，非 20 类主药，需单独核对",
+      "药典各药【注意】项配伍禁药确切名单（8.4：川乌/甘草/藜芦条抽查）",
+      "「甘草+海藻」药典甘草【注意】实列『不宜与海藻同用』，本库按需求文档 7.2 记 pharmacopoeia=未收录（深圳判例口径），与药典条文存在口径差异，答辩前定夺",
+      "方剂组成与君臣佐使以《方剂学》教材核对（8.4）",
+      "香砂六君子汤出处（《古今名医方论》/《医方集解》两说），核对后定稿"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "枸杞子",
+      "category": "herb",
+      "name_cn": "枸杞子",
+      "latin": "Lycii Fructus",
+      "aliases": ["枸杞", "甘枸杞", "杞子", "红耳坠"],
+      "profile": {
+        "性味": "甘，平",
+        "归经": ["肝", "肾"],
+        "功效": "滋补肝肾，益精明目",
+        "主治": "虚劳精亏，腰膝酸痛，眩晕耳鸣，阳痿遗精，内热消渴，血虚萎黄，目昏不明",
+        "用量": "6～12g",
+        "毒性": "无毒",
+        "禁忌": "脾虚便溏者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "补骨脂",
+      "category": "herb",
+      "name_cn": "补骨脂",
+      "latin": "Psoraleae Fructus",
+      "aliases": ["破故纸", "故纸"],
+      "profile": {
+        "性味": "辛、苦，温",
+        "归经": ["肾", "脾"],
+        "功效": "温肾助阳，纳气平喘，温脾止泻；外用消风祛斑",
+        "主治": "肾阳不足，阳痿遗精，遗尿尿频，腰膝冷痛，肾虚作喘，五更泄泻；外用白癜风、斑秃",
+        "用量": "6～10g",
+        "毒性": "无毒",
+        "禁忌": "阴虚火旺、大便秘结者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "草豆蔻",
+      "category": "herb",
+      "name_cn": "草豆蔻",
+      "latin": "Alpiniae Katsumadai Semen",
+      "aliases": ["草蔻", "草果仁（注意与草果区分）"],
+      "profile": {
+        "性味": "辛，温",
+        "归经": ["脾", "胃"],
+        "功效": "燥湿行气，温中止呕",
+        "主治": "寒湿内阻，脘腹胀满冷痛，嗳气呕逆，不思饮食",
+        "用量": "3～6g",
+        "毒性": "无毒",
+        "禁忌": "阴虚血燥者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "川楝子",
+      "category": "herb",
+      "name_cn": "川楝子",
+      "latin": "Toosendan Fructus",
+      "aliases": ["金铃子", "楝实"],
+      "profile": {
+        "性味": "苦，寒",
+        "归经": ["肝", "小肠", "膀胱"],
+        "功效": "疏肝泄热，行气止痛，杀虫",
+        "主治": "肝郁化火，胸胁、脘腹胀痛，疝气疼痛，虫积腹痛",
+        "用量": "5～10g",
+        "毒性": "小毒",
+        "禁忌": "孕妇慎用；不宜过量服用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "地肤子",
+      "category": "herb",
+      "name_cn": "地肤子",
+      "latin": "Kochiae Fructus",
+      "aliases": ["地葵", "落帚子"],
+      "profile": {
+        "性味": "辛、苦，寒",
+        "归经": ["肾", "膀胱"],
+        "功效": "清热利湿，祛风止痒",
+        "主治": "小便涩痛，阴痒带下，风疹，湿疹，皮肤瘙痒",
+        "用量": "9～15g",
+        "毒性": "无毒",
+        "禁忌": "无"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "豆蔻",
+      "category": "herb",
+      "name_cn": "豆蔻",
+      "latin": "Amomi Fructus Rotundus",
+      "aliases": ["白豆蔻", "白蔻", "圆豆蔻"],
+      "profile": {
+        "性味": "辛，温",
+        "归经": ["肺", "脾", "胃"],
+        "功效": "化湿行气，温中止呕，开胃消食",
+        "主治": "湿浊中阻，不思饮食，湿温初起，胸闷不饥，寒湿呕逆，食积不消",
+        "用量": "3～6g，后下",
+        "毒性": "无毒",
+        "禁忌": "阴虚血燥者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "覆盆子",
+      "category": "herb",
+      "name_cn": "覆盆子",
+      "latin": "Rubi Fructus",
+      "aliases": ["树莓", "覆盆"],
+      "profile": {
+        "性味": "甘、酸，温",
+        "归经": ["肝", "肾", "膀胱"],
+        "功效": "益肾固精缩尿，养肝明目",
+        "主治": "遗精滑精，遗尿尿频，阳痿早泄，目暗昏花",
+        "用量": "6～12g",
+        "毒性": "无毒",
+        "禁忌": "肾虚有火、小便短涩者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "瓜蒌皮",
+      "category": "herb",
+      "name_cn": "瓜蒌皮",
+      "latin": "Trichosanthis Pericarpium",
+      "aliases": ["栝楼皮", "栝楼壳"],
+      "profile": {
+        "性味": "甘，寒",
+        "归经": ["肺", "胃"],
+        "功效": "清热化痰，宽胸散结，润燥滑肠",
+        "主治": "痰热咳嗽，胸痹心痛，结胸痞满，乳痈，肺痈，肠痈，大便秘结",
+        "用量": "6～10g",
+        "毒性": "无毒",
+        "禁忌": "不宜与川乌、制川乌、草乌、制草乌、附子同用（十八反）；脾胃虚寒、大便溏泄者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "金樱子",
+      "category": "herb",
+      "name_cn": "金樱子",
+      "latin": "Rosae Laevigatae Fructus",
+      "aliases": ["糖罐子", "刺梨"],
+      "profile": {
+        "性味": "酸、甘、涩，平",
+        "归经": ["肾", "膀胱", "大肠"],
+        "功效": "固精缩尿，固崩止带，涩肠止泻",
+        "主治": "遗精滑精，遗尿尿频，崩漏带下，久泻久痢",
+        "用量": "6～12g",
+        "毒性": "无毒",
+        "禁忌": "有实火、邪热者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "苦杏仁",
+      "category": "herb",
+      "name_cn": "苦杏仁",
+      "latin": "Armeniacae Semen Amarum",
+      "aliases": ["杏仁", "北杏仁"],
+      "profile": {
+        "性味": "苦，微温",
+        "归经": ["肺", "大肠"],
+        "功效": "降气止咳平喘，润肠通便",
+        "主治": "咳嗽气喘，胸满痰多，肠燥便秘",
+        "用量": "5～10g，生品入煎剂宜后下",
+        "毒性": "小毒",
+        "禁忌": "内服不宜过量，以免中毒；婴儿慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "连翘",
+      "category": "herb",
+      "name_cn": "连翘",
+      "latin": "Forsythiae Fructus",
+      "aliases": ["青翘", "老翘", "连壳"],
+      "profile": {
+        "性味": "苦，微寒",
+        "归经": ["肺", "心", "小肠"],
+        "功效": "清热解毒，消肿散结，疏散风热",
+        "主治": "痈疽，瘰疬，乳痈，丹毒，风热感冒，温病初起，温热入营，高热烦渴，神昏发斑，热淋尿闭",
+        "用量": "6～15g",
+        "毒性": "无毒",
+        "禁忌": "脾胃虚寒、气虚脓清者不宜使用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "木瓜",
+      "category": "herb",
+      "name_cn": "木瓜",
+      "latin": "Chaenomelis Fructus",
+      "aliases": ["宣木瓜", "皱皮木瓜"],
+      "profile": {
+        "性味": "酸，温",
+        "归经": ["肝", "脾"],
+        "功效": "舒筋活络，和胃化湿",
+        "主治": "湿痹拘挛，腰膝关节酸重疼痛，暑湿吐泻，转筋挛痛，脚气水肿",
+        "用量": "6～9g",
+        "毒性": "无毒",
+        "禁忌": "胃酸过多者不宜服用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "砂仁",
+      "category": "herb",
+      "name_cn": "砂仁",
+      "latin": "Amomi Fructus",
+      "aliases": ["缩砂仁", "阳春砂", "春砂仁"],
+      "profile": {
+        "性味": "辛，温",
+        "归经": ["脾", "胃", "肾"],
+        "功效": "化湿开胃，温脾止泻，理气安胎",
+        "主治": "湿浊中阻，脘痞不饥，脾胃虚寒，呕吐泄泻，妊娠恶阻，胎动不安",
+        "用量": "3～6g，后下",
+        "毒性": "无毒",
+        "禁忌": "阴虚血燥者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "山楂",
+      "category": "herb",
+      "name_cn": "山楂",
+      "latin": "Crataegi Fructus",
+      "aliases": ["山里红", "红果", "北山楂"],
+      "profile": {
+        "性味": "酸、甘，微温",
+        "归经": ["脾", "胃", "肝"],
+        "功效": "消食健胃，行气散瘀，化浊降脂",
+        "主治": "肉食积滞，胃脘胀满，泻痢腹痛，瘀血经闭，产后瘀阻，心腹刺痛，胸痹心痛，疝气疼痛，高脂血症",
+        "用量": "9～12g",
+        "毒性": "无毒",
+        "禁忌": "胃酸分泌过多者慎用；脾胃虚弱而无积滞者慎用；孕妇慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "山茱萸",
+      "category": "herb",
+      "name_cn": "山茱萸",
+      "latin": "Corni Fructus",
+      "aliases": ["山萸肉", "萸肉", "枣皮"],
+      "profile": {
+        "性味": "酸、涩，微温",
+        "归经": ["肝", "肾"],
+        "功效": "补益肝肾，收涩固脱",
+        "主治": "眩晕耳鸣，腰膝酸痛，阳痿遗精，遗尿尿频，崩漏带下，大汗虚脱，内热消渴",
+        "用量": "6～12g",
+        "毒性": "无毒",
+        "禁忌": "命门火炽、素有湿热、小便淋涩者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "桃仁",
+      "category": "herb",
+      "name_cn": "桃仁",
+      "latin": "Persicae Semen",
+      "aliases": ["光桃仁", "桃核仁"],
+      "profile": {
+        "性味": "苦、甘，平",
+        "归经": ["心", "肝", "大肠"],
+        "功效": "活血祛瘀，润肠通便，止咳平喘",
+        "主治": "经闭痛经，癥瘕痞块，肺痈肠痈，跌扑损伤，肠燥便秘，咳嗽气喘",
+        "用量": "5～10g",
+        "毒性": "小毒",
+        "禁忌": "孕妇慎用（妊娠禁忌，药典 2015 版慎用名单）；便溏者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "乌梅",
+      "category": "herb",
+      "name_cn": "乌梅",
+      "latin": "Mume Fructus",
+      "aliases": ["酸梅", "乌梅肉"],
+      "profile": {
+        "性味": "酸、涩，平",
+        "归经": ["肝", "脾", "肺", "大肠"],
+        "功效": "敛肺，涩肠，生津，安蛔",
+        "主治": "肺虚久咳，久泻久痢，虚热消渴，蛔厥呕吐腹痛",
+        "用量": "6～12g",
+        "毒性": "无毒",
+        "禁忌": "外有表邪、内有实热积滞者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "五味子",
+      "category": "herb",
+      "name_cn": "五味子",
+      "latin": "Schisandrae Chinensis Fructus",
+      "aliases": ["北五味子", "五梅子"],
+      "profile": {
+        "性味": "酸、甘，温",
+        "归经": ["肺", "心", "肾"],
+        "功效": "收敛固涩，益气生津，补肾宁心",
+        "主治": "久嗽虚喘，梦遗滑精，遗尿尿频，久泻不止，自汗盗汗，津伤口渴，内热消渴，心悸失眠",
+        "用量": "2～6g",
+        "毒性": "无毒",
+        "禁忌": "外有表邪、内有实热、咳嗽初起、麻疹初发者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "小茴香",
+      "category": "herb",
+      "name_cn": "小茴香",
+      "latin": "Foeniculi Fructus",
+      "aliases": ["茴香", "谷茴香"],
+      "profile": {
+        "性味": "辛，温",
+        "归经": ["肝", "肾", "脾", "胃"],
+        "功效": "散寒止痛，理气和胃",
+        "主治": "寒疝腹痛，睾丸偏坠，痛经，少腹冷痛，脘腹胀痛，食少吐泻",
+        "用量": "3～6g",
+        "毒性": "无毒",
+        "禁忌": "阴虚火旺者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "栀子",
+      "category": "herb",
+      "name_cn": "栀子",
+      "latin": "Gardeniae Fructus",
+      "aliases": ["山栀", "山栀子", "黄栀子"],
+      "profile": {
+        "性味": "苦，寒",
+        "归经": ["心", "肺", "三焦"],
+        "功效": "泻火除烦，清热利湿，凉血解毒；外用消肿止痛",
+        "主治": "热病心烦，湿热黄疸，淋证涩痛，血热吐衄，目赤肿痛，火毒疮疡；外用扭挫伤痛",
+        "用量": "6～10g",
+        "毒性": "无毒",
+        "禁忌": "脾虚便溏者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（待人工核对）"
+    },
+    {
+      "id": "菊花",
+      "category": "herb",
+      "name_cn": "菊花",
+      "latin": "Chrysanthemi Flos",
+      "aliases": ["甘菊", "白菊花", "杭菊"],
+      "profile": {
+        "性味": "甘、苦，微寒",
+        "归经": ["肺", "肝"],
+        "功效": "疏散风热，平抑肝阳，清肝明目，清热解毒",
+        "主治": "风热感冒，头痛眩晕，目赤肿痛，眼目昏花，疮痈肿毒",
+        "用量": "5～10g",
+        "毒性": "无毒",
+        "禁忌": "气虚胃寒、食少泄泻者慎用"
+      },
+      "source": "《中国药典》2020 年版一部（扩展档案，非 20 类主药，待人工核对）"
+    },
+    {
+      "id": "甘草",
+      "category": "herb",
+      "name_cn": "甘草",
+      "latin": "Glycyrrhizae Radix et Rhizoma",
+      "aliases": ["国老", "生甘草", "炙甘草"],
+      "profile": {
+        "性味": "甘，平",
+        "归经": ["心", "肺", "脾", "胃"],
+        "功效": "补脾益气，清热解毒，祛痰止咳，缓急止痛，调和诸药",
+        "主治": "脾胃虚弱，倦怠乏力，心悸气短，咳嗽痰多，脘腹、四肢挛急疼痛，痈肿疮毒；缓解药物毒性、烈性",
+        "用量": "2～10g",
+        "毒性": "无毒",
+        "禁忌": "歌诀十八反「藻戟遂芫俱战草」：不宜与海藻、京大戟、红大戟、甘遂、芫花同用（本项目按需求文档口径记 pharmacopoeia=未收录，见 data_status.review_items）；湿盛胀满、水肿者不宜用"
+      },
+      "source": "《中国药典》2020 年版一部（扩展档案，非 20 类主药，待人工核对）"
+    },
+    {
+      "id": "川乌",
+      "category": "herb_minor",
+      "name_cn": "川乌",
+      "latin": "Aconiti Radix",
+      "aliases": ["制川乌"],
+      "source": "禁忌网络节点（只存名字，无档案）"
+    },
+    {
+      "id": "草乌",
+      "category": "herb_minor",
+      "name_cn": "草乌",
+      "latin": "Aconiti Kusnezoffii Radix",
+      "aliases": ["制草乌"],
+      "source": "禁忌网络节点（只存名字，无档案）"
+    },
+    {
+      "id": "半夏",
+      "category": "herb_minor",
+      "name_cn": "半夏",
+      "latin": "Pinelliae Rhizoma",
+      "aliases": ["法半夏", "姜半夏"],
+      "source": "禁忌网络节点（只存名字，无档案）"
+    },
+    {
+      "id": "贝母",
+      "category": "herb_minor",
+      "name_cn": "贝母",
+      "latin": "Fritillariae Bulbus",
+      "aliases": ["川贝母", "浙贝母"],
+      "source": "禁忌网络节点（只存名字，无档案）"
+    },
+    {
+      "id": "白蔹",
+      "category": "herb_minor",
+      "name_cn": "白蔹",
+      "latin": "Ampelopsis Radix",
+      "aliases": [],
+      "source": "禁忌网络节点（只存名字，无档案）"
+    },
+    {
+      "id": "白及",
+      "category": "herb_minor",
+      "name_cn": "白及",
+      "latin": "Bletillae Rhizoma",
+      "aliases": ["白芨"],
+      "source": "禁忌网络节点（只存名字，无档案）"
+    },
+    {
+      "id": "海藻",
+      "category": "herb_minor",
+      "name_cn": "海藻",
+      "latin": "Sargassum",
+      "aliases": [],
+      "source": "禁忌网络节点（只存名字，无档案）"
+    },
+    {
+      "id": "人参",
+      "category": "herb_minor",
+      "name_cn": "人参",
+      "latin": "Ginseng Radix et Rhizoma",
+      "aliases": ["红参", "白参"],
+      "source": "禁忌网络节点 + 方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "五灵脂",
+      "category": "herb_minor",
+      "name_cn": "五灵脂",
+      "latin": "Trogopterori Faeces",
+      "aliases": [],
+      "source": "禁忌网络节点（只存名字，无档案）"
+    },
+    {
+      "id": "硫黄",
+      "category": "herb_minor",
+      "name_cn": "硫黄",
+      "latin": "Sulfur",
+      "aliases": ["硫磺"],
+      "source": "禁忌网络节点（只存名字，无档案）"
+    },
+    {
+      "id": "朴硝",
+      "category": "herb_minor",
+      "name_cn": "朴硝",
+      "latin": "Natrii Sulfas",
+      "aliases": ["芒硝（朴硝为芒硝粗品，另立节点）"],
+      "source": "禁忌网络节点（只存名字，无档案）"
+    },
+    {
+      "id": "熟地黄",
+      "category": "herb_minor",
+      "name_cn": "熟地黄",
+      "latin": "Rehmanniae Radix Praeparata",
+      "aliases": ["熟地"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "山药",
+      "category": "herb_minor",
+      "name_cn": "山药",
+      "latin": "Dioscoreae Rhizoma",
+      "aliases": ["淮山"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "茯苓",
+      "category": "herb_minor",
+      "name_cn": "茯苓",
+      "latin": "Poria",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "泽泻",
+      "category": "herb_minor",
+      "name_cn": "泽泻",
+      "latin": "Alismatis Rhizoma",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "牡丹皮",
+      "category": "herb_minor",
+      "name_cn": "牡丹皮",
+      "latin": "Moutan Cortex",
+      "aliases": ["丹皮"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "神曲",
+      "category": "herb_minor",
+      "name_cn": "神曲",
+      "latin": "Massa Medicata Fermentata",
+      "aliases": ["六神曲", "焦神曲"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "陈皮",
+      "category": "herb_minor",
+      "name_cn": "陈皮",
+      "latin": "Citri Reticulatae Pericarpium",
+      "aliases": ["橘皮"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "莱菔子",
+      "category": "herb_minor",
+      "name_cn": "莱菔子",
+      "latin": "Raphani Semen",
+      "aliases": ["萝卜子"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "金银花",
+      "category": "herb_minor",
+      "name_cn": "金银花",
+      "latin": "Lonicerae Japonicae Flos",
+      "aliases": ["忍冬花", "双花"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "薄荷",
+      "category": "herb_minor",
+      "name_cn": "薄荷",
+      "latin": "Menthae Haplocalycis Herba",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "荆芥穗",
+      "category": "herb_minor",
+      "name_cn": "荆芥穗",
+      "latin": "Schizonepetae Herba",
+      "aliases": ["荆芥"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "淡豆豉",
+      "category": "herb_minor",
+      "name_cn": "淡豆豉",
+      "latin": "Sojae Semen Praeparatum",
+      "aliases": ["豆豉"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "牛蒡子",
+      "category": "herb_minor",
+      "name_cn": "牛蒡子",
+      "latin": "Arctii Fructus",
+      "aliases": ["大力子"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "桔梗",
+      "category": "herb_minor",
+      "name_cn": "桔梗",
+      "latin": "Platycodonis Radix",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "竹叶",
+      "category": "herb_minor",
+      "name_cn": "竹叶",
+      "latin": "Lophatheri Herba",
+      "aliases": ["淡竹叶"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "芦根",
+      "category": "herb_minor",
+      "name_cn": "芦根",
+      "latin": "Phragmitis Rhizoma",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "麦冬",
+      "category": "herb_minor",
+      "name_cn": "麦冬",
+      "latin": "Ophiopogonis Radix",
+      "aliases": ["麦门冬"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "肉豆蔻",
+      "category": "herb_minor",
+      "name_cn": "肉豆蔻",
+      "latin": "Myristicae Semen",
+      "aliases": ["玉果"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "吴茱萸",
+      "category": "herb_minor",
+      "name_cn": "吴茱萸",
+      "latin": "Euodiae Fructus",
+      "aliases": ["吴萸"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "生姜",
+      "category": "herb_minor",
+      "name_cn": "生姜",
+      "latin": "Zingiberis Rhizoma Recens",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "大枣",
+      "category": "herb_minor",
+      "name_cn": "大枣",
+      "latin": "Jujubae Fructus",
+      "aliases": ["红枣"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "细辛",
+      "category": "herb_minor",
+      "name_cn": "细辛",
+      "latin": "Asari Radix et Rhizoma",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "干姜",
+      "category": "herb_minor",
+      "name_cn": "干姜",
+      "latin": "Zingiberis Rhizoma",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "黄连",
+      "category": "herb_minor",
+      "name_cn": "黄连",
+      "latin": "Coptidis Rhizoma",
+      "aliases": ["川连"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "当归",
+      "category": "herb_minor",
+      "name_cn": "当归",
+      "latin": "Angelicae Sinensis Radix",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "附子",
+      "category": "herb_minor",
+      "name_cn": "附子",
+      "latin": "Aconiti Lateralis Radix Praeparata",
+      "aliases": ["制附子", "黑顺片"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "蜀椒",
+      "category": "herb_minor",
+      "name_cn": "蜀椒",
+      "latin": "Zanthoxyli Pericarpium",
+      "aliases": ["花椒"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "桂枝",
+      "category": "herb_minor",
+      "name_cn": "桂枝",
+      "latin": "Cinnamomi Ramulus",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "黄柏",
+      "category": "herb_minor",
+      "name_cn": "黄柏",
+      "latin": "Phellodendri Chinensis Cortex",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "杜仲",
+      "category": "herb_minor",
+      "name_cn": "杜仲",
+      "latin": "Eucommiae Cortex",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "核桃仁",
+      "category": "herb_minor",
+      "name_cn": "核桃仁",
+      "latin": "Juglandis Semen",
+      "aliases": ["胡桃仁"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "大蒜",
+      "category": "herb_minor",
+      "name_cn": "大蒜",
+      "latin": "Allii Sativi Bulbus",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "白术",
+      "category": "herb_minor",
+      "name_cn": "白术",
+      "latin": "Atractylodis Macrocephalae Rhizoma",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "木香",
+      "category": "herb_minor",
+      "name_cn": "木香",
+      "latin": "Aucklandiae Radix",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "柏子仁",
+      "category": "herb_minor",
+      "name_cn": "柏子仁",
+      "latin": "Platycladi Semen",
+      "aliases": ["柏仁"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "郁李仁",
+      "category": "herb_minor",
+      "name_cn": "郁李仁",
+      "latin": "Pruni Semen",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "松子仁",
+      "category": "herb_minor",
+      "name_cn": "松子仁",
+      "latin": "Pini Semen",
+      "aliases": ["松仁"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "大黄",
+      "category": "herb_minor",
+      "name_cn": "大黄",
+      "latin": "Rhei Radix et Rhizoma",
+      "aliases": ["川军", "锦纹"],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "芒硝",
+      "category": "herb_minor",
+      "name_cn": "芒硝",
+      "latin": "Natrii Sulfas",
+      "aliases": [],
+      "source": "方剂组成节点（只存名字，无档案）"
+    },
+    {
+      "id": "杞菊地黄丸",
+      "category": "formula",
+      "name_cn": "杞菊地黄丸",
+      "aliases": ["杞菊地黄汤"],
+      "formula": {
+        "组成": [
+          { "herb": "熟地黄", "role": "君" },
+          { "herb": "山茱萸", "role": "臣" },
+          { "herb": "山药", "role": "臣" },
+          { "herb": "茯苓", "role": "佐" },
+          { "herb": "泽泻", "role": "佐" },
+          { "herb": "牡丹皮", "role": "佐" },
+          { "herb": "枸杞子", "role": "佐" },
+          { "herb": "菊花", "role": "佐" }
+        ],
+        "主治": "肝肾阴虚，头晕目眩，视物昏花，目涩畏光",
+        "出处": "《医级》"
+      },
+      "source": "《方剂学》教材（待人工核对）"
+    },
+    {
+      "id": "六味地黄丸",
+      "category": "formula",
+      "name_cn": "六味地黄丸",
+      "aliases": ["六味地黄汤"],
+      "formula": {
+        "组成": [
+          { "herb": "熟地黄", "role": "君" },
+          { "herb": "山茱萸", "role": "臣" },
+          { "herb": "山药", "role": "臣" },
+          { "herb": "泽泻", "role": "佐" },
+          { "herb": "茯苓", "role": "佐" },
+          { "herb": "牡丹皮", "role": "佐" }
+        ],
+        "主治": "肾阴亏损，头晕耳鸣，腰膝酸软，骨蒸潮热，盗汗遗精",
+        "出处": "《小儿药证直诀》"
+      },
+      "source": "《方剂学》教材（待人工核对）"
+    },
+    {
+      "id": "保和丸",
+      "category": "formula",
+      "name_cn": "保和丸",
+      "aliases": [],
+      "formula": {
+        "组成": [
+          { "herb": "山楂", "role": "君" },
+          { "herb": "神曲", "role": "臣" },
+          { "herb": "半夏", "role": "臣" },
+          { "herb": "茯苓", "role": "佐" },
+          { "herb": "陈皮", "role": "佐" },
+          { "herb": "连翘", "role": "佐" },
+          { "herb": "莱菔子", "role": "佐" }
+        ],
+        "主治": "食积停滞，脘腹胀满，嗳腐吞酸，不欲饮食",
+        "出处": "《丹溪心法》"
+      },
+      "source": "《方剂学》教材（待人工核对）"
+    },
+    {
+      "id": "银翘散",
+      "category": "formula",
+      "name_cn": "银翘散",
+      "aliases": [],
+      "formula": {
+        "组成": [
+          { "herb": "金银花", "role": "君" },
+          { "herb": "连翘", "role": "君" },
+          { "herb": "薄荷", "role": "臣" },
+          { "herb": "荆芥穗", "role": "臣" },
+          { "herb": "淡豆豉", "role": "臣" },
+          { "herb": "牛蒡子", "role": "臣" },
+          { "herb": "桔梗", "role": "佐" },
+          { "herb": "竹叶", "role": "佐" },
+          { "herb": "甘草", "role": "使" },
+          { "herb": "芦根", "role": "使" }
+        ],
+        "主治": "温病初起，发热无汗，口渴咽痛",
+        "出处": "《温病条辨》"
+      },
+      "source": "《方剂学》教材（待人工核对）"
+    },
+    {
+      "id": "生脉散",
+      "category": "formula",
+      "name_cn": "生脉散",
+      "aliases": ["生脉饮"],
+      "formula": {
+        "组成": [
+          { "herb": "人参", "role": "君" },
+          { "herb": "麦冬", "role": "臣" },
+          { "herb": "五味子", "role": "佐" }
+        ],
+        "主治": "气阴两亏，心悸气短，脉微自汗",
+        "出处": "《医学启源》"
+      },
+      "source": "《方剂学》教材（待人工核对）"
+    },
+    {
+      "id": "四神丸",
+      "category": "formula",
+      "name_cn": "四神丸",
+      "aliases": [],
+      "formula": {
+        "组成": [
+          { "herb": "补骨脂", "role": "君" },
+          { "herb": "肉豆蔻", "role": "臣" },
+          { "herb": "五味子", "role": "佐" },
+          { "herb": "吴茱萸", "role": "佐" },
+          { "herb": "生姜", "role": "使" },
+          { "herb": "大枣", "role": "使" }
+        ],
+        "主治": "肾阳不足，五更泄泻，不思饮食，食不消化",
+        "出处": "《内科摘要》"
+      },
+      "source": "《方剂学》教材（待人工核对）"
+    },
+    {
+      "id": "乌梅丸",
+      "category": "formula",
+      "name_cn": "乌梅丸",
+      "aliases": [],
+      "formula": {
+        "组成": [
+          { "herb": "乌梅", "role": "君" },
+          { "herb": "细辛", "role": "臣" },
+          { "herb": "干姜", "role": "臣" },
+          { "herb": "黄连", "role": "臣" },
+          { "herb": "当归", "role": "佐" },
+          { "herb": "附子", "role": "佐" },
+          { "herb": "蜀椒", "role": "佐" },
+          { "herb": "桂枝", "role": "佐" },
+          { "herb": "人参", "role": "佐" },
+          { "herb": "黄柏", "role": "佐" }
+        ],
+        "主治": "蛔厥，久痢，厥阴头痛，手足厥冷",
+        "出处": "《伤寒论》"
+      },
+      "source": "《方剂学》教材（待人工核对）"
+    },
+    {
+      "id": "栀子豉汤",
+      "category": "formula",
+      "name_cn": "栀子豉汤",
+      "aliases": [],
+      "formula": {
+        "组成": [
+          { "herb": "栀子", "role": "君" },
+          { "herb": "淡豆豉", "role": "臣" }
+        ],
+        "主治": "热郁胸膈，虚烦不眠，心中懊憹",
+        "出处": "《伤寒论》"
+      },
+      "source": "《方剂学》教材（待人工核对）"
+    },
+    {
+      "id": "青娥丸",
+      "category": "formula",
+      "name_cn": "青娥丸",
+      "aliases": [],
+      "formula": {
+        "组成": [
+          { "herb": "补骨脂", "role": "君" },
+          { "herb": "杜仲", "role": "臣" },
+          { "herb": "核桃仁", "role": "臣" },
+          { "herb": "大蒜", "role": "佐" }
+        ],
+        "主治": "肾虚腰痛，起坐不利，膝软乏力",
+        "出处": "《太平惠民和剂局方》"
+      },
+      "source": "《方剂学》教材（待人工核对）"
+    },
+    {
+      "id": "香砂六君子汤",
+      "category": "formula",
+      "name_cn": "香砂六君子汤",
+      "aliases": [],
+      "formula": {
+        "组成": [
+          { "herb": "人参", "role": "君" },
+          { "herb": "白术", "role": "臣" },
+          { "herb": "茯苓", "role": "臣" },
+          { "herb": "甘草", "role": "佐" },
+          { "herb": "陈皮", "role": "佐" },
+          { "herb": "半夏", "role": "佐" },
+          { "herb": "木香", "role": "佐" },
+          { "herb": "砂仁", "role": "佐" }
+        ],
+        "主治": "脾胃气虚，湿阻中焦，脘腹胀满，食少便溏",
+        "出处": "《古今名医方论》（另说《医方集解》，待核对）"
+      },
+      "source": "《方剂学》教材（待人工核对）"
+    },
+    {
+      "id": "五仁丸",
+      "category": "formula",
+      "name_cn": "五仁丸",
+      "aliases": [],
+      "formula": {
+        "组成": [
+          { "herb": "桃仁", "role": "君" },
+          { "herb": "杏仁", "role": "臣" },
+          { "herb": "柏子仁", "role": "佐" },
+          { "herb": "郁李仁", "role": "佐" },
+          { "herb": "松子仁", "role": "佐" },
+          { "herb": "陈皮", "role": "使" }
+        ],
+        "主治": "津枯肠燥，大便艰难",
+        "出处": "《世医得效方》"
+      },
+      "source": "《方剂学》教材（待人工核对）"
+    },
+    {
+      "id": "桃核承气汤",
+      "category": "formula",
+      "name_cn": "桃核承气汤",
+      "aliases": ["桃仁承气汤"],
+      "formula": {
+        "组成": [
+          { "herb": "桃仁", "role": "君" },
+          { "herb": "大黄", "role": "臣" },
+          { "herb": "桂枝", "role": "佐" },
+          { "herb": "甘草", "role": "佐" },
+          { "herb": "芒硝", "role": "佐" }
+        ],
+        "主治": "下焦蓄血，少腹急结，小便自利，其人如狂",
+        "出处": "《伤寒论》"
+      },
+      "source": "《方剂学》教材（待人工核对）"
+    }
+  ],
+  "edges": [
+    { "type": "组成", "formula": "杞菊地黄丸", "herb": "熟地黄", "role": "君" },
+    { "type": "组成", "formula": "杞菊地黄丸", "herb": "山茱萸", "role": "臣" },
+    { "type": "组成", "formula": "杞菊地黄丸", "herb": "山药", "role": "臣" },
+    { "type": "组成", "formula": "杞菊地黄丸", "herb": "茯苓", "role": "佐" },
+    { "type": "组成", "formula": "杞菊地黄丸", "herb": "泽泻", "role": "佐" },
+    { "type": "组成", "formula": "杞菊地黄丸", "herb": "牡丹皮", "role": "佐" },
+    { "type": "组成", "formula": "杞菊地黄丸", "herb": "枸杞子", "role": "佐" },
+    { "type": "组成", "formula": "杞菊地黄丸", "herb": "菊花", "role": "佐" },
+    { "type": "组成", "formula": "六味地黄丸", "herb": "熟地黄", "role": "君" },
+    { "type": "组成", "formula": "六味地黄丸", "herb": "山茱萸", "role": "臣" },
+    { "type": "组成", "formula": "六味地黄丸", "herb": "山药", "role": "臣" },
+    { "type": "组成", "formula": "六味地黄丸", "herb": "泽泻", "role": "佐" },
+    { "type": "组成", "formula": "六味地黄丸", "herb": "茯苓", "role": "佐" },
+    { "type": "组成", "formula": "六味地黄丸", "herb": "牡丹皮", "role": "佐" },
+    { "type": "组成", "formula": "保和丸", "herb": "山楂", "role": "君" },
+    { "type": "组成", "formula": "保和丸", "herb": "神曲", "role": "臣" },
+    { "type": "组成", "formula": "保和丸", "herb": "半夏", "role": "臣" },
+    { "type": "组成", "formula": "保和丸", "herb": "茯苓", "role": "佐" },
+    { "type": "组成", "formula": "保和丸", "herb": "陈皮", "role": "佐" },
+    { "type": "组成", "formula": "保和丸", "herb": "连翘", "role": "佐" },
+    { "type": "组成", "formula": "保和丸", "herb": "莱菔子", "role": "佐" },
+    { "type": "组成", "formula": "银翘散", "herb": "金银花", "role": "君" },
+    { "type": "组成", "formula": "银翘散", "herb": "连翘", "role": "君" },
+    { "type": "组成", "formula": "银翘散", "herb": "薄荷", "role": "臣" },
+    { "type": "组成", "formula": "银翘散", "herb": "荆芥穗", "role": "臣" },
+    { "type": "组成", "formula": "银翘散", "herb": "淡豆豉", "role": "臣" },
+    { "type": "组成", "formula": "银翘散", "herb": "牛蒡子", "role": "臣" },
+    { "type": "组成", "formula": "银翘散", "herb": "桔梗", "role": "佐" },
+    { "type": "组成", "formula": "银翘散", "herb": "竹叶", "role": "佐" },
+    { "type": "组成", "formula": "银翘散", "herb": "甘草", "role": "使" },
+    { "type": "组成", "formula": "银翘散", "herb": "芦根", "role": "使" },
+    { "type": "组成", "formula": "生脉散", "herb": "人参", "role": "君" },
+    { "type": "组成", "formula": "生脉散", "herb": "麦冬", "role": "臣" },
+    { "type": "组成", "formula": "生脉散", "herb": "五味子", "role": "佐" },
+    { "type": "组成", "formula": "四神丸", "herb": "补骨脂", "role": "君" },
+    { "type": "组成", "formula": "四神丸", "herb": "肉豆蔻", "role": "臣" },
+    { "type": "组成", "formula": "四神丸", "herb": "五味子", "role": "佐" },
+    { "type": "组成", "formula": "四神丸", "herb": "吴茱萸", "role": "佐" },
+    { "type": "组成", "formula": "四神丸", "herb": "生姜", "role": "使" },
+    { "type": "组成", "formula": "四神丸", "herb": "大枣", "role": "使" },
+    { "type": "组成", "formula": "乌梅丸", "herb": "乌梅", "role": "君" },
+    { "type": "组成", "formula": "乌梅丸", "herb": "细辛", "role": "臣" },
+    { "type": "组成", "formula": "乌梅丸", "herb": "干姜", "role": "臣" },
+    { "type": "组成", "formula": "乌梅丸", "herb": "黄连", "role": "臣" },
+    { "type": "组成", "formula": "乌梅丸", "herb": "当归", "role": "佐" },
+    { "type": "组成", "formula": "乌梅丸", "herb": "附子", "role": "佐" },
+    { "type": "组成", "formula": "乌梅丸", "herb": "蜀椒", "role": "佐" },
+    { "type": "组成", "formula": "乌梅丸", "herb": "桂枝", "role": "佐" },
+    { "type": "组成", "formula": "乌梅丸", "herb": "人参", "role": "佐" },
+    { "type": "组成", "formula": "乌梅丸", "herb": "黄柏", "role": "佐" },
+    { "type": "组成", "formula": "栀子豉汤", "herb": "栀子", "role": "君" },
+    { "type": "组成", "formula": "栀子豉汤", "herb": "淡豆豉", "role": "臣" },
+    { "type": "组成", "formula": "青娥丸", "herb": "补骨脂", "role": "君" },
+    { "type": "组成", "formula": "青娥丸", "herb": "杜仲", "role": "臣" },
+    { "type": "组成", "formula": "青娥丸", "herb": "核桃仁", "role": "臣" },
+    { "type": "组成", "formula": "青娥丸", "herb": "大蒜", "role": "佐" },
+    { "type": "组成", "formula": "香砂六君子汤", "herb": "人参", "role": "君" },
+    { "type": "组成", "formula": "香砂六君子汤", "herb": "白术", "role": "臣" },
+    { "type": "组成", "formula": "香砂六君子汤", "herb": "茯苓", "role": "臣" },
+    { "type": "组成", "formula": "香砂六君子汤", "herb": "甘草", "role": "佐" },
+    { "type": "组成", "formula": "香砂六君子汤", "herb": "陈皮", "role": "佐" },
+    { "type": "组成", "formula": "香砂六君子汤", "herb": "半夏", "role": "佐" },
+    { "type": "组成", "formula": "香砂六君子汤", "herb": "木香", "role": "佐" },
+    { "type": "组成", "formula": "香砂六君子汤", "herb": "砂仁", "role": "佐" },
+    { "type": "组成", "formula": "五仁丸", "herb": "桃仁", "role": "君" },
+    { "type": "组成", "formula": "五仁丸", "herb": "杏仁", "role": "臣" },
+    { "type": "组成", "formula": "五仁丸", "herb": "柏子仁", "role": "佐" },
+    { "type": "组成", "formula": "五仁丸", "herb": "郁李仁", "role": "佐" },
+    { "type": "组成", "formula": "五仁丸", "herb": "松子仁", "role": "佐" },
+    { "type": "组成", "formula": "五仁丸", "herb": "陈皮", "role": "使" },
+    { "type": "组成", "formula": "桃核承气汤", "herb": "桃仁", "role": "君" },
+    { "type": "组成", "formula": "桃核承气汤", "herb": "大黄", "role": "臣" },
+    { "type": "组成", "formula": "桃核承气汤", "herb": "桂枝", "role": "佐" },
+    { "type": "组成", "formula": "桃核承气汤", "herb": "甘草", "role": "佐" },
+    { "type": "组成", "formula": "桃核承气汤", "herb": "芒硝", "role": "佐" },
+    {
+      "type": "禁忌",
+      "herb_a": "瓜蒌皮",
+      "herb_b": "川乌",
+      "verse": "十八反",
+      "pharmacopoeia": "认定",
+      "source": "《中国药典》2020 年版一部·瓜蒌【注意】不宜与川乌、制川乌、草乌、制草乌、附子同用；歌诀「半蒌贝蔹及攻乌」（待人工核对）",
+      "note": "演示主用例：双向展示歌诀 + 药典两重依据"
+    },
+    {
+      "type": "禁忌",
+      "herb_a": "瓜蒌皮",
+      "herb_b": "草乌",
+      "verse": "十八反",
+      "pharmacopoeia": "认定",
+      "source": "《中国药典》2020 年版一部·瓜蒌【注意】不宜与川乌、制川乌、草乌、制草乌、附子同用；歌诀「半蒌贝蔹及攻乌」（待人工核对）"
+    },
+    {
+      "type": "禁忌",
+      "herb_a": "川乌",
+      "herb_b": "半夏",
+      "verse": "十八反",
+      "pharmacopoeia": "认定",
+      "source": "《中国药典》2020 年版一部·川乌【注意】不宜与半夏、瓜蒌、贝母、白蔹、白及同用；歌诀「半蒌贝蔹及攻乌」（待人工核对）"
+    },
+    {
+      "type": "禁忌",
+      "herb_a": "川乌",
+      "herb_b": "贝母",
+      "verse": "十八反",
+      "pharmacopoeia": "认定",
+      "source": "《中国药典》2020 年版一部·川乌【注意】不宜与半夏、瓜蒌、贝母、白蔹、白及同用；歌诀「半蒌贝蔹及攻乌」（待人工核对）"
+    },
+    {
+      "type": "禁忌",
+      "herb_a": "川乌",
+      "herb_b": "白蔹",
+      "verse": "十八反",
+      "pharmacopoeia": "认定",
+      "source": "《中国药典》2020 年版一部·川乌【注意】不宜与半夏、瓜蒌、贝母、白蔹、白及同用；歌诀「半蒌贝蔹及攻乌」（待人工核对）"
+    },
+    {
+      "type": "禁忌",
+      "herb_a": "川乌",
+      "herb_b": "白及",
+      "verse": "十八反",
+      "pharmacopoeia": "认定",
+      "source": "《中国药典》2020 年版一部·川乌【注意】不宜与半夏、瓜蒌、贝母、白蔹、白及同用；歌诀「半蒌贝蔹及攻乌」（待人工核对）"
+    },
+    {
+      "type": "禁忌",
+      "herb_a": "甘草",
+      "herb_b": "海藻",
+      "verse": "十八反",
+      "pharmacopoeia": "未收录",
+      "source": "歌诀「藻戟遂芫俱战草」；药典甘草【注意】实列不宜与海藻同用，但本项目按需求文档 7.2 口径记「未收录」（深圳判例：法院据药典未列为充分依据判医院无责）（待人工核对）",
+      "note": "歌诀有、药典未认定，必须双源分别展示"
+    },
+    {
+      "type": "禁忌",
+      "herb_a": "人参",
+      "herb_b": "五灵脂",
+      "verse": "十九畏",
+      "pharmacopoeia": "未收录",
+      "source": "歌诀「人参畏五灵脂」；药典未列入该对（待人工核对）",
+      "note": "歌诀有、药典未认定，必须双源分别展示"
+    },
+    {
+      "type": "禁忌",
+      "herb_a": "硫黄",
+      "herb_b": "朴硝",
+      "verse": "十九畏",
+      "pharmacopoeia": "未收录",
+      "source": "歌诀「硫黄原是火中精，朴硝一见便相争」；药典未列入该对（待人工核对）",
+      "note": "歌诀有、药典未认定，必须双源分别展示"
+    }
+  ]
+}
