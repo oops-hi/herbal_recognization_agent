@@ -11,6 +11,7 @@ Flask Web 后端：上传识别 + 多轮对话（SSE 流式工具链）+ 图谱�
 
 启动：conda run -n task python app.py  →  http://localhost:5000
 """
+import json
 import time
 import uuid
 from pathlib import Path
@@ -201,6 +202,19 @@ def chat():
 def herb_api(name: str):
     """单味药档案 JSON（图谱页离线检索用）。"""
     return Response(kq.dump_for_json(name), mimetype="application/json; charset=utf-8")
+
+
+@app.get("/api/graph")
+def graph_api():
+    """全量拓扑 JSON（图谱页交互式力导向图数据源）。
+
+    注意不能用 jsonify：Flask 2.2.2 默认 ensure_ascii=True，90% 中文的载荷
+    会转义成 \\uXXXX 膨胀约 2 倍 —— 与 /api/herb 的 dump_for_json 同模式。
+    """
+    return Response(
+        json.dumps(kq.graph_dataset(), ensure_ascii=False),
+        mimetype="application/json; charset=utf-8",
+    )
 
 
 @app.get("/api/health")

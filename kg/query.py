@@ -213,6 +213,57 @@ def dump_for_json(name: str) -> str:
     return json.dumps({"found": True, **node}, ensure_ascii=False)
 
 
+def graph_dataset() -> dict:
+    """前端 /api/graph 用：全量拓扑 JSON（节点带度数/是否含档案，禁忌双向边去重为一条）。
+
+    单一数据源：直接遍历 builder.load() 的 nx 图，与 6 个查询工具所见一致。
+    degree = 唯一邻居数（禁忌双向只算 1）；未知端点（防旧缓存）跳过不抛错。
+    """
+    g = builder.load()
+    node_ids = set(g.nodes)
+    nodes, edges = [], []
+    for nid, attrs in g.nodes(data=True):
+        if attrs.get("category") not in ("herb", "herb_minor", "formula"):
+            continue  # 防御：幽灵节点无 category，不发给前端
+        neighbors = set(g.predecessors(nid)) | set(g.successors(nid))
+        nodes.append({
+            "id": nid,
+            "category": attrs["category"],
+            "name_cn": attrs.get("name_cn", nid),
+            "latin": attrs.get("latin", ""),
+            "aliases": attrs.get("aliases", []),
+            "degree": len(neighbors),
+            "has_profile": attrs.get("category") == "herb" and "profile" in attrs,
+            "source": attrs.get("source", ""),
+        })
+    node_ids = {n["id"] for n in nodes}
+    seen_tabu = set()
+    for u, v, attrs in g.edges(data=True):
+        if u not in node_ids or v not in node_ids:
+            continue
+        if attrs.get("type") == "禁忌":
+            key = frozenset((u, v))
+            if key in seen_tabu:
+                continue  # 禁忌边在 nx 里是双向两条，前端只渲染一条
+            seen_tabu.add(key)
+            edges.append({
+                "source": u, "target": v, "type": "禁忌",
+                "verse": attrs.get("verse", ""),
+                "pharmacopoeia": attrs.get("pharmacopoeia", ""),
+                "note": attrs.get("note", ""),
+            })
+        elif attrs.get("type") == "组成":
+            edges.append({"source": u, "target": v, "type": "组成", "role": attrs.get("role", "")})
+    meta = {
+        "nodeCount": len(nodes),
+        "edgeCount": len(edges),
+        "herb": sum(1 for n in nodes if n["category"] == "herb"),
+        "herbMinor": sum(1 for n in nodes if n["category"] == "herb_minor"),
+        "formula": sum(1 for n in nodes if n["category"] == "formula"),
+    }
+    return {"meta": meta, "nodes": nodes, "edges": edges}
+
+
 def main():
     ap = argparse.ArgumentParser(description="知识图谱查询 CLI")
     ap.add_argument("--herb", help="查单味药档案")
@@ -221,10 +272,13 @@ def main():
     ap.add_argument("--symptom", help="按症状推荐方剂")
     ap.add_argument("--search", help="按性味/归经/功效反向检索")
     ap.add_argument("--similar", help="相似药推荐")
+    ap.add_argument("--graph", action="store_true", help="输出全量拓扑 JSON（/api/graph 冒烟）")
     ap.add_argument("--stats", action="store_true", help="图规模统计")
     args = ap.parse_args()
 
-    if args.stats:
+    if args.graph:
+        print(json.dumps(graph_dataset(), ensure_ascii=False, indent=2))
+    elif args.stats:
         print(graph_stats())
     elif args.herb:
         print(get_profile(args.herb))

@@ -41,7 +41,11 @@ def load() -> nx.MultiDiGraph:
 
     for edge in data["edges"]:
         if edge["type"] == "组成":
-            g.add_edge(edge["formula"], edge["herb"], type="组成", role=edge["role"])
+            # 端点先过别名索引（如 kg.json 边里写「杏仁」→ 节点「苦杏仁」），
+            # 防止产生无 category 的幽灵节点
+            formula = _alias_index.get(edge["formula"], edge["formula"])
+            herb = _alias_index.get(edge["herb"], edge["herb"])
+            g.add_edge(formula, herb, type="组成", role=edge["role"])
         elif edge["type"] == "禁忌":
             # 无向禁忌 → 双向边，查询时任一方向都能命中
             attrs = {

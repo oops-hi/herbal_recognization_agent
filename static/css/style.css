@@ -320,3 +320,111 @@ main {
   white-space: pre-wrap;
   display: none;
 }
+
+/* ---------- 图谱页 v2：交互式力导向图（D3，Obsidian 风格浅色画布） ---------- */
+#graph-area {
+  position: relative;
+  height: max(66vh, 560px);
+  /* 画布用暖米色（比 --card 深一档）：纯白底上 Windows 白色鼠标指针看不见 */
+  background: #f0eadf;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+#graph-area img#graph-static {
+  display: none; /* 默认隐藏：仅 /api/graph 失败（断网/后端挂）时降级显示 */
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+}
+#graph-svg { display: block; width: 100%; height: 100%; }
+.graph-bg { cursor: grab; }
+/* 交互图加载中提示（默认首屏，避免 v1 静态图闪现） */
+.graph-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray);
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+/* 悬停 tooltip（节点 / 边共用） */
+.graph-tooltip {
+  position: absolute;
+  z-index: 10;
+  max-width: 260px;
+  padding: 8px 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(47, 42, 36, 0.18);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text);
+  pointer-events: none;
+}
+.graph-tooltip .tt-tag { color: var(--gray); font-size: 11px; }
+.graph-tooltip .tt-hint { color: var(--gray); font-size: 11px; }
+
+/* 降级提示条 */
+.fallback-note {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: var(--red-soft);
+  color: var(--red);
+  border: 1px solid var(--red);
+  border-radius: var(--radius);
+  font-size: 13px;
+}
+
+/* 图例筛选芯片 */
+.legend-chip { cursor: pointer; user-select: none; border-radius: 12px; padding: 2px 8px; transition: opacity 0.2s; }
+.legend-chip:hover { background: var(--green-soft); }
+.legend-chip.off { opacity: 0.35; text-decoration: line-through; }
+
+/* 复位按钮 */
+#reheat-btn {
+  border: none;
+  border-radius: 8px;
+  background: var(--green);
+  color: #fff;
+  padding: 3px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  margin-left: auto;
+}
+#reheat-btn:hover { background: var(--green-dark); }
+
+/* SVG 图元 */
+/* .dim 加在节点 g / 边整体上，所以过渡要加在 g 与边元素本身（否则文字标签瞬间消失） */
+.node { cursor: grab; transition: opacity 0.35s ease; }
+.node:active { cursor: grabbing; }
+.node circle, .node rect { transition: opacity 0.35s ease, stroke-width 0.2s ease; }
+.node-label {
+  font-size: 10px;
+  fill: var(--text);
+  text-anchor: middle;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: #f0eadf; /* 与画布底色一致，文字描边才自然 */
+  stroke-width: 3px;
+}
+.link { transition: opacity 0.35s ease; stroke-linecap: round; }
+.link-composition { stroke: #b9b2a3; stroke-width: 1; }
+.link-taboo { stroke: var(--red); stroke-width: 1.6; stroke-dasharray: 5 4; opacity: 0.85; }
+
+/* 悬停高亮：邻接 .hl，其余 .dim（柔和弱化而非消失，0.35s 平滑过渡不晃眼） */
+.link.dim, .node.dim { opacity: 0.3; }
+.link.hl { stroke-width: 3; opacity: 1; }
+.node.hl circle, .node.hl rect { stroke: #8a7a5f; stroke-width: 2px; }
+
+/* 点击聚焦常驻高亮 */
+.node.pinned circle, .node.pinned rect { stroke: var(--green-dark); stroke-width: 3px; }
+.node.pinned .node-label { font-weight: 700; }

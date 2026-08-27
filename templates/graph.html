@@ -9,21 +9,33 @@
 <body>
   <header>
     <h1>🌿 知识图谱可视化</h1>
-    <span class="tagline">离线渲染 · 无外部 CDN 依赖</span>
+    <span class="tagline">交互式力导向图谱 · 离线可用（本地渲染，0 外部请求）</span>
     <div class="header-right">
       <a href="/" class="badge" style="text-decoration:none;">← 返回主页</a>
     </div>
   </header>
 
   <div class="graph-wrap">
-    <img src="{{ url_for('static', filename='kg_graph.png') }}" alt="知识图谱">
+    <div id="graph-area">
+      <!-- 交互式 SVG 默认显示（避免 v1 静态图闪现）；graph.js 渲染后隐藏 loading -->
+      <svg id="graph-svg"></svg>
+      <div class="graph-loading" id="graph-loading">图谱加载中…</div>
+      <!-- 静态 PNG 默认隐藏，仅 /api/graph 失败（断网/后端挂）时降级显示 -->
+      <img id="graph-static" src="{{ url_for('static', filename='kg_graph.png') }}" alt="知识图谱">
+      <div class="graph-tooltip" id="graph-tooltip" hidden></div>
+      <div class="fallback-note" id="graph-fallback" hidden>
+        交互式图谱加载失败（服务未运行或已断网），已自动降级为静态渲染图；档案检索随本地服务状态而定。
+      </div>
+    </div>
 
     <div class="legend-box">
-      <span><span class="dot" style="background:#4caf50;"></span>带档案药材（20 类 + 扩展）</span>
-      <span><span class="dot" style="background:#bdbdbd;"></span>次要节点（只存名字）</span>
-      <span><span class="sq" style="background:#42a5f5;"></span>经典方剂</span>
-      <span><span class="line"></span>配伍禁忌（十八反 / 十九畏）</span>
+      <span class="legend-chip" data-filter="herb" title="点击显隐"><span class="dot" style="background:#4caf50;"></span>带档案药材</span>
+      <span class="legend-chip" data-filter="herb_minor" title="点击显隐"><span class="dot" style="background:#bdbdbd;"></span>次要节点</span>
+      <span class="legend-chip" data-filter="formula" title="点击显隐"><span class="sq" style="background:#42a5f5;"></span>经典方剂</span>
+      <span class="legend-chip" data-filter="禁忌" title="点击显隐"><span class="line"></span>配伍禁忌（十八反 / 十九畏）</span>
+      <span class="legend-chip" data-filter="组成" title="点击显隐"><span class="line" style="border-color:#b9b2a3;"></span>方剂组成</span>
       <span id="graph-stats" style="color:var(--gray);"></span>
+      <button id="reheat-btn" title="重新布局并复位视图">↻ 重新布局</button>
     </div>
 
     <div class="search-box">
@@ -47,54 +59,19 @@
     有毒药材信息请勿自行采食；紧急情况请立即就医。
   </footer>
 
+  <!-- 全部本地资源：vendor d3 + graph.js（零 CDN，断网可用） -->
+  <script src="{{ url_for('static', filename='vendor/d3.v7.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
   <script>
     (function () {
       "use strict";
+      // v1 的搜索框逻辑已并入 graph.js（GraphPage.showProfile），这里只绑事件
       const input = document.getElementById("herb-input");
-      const result = document.getElementById("herb-result");
       const btn = document.getElementById("herb-btn");
-
-      async function query() {
-        const name = input.value.trim();
-        if (!name) return;
-        result.style.display = "block";
-        result.textContent = "查询中…";
-        try {
-          const resp = await fetch("/api/herb/" + encodeURIComponent(name));
-          const j = await resp.json();
-          if (!j.found) {
-            result.innerHTML = "<b style='color:var(--red);'>知识库未收录「" + name + "」</b>" +
-              "<br>该药可能未在 20 类主药档案内，或可尝试别名（如 栝楼皮 → 瓜蒌皮）。";
-            return;
-          }
-          if (j.category !== "herb") {
-            result.textContent = "「" + j.name_cn + "」为" +
-              (j.category === "formula" ? "方剂" : "次要") + "节点，无独立档案（图谱连线可见）。";
-            return;
-          }
-          const p = j.profile;
-          result.textContent =
-            "【" + j.name_cn + "】" + (j.latin || "") + "\n" +
-            "性味：" + p["性味"] + "\n" +
-            "归经：" + p["归经"].join("、") + "\n" +
-            "功效：" + p["功效"] + "\n" +
-            "主治：" + p["主治"] + "\n" +
-            "用量：" + p["用量"] + "\n" +
-            "毒性：" + p["毒性"] + "\n" +
-            "禁忌：" + p["禁忌"] + "\n" +
-            "出处：" + (j.source || "");
-        } catch (e) {
-          result.textContent = "查询失败（本页为离线静态渲染，档案查询需要本地服务运行）。";
-        }
-      }
-
+      if (!window.GraphPage) return; // 极端降级：graph.js 未加载，搜索框静默
+      function query() { GraphPage.showProfile(input.value); }
       btn.addEventListener("click", query);
       input.addEventListener("keydown", (e) => { if (e.key === "Enter") query(); });
-
-      // 图谱统计
-      fetch("/api/health").then((r) => r.json()).then((j) => {
-        document.getElementById("graph-stats").textContent = j.graph || "";
-      }).catch(() => {});
     })();
   </script>
 </body>

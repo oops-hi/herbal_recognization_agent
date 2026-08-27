@@ -73,7 +73,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 2. **智能体**：手写 ReAct 循环（不用 LangChain），`MAX_TURNS=8`；⚠️`function.arguments` 是 JSON **字符串**必须 `json.loads()`；⚠️assistant 消息 `content` 为 None 也要原样回填 messages；⚠️分发前 `REGISTRY` 白名单校验工具名；⚠️工具异常以 `role:"tool"` 回填让模型自纠，**不让请求 500**
 3. **会话记忆**：服务端 dict + localStorage `client_id`（Flask cookie session 约 4KB 上限，装不下工具返回）
 4. **上传文件不删除**（智能体需跨轮次重复识别），新图上传时清理旧图 + 启动时清理 24h 前文件（与 pet 项目的 finally-unlink 刻意不同）
-5. **知识图谱可视化**：matplotlib 静态 PNG（pyvis 依赖 vis.js CDN，答辩教室断网即白屏）；Windows 必须设 `plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]` + `axes.unicode_minus=False`，否则中文全是方框
+5. **知识图谱可视化（v2）**：`/graph` 页 = **D3 手写力导向交互图**（vendor 本地 `static/vendor/d3.v7.min.js`，**页面 0 外部请求**）：拖拽 / 缩放平移 / 悬停邻接高亮 / 点击节点聚焦 + 档案面板联动 / 图例筛选 / 复位；数据源 `GET /api/graph`（`kg.query.graph_dataset()`：84 节点 + 84 边，禁忌双向边去重为 9 条，`ensure_ascii=False` 防中文转义）；**失败 / 断网自动降级为 matplotlib 静态 PNG**（`static/kg_graph.png`，离线渲染语义保住）；Windows matplotlib 须设 `plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei"]` + `axes.unicode_minus=False`，否则中文全是方框
 6. **SSE 流式**：`fetch` + `ReadableStream`（POST 语义，EventSource 用不了）；让评委实时看到工具逐个触发
 7. **合规**：不输出诊断/辨证/具体剂量/疗效；禁忌=知识展示；页面固定免责声明面板
 8. **DeepSeek**：密钥只从 `DEEPSEEK_API_KEY` 读（支持 .env），绝不硬编码；429 单次退避重试、402 不重试、断网 fail-soft（识别+图谱可用，仅对话降级）
@@ -99,7 +99,7 @@ conda run -n task python app.py              # http://localhost:5000
 4. 问"瓜蒌皮能和川乌一起用吗" → 主动提示十八反（歌诀+药典双源）
 5. 传宠物照片 → 拒绝下结论 + 补拍建议
 6. **拔网线** → 识别与图谱页仍可用，对话区友好降级
-7. 图谱可视化页离线渲染
+7. 图谱可视化页：本地服务在 → 交互式力导向图；断网 → 自动降级静态 PNG + 提示条（离线渲染语义不变）
 
 ## 当前状态
 
@@ -115,4 +115,5 @@ conda run -n task python app.py              # http://localhost:5000
 - [x] kg.json 医学数据人工核对（2026-08-27 用户核定，review_status 已更新；核对清单留档 review_items）
 - [x] Web 整体验收（2026-08-27，对照 10.2 演示脚本 7 步全过）：① 药房实拍枸杞子 → top1 0.94 + 图谱出处 ✅ ② 菊花泡水/眼睛干 → 4 次工具调用 + 杞菊地黄丸 ✅ ③ 追问用量 → 指代消解 + 知识条目 ✅ ④ 瓜蒌皮×川乌 → 十八反双源 ✅ ⑤ 宠物照片（Bombay/Birman/British_Shorthair）→ 拒答+补拍建议 ✅ ⑥ 断网模拟 → 识别+图谱可用、对话友好降级 ✅ ⑦ 图谱页离线渲染 + 档案 API ✅
 - [x] 验收期修复（2026-08-27）：`app.py` **debug=True → False**（werkzeug reloader 子进程里 import torch 触发 2.12.0.dev 的 dsl_registry 循环导入，上传识别 500）；`LOW_CONF_THRESHOLD 0.6 → 0.75`（宠物等域外图高置信误判最高 0.94，见 config.py 注释）；`classifier/predictor.py` 首调 `model.predictor is None` bug
+- [x] 图谱页 v2（2026-08-27）：`/graph` 升级为 **D3 手写力导向交互图**（Obsidian 双向链接风格、浅色画布）：vendor 本地 d3.v7.9.0（279KB，`static/vendor/`，页面 0 外部请求）；`GET /api/graph`（`kg.query.graph_dataset()`：节点带 degree/has_profile/aliases，禁忌双向 18 条去重为 9，`ensure_ascii=False`）；`static/js/graph.js`（IIFE，暴露 `window.GraphPage.showProfile`）：拖拽 / zoom(0.3~4) / 悬停邻接高亮 + tooltip（禁忌边双源：歌诀+药典）/ 点击聚焦(1.6×) + 档案联动（formula 节点升级显示君臣佐使）/ legend 筛选 / 复位；失败/断网降级静态 PNG + 提示条。**顺带修复数据 bug**：「五仁丸→杏仁」边与节点组成数组 `杏仁`→`苦杏仁`（builder.py 组成边过别名索引双保险；`formulas_by_herb("苦杏仁")` 不再漏报五仁丸，孤立节点 9→8）。已验证：全路由 200、/api/graph 84/84、中文不转义、禁忌 9 条双源齐全；浏览器交互与断网降级待答辩前人工复验
 - [ ] 待办（答辩前可选）：清理 kg.json 档案出处里残留的「待人工核对」字样（用户已核对完）；「甘草+海藻」口径决策待用户答复（歌诀有、药典未认定的展示口径，review_items 留档）
