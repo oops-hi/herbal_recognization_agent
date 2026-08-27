@@ -19,7 +19,11 @@ PRETRAINED   = "yolov8n-cls.pt"              # 预训练权重（带 v！不是 
 
 # ---- 识别 ----
 IMG_SIZE          = 224
-LOW_CONF_THRESHOLD = 0.6    # Top-1 低于该值 → 拒答并建议补拍（FR-03）
+# FR-03 拒答阈值：0.6 → 0.75（2026-08-27 实测调优）
+#   Dataset2 400 张：0.6 保留 92%/答对率 90%；0.75 保留 86%/答对率 94%
+#   宠物等域外图高置信误判（最高 0.94 = 木瓜，beagle 也 0.938），0.75 能拒掉约 6/10 类宠物图；
+#   单阈值无法全分离（枸杞子演示图 0.94 必须过），演示 5 选低置信宠物图（Bombay 0.28 / Birman 0.487 / British_Shorthair 0.468）
+LOW_CONF_THRESHOLD = 0.75
 
 # ---- 大模型 ----
 DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions"

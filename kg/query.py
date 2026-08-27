@@ -125,7 +125,7 @@ def formulas_by_herb(herb: str) -> str:
 
 
 def formulas_by_symptom(symptom: str) -> str:
-    """FR-09 按症状/证候推荐方剂（关键词匹配主治）。"""
+    """FR-09 按症状/证候推荐方剂（匹配 主治 + keywords 同义词表）。"""
     g = builder.load()
     keys = [k.strip() for k in symptom.replace("，", ",").split(",") if k.strip()] or [symptom]
     hits = []
@@ -133,7 +133,9 @@ def formulas_by_symptom(symptom: str) -> str:
         if attrs.get("category") != "formula":
             continue
         f = attrs.get("formula", {})
-        if any(k in f.get("主治", "") for k in keys):
+        # keywords 在节点层（与 formula 同级），不在 formula 字典内
+        hay = f.get("主治", "") + " " + " ".join(attrs.get("keywords", []))
+        if any(k in hay for k in keys):
             members = "、".join(m["herb"] for m in f.get("组成", []))
             hits.append(
                 f"{attrs['name_cn']}：主治「{f['主治']}」；组成：{members}；出处：{f['出处']}"

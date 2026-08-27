@@ -8,6 +8,12 @@ agent/core.py
 - assistant 消息 content 为 None 也要原样回填 messages（否则模型失忆）
 - 分发前 REGISTRY 白名单校验；工具异常以 role:"tool" 回填让模型自纠，不让请求 500
 - 429 单次退避重试；402 不重试；断网 fail-soft（识别+图谱可用，仅对话降级）
+
+两种入口：
+- stream_run()：生成器，逐事件产出（Flask SSE 前端时间轴实时展示）
+- run()：stream_run 的收集包装，返回 {answer, status, trace, turns}（CLI 用）
+
+两者共用同一循环；messages 由调用方持有并在原地更新（Web 会话/CLI 交互都靠它做指代消解）。
 """
 import json
 import os
@@ -22,9 +28,15 @@ from . import prompts, tools
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
+HERB_CTX_PREFIX = "【当前识别上下文】"
+
 
 def _api_key() -> str | None:
     return os.environ.get("DEEPSEEK_API_KEY")
+
+
+def is_configured() -> bool:
+    return bool(_api_key())
 
 
 def _chat_completion(messages: list[dict], with_tools: bool = True) -> dict:
@@ -69,119 +81,157 @@ def _chat_completion(messages: list[dict], with_tools: bool = True) -> dict:
     return resp.json()["choices"][0]["message"]
 
 
-def run(
+def _set_herb_context(messages: list[dict], herb: str) -> None:
+    """写入/更新【当前识别上下文】（上传新图时替换旧上下文）。"""
+    ctx = (
+        f"{HERB_CTX_PREFIX}用户已上传一张中药饮片图片，识别结果为：{herb}。"
+        f"用户后续提问中的『这个/它/这味药』默认指 {herb}，无需重复询问。"
+    )
+    for m in messages:
+        if m.get("role") == "system" and m["content"].startswith(HERB_CTX_PREFIX):
+            m["content"] = ctx
+            return
+    messages.append({"role": "system", "content": ctx})
+
+
+def _inject_image_context(messages: list[dict], image_path: str) -> None:
+    """注入图片识别结果（--image 场景，与 6.1 主流程一致）。"""
+    try:
+        from classifier import predictor
+
+        top = predictor.predict_topk(image_path, k=3)
+    except Exception as e:
+        messages.append({
+            "role": "user",
+            "content": f"[系统注入] 用户上传了图片 {image_path}，但图片识别不可用（{e}），请如实告知。",
+        })
+        return
+    if not top:
+        messages.append({
+            "role": "user",
+            "content": f"[系统注入] 用户上传了图片 {image_path}，但模型未返回结果，请如实告知。",
+        })
+        return
+    lines = "\n".join(f"- {n}（置信度 {c:.2%}）" for n, c in top)
+    messages.append({
+        "role": "user",
+        "content": (
+            f"[系统注入] 用户上传了图片 {image_path}，模型识别 Top-3：\n{lines}\n"
+            f"本轮对话以识别结果 {top[0][0]} 为当前药材。"
+        ),
+    })
+
+
+def stream_run(
     question: str,
-    current_herb: str | None = None,
-    history: list[dict] | None = None,
+    messages: list[dict],
     image_path: str | None = None,
-) -> dict:
-    """执行一轮智能体问答。
+    current_herb: str | None = None,
+):
+    """ReAct 循环生成器：逐事件产出，messages 原地更新。
 
-    返回 {"answer", "status", "trace", "turns"}：
-    - status: "ok" / "no_key" / "quota" / "rate_limited" / "offline" / "error"
-    - trace:  [{name, arguments, result(截断), summary}]，供前端时间轴
+    events:
+      {"type": "tool",   "name", "arguments", "summary", "result"(≤200 字)}
+      {"type": "answer", "text"}
+      {"type": "error",  "text", "status": no_key|quota|rate_limited|offline|error}
+      {"type": "turn",   "count"}   # 每次 LLM 调用后发一次（前端可显示进度）
     """
-    system = prompts.build_system_prompt(current_herb)
-    messages: list[dict] = [{"role": "system", "content": system}]
-    if history:
-        messages.extend(history)
-
+    if not messages or messages[0].get("role") != "system":
+        messages.insert(0, {"role": "system", "content": prompts.build_system_prompt()})
+    if current_herb:
+        _set_herb_context(messages, current_herb)
     if image_path:
-        # 文本问答为主，识别结果作为 context 注入（与 6.1 主流程一致）
-        try:
-            from classifier import predictor
-
-            top = predictor.predict_topk(image_path, k=3)
-            if top:
-                top1 = top[0][0]
-                lines = "\n".join(f"- {n}（置信度 {c:.2%}）" for n, c in top)
-                messages.append({
-                    "role": "user",
-                    "content": (
-                        f"[系统注入] 用户上传了图片 {image_path}，模型识别 Top-3：\n{lines}\n"
-                        f"本轮对话以识别结果 {top1} 为当前药材。"
-                    ),
-                })
-        except Exception as e:
-            messages.append({
-                "role": "user",
-                "content": f"[系统注入] 用户上传了图片 {image_path}，但图片识别不可用（{e}），请如实告知。",
-            })
-
+        _inject_image_context(messages, image_path)
     messages.append({"role": "user", "content": question})
 
-    trace: list[dict] = []
+    if not _api_key():
+        yield {"type": "error", "text": "未配置 DEEPSEEK_API_KEY，对话服务不可用（请配置 .env）。", "status": "no_key"}
+        return
+
     turns = 0
-    try:
-        while turns < MAX_TURNS:
-            turns += 1
+    while turns < MAX_TURNS:
+        turns += 1
+        try:
+            msg = _chat_completion(messages)
+        except requests.ConnectionError:
+            yield {
+                "type": "error",
+                "text": "当前网络不可用，对话服务暂时离线。图片识别与知识图谱查询仍可正常使用。",
+                "status": "offline",
+            }
+            return
+        except requests.Timeout:
+            yield {"type": "error", "text": "大模型响应超时，请稍后重试。", "status": "error"}
+            return
+        except RuntimeError as e:
+            status = "quota" if "402" in str(e) else "error"
+            yield {"type": "error", "text": str(e), "status": status}
+            return
+
+        yield {"type": "turn", "count": turns}
+
+        tool_calls = msg.get("tool_calls")
+        # ⚠️ assistant 消息 content 可能为 None，必须原样回填（含 tool_calls）
+        messages.append({"role": "assistant", "content": msg.get("content"), "tool_calls": tool_calls})
+
+        if not tool_calls:
+            yield {"type": "answer", "text": msg.get("content") or "（模型未返回内容）"}
+            return
+
+        for call in tool_calls:
+            fn = call.get("function", {})
+            name = fn.get("name", "")
             try:
-                msg = _chat_completion(messages)
-            except requests.ConnectionError:
-                return {
-                    "answer": "当前网络不可用，对话服务暂时离线。图片识别与知识图谱查询仍可正常使用。",
-                    "status": "offline",
-                    "trace": trace,
-                    "turns": turns,
-                }
-            except requests.Timeout:
-                return {
-                    "answer": "大模型响应超时，请稍后重试。",
-                    "status": "error",
-                    "trace": trace,
-                    "turns": turns,
-                }
-            except RuntimeError as e:
-                status = "quota" if "402" in str(e) else "error"
-                return {"answer": str(e), "status": status, "trace": trace, "turns": turns}
+                arguments = json.loads(fn.get("arguments") or "{}")
+            except json.JSONDecodeError as e:
+                arguments = {}
+                result = f"参数解析失败（{e}），请重新生成合法的 JSON 参数。"
+            else:
+                result = tools.call_tool(name, arguments)
 
-            tool_calls = msg.get("tool_calls")
-            # ⚠️ assistant 消息 content 可能为 None，必须原样回填（含 tool_calls）
-            messages.append({"role": "assistant", "content": msg.get("content"), "tool_calls": tool_calls})
+            yield {
+                "type": "tool",
+                "name": name,
+                "arguments": arguments,
+                "summary": tools.tool_summary(name, arguments),
+                "result": result[:200] + ("…" if len(result) > 200 else ""),
+            }
+            messages.append({
+                "role": "tool",
+                "tool_call_id": call.get("id", ""),
+                "content": result,
+            })
 
-            if not tool_calls:
-                return {
-                    "answer": msg.get("content") or "（模型未返回内容）",
-                    "status": "ok",
-                    "trace": trace,
-                    "turns": turns,
-                }
-
-            # 逐个分发（并行工具调用时顺序执行，结果稳定）
-            for call in tool_calls:
-                fn = call.get("function", {})
-                name = fn.get("name", "")
-                try:
-                    arguments = json.loads(fn.get("arguments") or "{}")
-                except json.JSONDecodeError as e:
-                    arguments = {}
-                    result = f"参数解析失败（{e}），请重新生成合法的 JSON 参数。"
-                else:
-                    # 白名单校验在 tools.call_tool 内 + 这里双重校验
-                    result = tools.call_tool(name, arguments)
-
-                trace.append({
-                    "name": name,
-                    "arguments": arguments,
-                    "summary": tools.tool_summary(name, arguments),
-                    "result": result[:200] + ("…" if len(result) > 200 else ""),
-                })
-                messages.append({
-                    "role": "tool",
-                    "tool_call_id": call.get("id", ""),
-                    "content": result,
-                })
-
-        return {
-            "answer": f"已达到最大工具轮次（{MAX_TURNS}），未能收敛出最终回答。请尝试把问题拆细。",
-            "status": "error",
-            "trace": trace,
-            "turns": turns,
-        }
-    finally:
-        # 不抛异常；调用链异常已在循环内兜底
-        pass
+    yield {
+        "type": "error",
+        "text": f"已达到最大工具轮次（{MAX_TURNS}），未能收敛出最终回答。请尝试把问题拆细。",
+        "status": "error",
+    }
 
 
-def is_configured() -> bool:
-    return bool(_api_key())
+def run(
+    question: str,
+    messages: list[dict],
+    image_path: str | None = None,
+    current_herb: str | None = None,
+) -> dict:
+    """stream_run 的收集包装（CLI/demo_agent 用）。messages 同样原地更新。"""
+    result: dict = {"answer": "", "status": "error", "trace": [], "turns": 0}
+    for ev in stream_run(question, messages, image_path, current_herb):
+        t = ev["type"]
+        if t == "tool":
+            result["trace"].append({
+                "name": ev["name"],
+                "arguments": ev["arguments"],
+                "summary": ev["summary"],
+                "result": ev["result"],
+            })
+        elif t == "answer":
+            result["answer"] = ev["text"]
+            result["status"] = "ok"
+        elif t == "turn":
+            result["turns"] = ev["count"]
+        elif t == "error":
+            result["answer"] = ev["text"]
+            result["status"] = ev.get("status", "error")
+    return result

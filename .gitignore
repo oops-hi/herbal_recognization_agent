@@ -17,3 +17,6 @@ runs/
 
 # IDE
 .idea/
+
+# ultralytics AMP 检查产物（yolo26n.pt 等）
+weights/

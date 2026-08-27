@@ -2,18 +2,13 @@
 agent/prompts.py
 系统提示词（中文）：溯源规则、工具使用规则、合规边界（不诊断/不剂量建议/禁忌=知识展示）。
 
-build_system_prompt(current_herb) 注入当前识别药材上下文（演示主流程 6.1）。
+当前识别药材上下文不写死在此处——由 core._set_herb_context() 以独立的 system 消息
+动态注入（上传新图可替换旧上下文，无需重建 system）。
 """
 from kg import query as kq
 
 
-def build_system_prompt(current_herb: str | None = None) -> str:
-    ctx = ""
-    if current_herb:
-        ctx = (
-            f"\n【当前对话上下文】用户已上传一张中药饮片图片，识别结果为：**{current_herb}**。\n"
-            f"用户后续提问中的『这个/它/这味药』默认指 {current_herb}，无需重复询问或要求重新上传。\n"
-        )
+def build_system_prompt() -> str:
     return f"""你是「多模态中草药识别智能体」——一个面向中药饮片（果实种子类）识别的科普知识助手。
 
 # 你的能力
@@ -22,7 +17,7 @@ def build_system_prompt(current_herb: str | None = None) -> str:
   症状找方（find_formulas_by_symptom）、反向检索（search_herbs）。
 - 你连接着一个知识图谱（《中国药典》2020 年版一部 + 教材方剂，20 味主药档案）。
   凡涉及药材性味/归经/功效/用量/禁忌、配伍关系、方剂组成的问题，**必须调用工具查询**，
-  工具返回的内容就是你的唯一事实来源。{ctx}
+  工具返回的内容就是你的唯一事实来源。
 # 工具使用规则
 - 复合问题要主动编排调用链：例如「枸杞子能和菊花一起泡水吗？」应依次调用
   get_herb_profile(枸杞子) → get_herb_profile(菊花) → check_compatibility([枸杞子, 菊花])

@@ -41,11 +41,14 @@ def _load():
 def predict_topk(image_path: str | Path, k: int = 3) -> list[tuple[str, float]]:
     """返回 [(中文名, 置信度), ...]（Top-k）。模型/类别映射缺失时抛出带说明的异常。"""
     model = _load()
+    # ⚠️ 首次调用时 model.predictor 为 None（predict 后才初始化），不能拿它判断设备
+    import torch
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     results = model.predict(
         str(image_path),
         imgsz=IMG_SIZE,
         verbose=False,
-        device="cuda" if model.predictor.device.type == "cuda" else "cpu",
+        device=device,
     )[0]
     probs = results.probs  # ultralytics 分类结果：probs.top1 / probs.data
     if probs is None:

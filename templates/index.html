@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多模态中草药识别智能体</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>🌿 多模态中草药识别智能体</h1>
+    <span class="tagline">图像识别 · 知识图谱 · 智能体工具链</span>
+    <div class="header-right">
+      <span class="badge" id="badge-model">模型检查中…</span>
+      <span class="badge" id="badge-api">API 检查中…</span>
+      <a href="/graph" class="badge" style="text-decoration:none;">📊 知识图谱</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ 左：上传识别区 ============ -->
+    <section class="card">
+      <h2>上传中药饮片图片</h2>
+      <div class="dropzone" id="dropzone">
+        <div class="big">点击或拖拽图片到此处</div>
+        <div>支持 jpg / png / webp / bmp，≤ 16MB</div>
+        <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.webp,.bmp" hidden>
+      </div>
+
+      <div class="preview-box" id="preview-box">
+        <img id="preview-img" alt="预览">
+      </div>
+
+      <div class="rec-card" id="rec-card">
+        <div class="top1" id="rec-top1"></div>
+        <div class="conf" id="rec-conf"></div>
+        <div class="top3" id="rec-top3"></div>
+        <div class="profile" id="rec-profile"></div>
+      </div>
+
+      <div class="advice-box" id="advice-box"></div>
+      <div class="error-box" id="upload-error"></div>
+    </section>
+
+    <!-- ============ 右：对话区 ============ -->
+    <section class="card">
+      <h2>智能体对话 <span style="font-weight:400;color:var(--gray);font-size:12px;">（工具调用链实时展示）</span></h2>
+      <div class="chat-body" id="chat-body"></div>
+
+      <div class="chat-input">
+        <textarea id="chat-input" rows="2"
+                  placeholder="例如：这个能和菊花一起泡水吗？我最近眼睛干&#10;（Enter 发送，Shift+Enter 换行）"></textarea>
+        <button id="send-btn">发送</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="disclaimer">
+    <b>免责声明：</b>本工具仅供学习与科普参考，不构成医疗、诊断或用药建议；识别结果存在误差，
+    不能作为药材真伪、安全性或食用/药用依据，请以执业药师或专业机构鉴定为准；
+    有毒药材信息依据《中国药典》标注，请勿自行采食；紧急情况请立即就医。
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/markdown.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

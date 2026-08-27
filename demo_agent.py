@@ -28,19 +28,6 @@ def print_trace(trace: list[dict]) -> None:
     print("=" * 56 + "\n")
 
 
-def ask(question: str, image_path: str | None, history: list[dict]) -> dict:
-    """单轮问答；返回 result，同时把对话写回 history（供指代消解）。"""
-    result = core.run(question, image_path=image_path, history=history)
-    print_trace(result["trace"])
-    print(result["answer"])
-    if result["status"] != "ok":
-        print(f"\n[状态: {result['status']}]")
-    # 回填 history：assistant 回答对多轮指代消解是关键
-    history.append({"role": "user", "content": question})
-    history.append({"role": "assistant", "content": result["answer"]})
-    return result
-
-
 def main():
     ap = argparse.ArgumentParser(description="中草药识别智能体 · 命令行演示")
     ap.add_argument("--image", help="中药饮片图片路径（可选，注入识别上下文）")
@@ -55,10 +42,15 @@ def main():
         sys.exit(1)
 
     print(prompts.get_graph_stats())
-    history: list[dict] = []
+    # 会话消息由 core.run 原地更新（含 system/assistant/tool 全量消息，支持指代消解）
+    messages: list[dict] = []
 
     if args.q:
-        ask(args.q, args.image, history)
+        result = core.run(args.q, messages, image_path=args.image)
+        print_trace(result["trace"])
+        print(result["answer"])
+        if result["status"] != "ok":
+            print(f"\n[状态: {result['status']}]")
         return
 
     print("进入交互模式（输入 exit 退出）。支持多轮追问与指代消解。")
@@ -73,7 +65,11 @@ def main():
         if q.lower() in ("exit", "quit", "q"):
             print("再见。")
             break
-        ask(q, args.image, history)
+        result = core.run(q, messages, image_path=args.image)
+        print_trace(result["trace"])
+        print(result["answer"])
+        if result["status"] != "ok":
+            print(f"\n[状态: {result['status']}]")
 
 
 if __name__ == "__main__":

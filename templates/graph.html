@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知识图谱 · 多模态中草药识别智能体</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>🌿 知识图谱可视化</h1>
+    <span class="tagline">离线渲染 · 无外部 CDN 依赖</span>
+    <div class="header-right">
+      <a href="/" class="badge" style="text-decoration:none;">← 返回主页</a>
+    </div>
+  </header>
+
+  <div class="graph-wrap">
+    <img src="{{ url_for('static', filename='kg_graph.png') }}" alt="知识图谱">
+
+    <div class="legend-box">
+      <span><span class="dot" style="background:#4caf50;"></span>带档案药材（20 类 + 扩展）</span>
+      <span><span class="dot" style="background:#bdbdbd;"></span>次要节点（只存名字）</span>
+      <span><span class="sq" style="background:#42a5f5;"></span>经典方剂</span>
+      <span><span class="line"></span>配伍禁忌（十八反 / 十九畏）</span>
+      <span id="graph-stats" style="color:var(--gray);"></span>
+    </div>
+
+    <div class="search-box">
+      <div class="row">
+        <input id="herb-input" placeholder="离线检索药材档案，如：枸杞子 / 栝楼皮（别名）/ 瓜蒌皮" list="herb-suggest">
+        <datalist id="herb-suggest">
+          <option>枸杞子</option><option>菊花</option><option>瓜蒌皮</option><option>川乌</option>
+          <option>山楂</option><option>连翘</option><option>栀子</option><option>砂仁</option>
+          <option>豆蔻</option><option>草豆蔻</option><option>甘草</option><option>桃仁</option>
+          <option>苦杏仁</option><option>金樱子</option><option>补骨脂</option>
+        </datalist>
+        <button id="herb-btn">查询</button>
+      </div>
+      <div class="search-result" id="herb-result"></div>
+    </div>
+  </div>
+
+  <footer class="disclaimer">
+    <b>免责声明：</b>本工具仅供学习与科普参考，不构成医疗、诊断或用药建议；
+    图谱内容依据《中国药典》2020 年版一部与教材方剂整理，数据仍在人工核对中；
+    有毒药材信息请勿自行采食；紧急情况请立即就医。
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+      const input = document.getElementById("herb-input");
+      const result = document.getElementById("herb-result");
+      const btn = document.getElementById("herb-btn");
+
+      async function query() {
+        const name = input.value.trim();
+        if (!name) return;
+        result.style.display = "block";
+        result.textContent = "查询中…";
+        try {
+          const resp = await fetch("/api/herb/" + encodeURIComponent(name));
+          const j = await resp.json();
+          if (!j.found) {
+            result.innerHTML = "<b style='color:var(--red);'>知识库未收录「" + name + "」</b>" +
+              "<br>该药可能未在 20 类主药档案内，或可尝试别名（如 栝楼皮 → 瓜蒌皮）。";
+            return;
+          }
+          if (j.category !== "herb") {
+            result.textContent = "「" + j.name_cn + "」为" +
+              (j.category === "formula" ? "方剂" : "次要") + "节点，无独立档案（图谱连线可见）。";
+            return;
+          }
+          const p = j.profile;
+          result.textContent =
+            "【" + j.name_cn + "】" + (j.latin || "") + "\n" +
+            "性味：" + p["性味"] + "\n" +
+            "归经：" + p["归经"].join("、") + "\n" +
+            "功效：" + p["功效"] + "\n" +
+            "主治：" + p["主治"] + "\n" +
+            "用量：" + p["用量"] + "\n" +
+            "毒性：" + p["毒性"] + "\n" +
+            "禁忌：" + p["禁忌"] + "\n" +
+            "出处：" + (j.source || "");
+        } catch (e) {
+          result.textContent = "查询失败（本页为离线静态渲染，档案查询需要本地服务运行）。";
+        }
+      }
+
+      btn.addEventListener("click", query);
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") query(); });
+
+      // 图谱统计
+      fetch("/api/health").then((r) => r.json()).then((j) => {
+        document.getElementById("graph-stats").textContent = j.graph || "";
+      }).catch(() => {});
+    })();
+  </script>
+</body>
+</html>

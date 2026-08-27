@@ -18,6 +18,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - numpy **1.23.5（锁定值）**、scipy 1.10.1、pandas 2.0.3、networkx 3.4.2、matplotlib 3.7.2、scikit-learn 1.7.2、psutil 7.2.2、pillow 12.3
 - ⚠️ **裸 `python` 指向 base Anaconda（其 pandas/scipy 已损坏）**——一律 `conda run -n task python ...` 或 PyCharm 打开，不要裸用
 - ⚠️ **opencv 已修复（2026-08-27）**：原 `cv2` 来自 conda 包 `opencv`（4.12.0），与 numpy 1.23.5 ABI 不匹配（import 报 DLL load failed）；修复 = `conda remove -n task opencv` + `pip install opencv-python==4.9.0.80`。opencv-python ≥4.10 要求 numpy≥2，**禁止升级**；装包用 `--ignore-installed` 覆盖残留 dist-info
+- ⚠️ **polars 1.44.1（2026-08-27 补装）**：ultralytics 8.4.130 的 `read_results_csv`（保存检查点）**硬依赖** polars，缺它训练第一个 epoch 就挂；二进制与主包拆分，须 `pip install --no-deps polars polars-runtime-32`（后者包名不是 polars-polars）
+- ⚠️ **训练启动会下载 yolo26n.pt 做 AMP 检查**：GitHub 直连极慢（30KB/s 级），表现为"启动后 GPU 0%、进程卡死"；已缓存到项目根 `weights/yolo26n.pt`（已 gitignore），且训练脚本设 `YOLO_OFFLINE=true` 会跳过。勿删 weights/，删了下次训练又要卡十几分钟
+- ⚠️ **Windows DLL 加载顺序**：`import torch` 必须先于 matplotlib/scipy（否则 c10.dll WinError 1114）；evaluate.py 的 ultralytics import 必须放文件最顶部
+- ⚠️ **conda run 缓冲输出**：后台跑长任务时 `conda run -n task python` 的 stdout 会缓冲到进程结束才落盘，看不到中途进度；长任务用 `D:\CondaEnv\task\python.exe -u` 直调 + `PYTHONUNBUFFERED=1`
 
 ### 环境红线（违反=显卡直接不可用，训练全挂）
 
@@ -34,9 +38,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ├── requirements.txt
 ├── .env.example / .env    # DEEPSEEK_API_KEY（绝不硬编码）
 ├── prepare_dataset.py     # 原始数据 → train/val（Dataset1 9:1）+ 跨域 test（Dataset2）
-├── train.py               # ultralytics yolo8n-cls 训练（镜像 pet_recognition 写法）
+├── train.py               # ultralytics yolov8n-cls 训练（镜像 pet_recognition 写法）
 ├── evaluate.py            # 跨域测试：Dataset2 per-class F1 + 混淆矩阵
-├── models/best.pt  class_names.json  class_cn.json
+├── models/best.pt  class_map.json   # class_map: id → {name_cn, aliases}
 ├── classifier/predictor.py  # YOLO 加载 → predict_topk() → [(中文名, 置信度)]
 ├── kg/
 │   ├── data/kg.json       # 单文件：nodes[] + edges[]
@@ -73,7 +77,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 6. **SSE 流式**：`fetch` + `ReadableStream`（POST 语义，EventSource 用不了）；让评委实时看到工具逐个触发
 7. **合规**：不输出诊断/辨证/具体剂量/疗效；禁忌=知识展示；页面固定免责声明面板
 8. **DeepSeek**：密钥只从 `DEEPSEEK_API_KEY` 读（支持 .env），绝不硬编码；429 单次退避重试、402 不重试、断网 fail-soft（识别+图谱可用，仅对话降级）
-9. **低置信度**：Top-1 < 0.6 拒绝下结论，给补拍建议（干燥饮片特写、光照均匀、纯色背景），不硬答
+9. **低置信度**：Top-1 < LOW_CONF_THRESHOLD（现 0.75，调优记录见 config.py 注释）拒绝下结论，给补拍建议（干燥饮片特写、光照均匀、纯色背景），不硬答
 10. Windows DataLoader 需 `if __name__ == "__main__": main()` 包主逻辑
 
 ## 常用命令
@@ -100,5 +104,15 @@ conda run -n task python app.py              # http://localhost:5000
 ## 当前状态
 
 - [x] docs/需求分析.md v0.9（待人工核对医学数据）
-- [ ] M0：修 opencv → 装依赖 → 手动下载数据集 → config.py/.env
-- [ ] M1~M6（见实施计划阶段二）
+- [x] M0 环境侧：opencv 修复、ultralytics 8.4.130 + flask + dotenv 安装（全部 `--no-deps`）、torch cu128 验证全绿；`yolov8n-cls.pt` 已下载到项目根目录；config.py / requirements.txt / .env.example / .gitignore / README.md / data/raw/README.md 已写完（.env 由用户复制）
+- [ ] M0 用户侧（阻塞训练/识别）：① 浏览器手动下载 NB-TCM-CHM → `data/raw/`（步骤见 data/raw/README.md）② `copy .env.example .env` 并填入自己的 DEEPSEEK_API_KEY（建议直接从 pet_recognition 复制 .env）
+- [x] 知识图谱层（2026-08-27，不依赖数据）：`kg/data/kg.json`（22 味带档案药材 = 20 主药 + 菊花/甘草扩展档案、10 禁忌网络节点、45 方剂组成节点、12 首经典方剂、9 条禁忌边）；`kg/builder.py`（JSON→MultiDiGraph + 别名索引）、`kg/query.py`（档案/禁忌双源/方剂反查/症状找方/反向检索/相似药，CLI 已验证）、`kg/viz.py`（matplotlib 静态 PNG → `static/kg_graph.png`，离线可渲染，已验证）
+- [x] 智能体层（2026-08-27）：`agent/tools.py`（6 工具 + JSON Schema + REGISTRY 白名单 + 入参校验）、`agent/prompts.py`（溯源/合规 System Prompt，支持注入当前识别药材）、`agent/core.py`（手写 ReAct：MAX_TURNS=8、arguments json.loads、content=None 原样回填、429 单次退避/402 不重试/断网 fail-soft）；`demo_agent.py` CLI（无密钥时友好提示退出，已验证）
+- [x] Web 层（2026-08-27）：`app.py`（/ /graph /upload /chat(SSE) /api/herb /api/health + 413/404/500 兜底 + 启动清理 24h 上传 + 会话 dict + 低置信度拒答 + 模型未就绪 fail-soft）；`templates/index.html`（上传区+对话区+时间轴+固定免责面板）、`templates/graph.html`（离线图谱 + 档案检索）、`static/css/style.css`、`static/js/main.js`（fetch+ReadableStream 解析 SSE、localStorage client_id、拖拽上传、时间轴折叠）。已验证：页面 200、上传校验 400/413、无模型 fail-soft 200、无密钥 SSE error、图谱/档案 API
+- [x] 真实调用链实测（2026-08-27，DeepSeek 密钥已在系统环境变量）：用例 4「瓜蒌皮×川乌」→ 3 次工具调用 + 十八反双源 ✅；用例 2「枸杞子+菊花泡水/眼睛干」（注入 current_herb 模拟上传后）→ 4 次工具调用 + 杞菊地黄丸 ✅；工具 schema 需 `{"type":"function"}` 包裹（已修）；方剂症状匹配加 `keywords` 同义词层（「眼睛干」→ 杞菊地黄丸，已修）；川乌/草乌补最小档案（毒性溯源）
+- [x] 模型层（2026-08-27，M1~M2 完成）：`prepare_dataset.py`（Dataset1 按类 9:1 → `data/herbs_cls/{train,val}/00~19`，Dataset2 整体 → test，生成 `models/class_map.json`）；`train.py`（yolov8n-cls，150 epochs/patience 30/batch 64，**val top-1 93.8% / top-5 99.7%**，best.pt → `models/best.pt`）；`evaluate.py`（跨域 Dataset2 400 张：**top-1 85.75% / top-3 96.75%**，per-class F1 表 + 混淆矩阵 PNG → `runs/evaluate/` + 易混对统计）。冒烟测试：药房实拍枸杞子 → 枸杞子 0.94 ✅（演示用例 1 数据就绪）；顺手修了 `classifier/predictor.py` 首次调用 `model.predictor is None` 的 500 bug
+- [ ] 已知弱点（答辩可展开）：桃仁 recall 仅 0.30（14/20 被误判，主要流向苦杏仁/川楝子）、草豆蔻 recall 0.45（8 张误判为砂仁）、砂仁/川楝子 precision 偏低（0.59/0.61）；山楂↔金樱子跨域无混淆（好于预期）。改进方向：类加权 / 更高 imgsz / 延长训练
+- [x] kg.json 医学数据人工核对（2026-08-27 用户核定，review_status 已更新；核对清单留档 review_items）
+- [x] Web 整体验收（2026-08-27，对照 10.2 演示脚本 7 步全过）：① 药房实拍枸杞子 → top1 0.94 + 图谱出处 ✅ ② 菊花泡水/眼睛干 → 4 次工具调用 + 杞菊地黄丸 ✅ ③ 追问用量 → 指代消解 + 知识条目 ✅ ④ 瓜蒌皮×川乌 → 十八反双源 ✅ ⑤ 宠物照片（Bombay/Birman/British_Shorthair）→ 拒答+补拍建议 ✅ ⑥ 断网模拟 → 识别+图谱可用、对话友好降级 ✅ ⑦ 图谱页离线渲染 + 档案 API ✅
+- [x] 验收期修复（2026-08-27）：`app.py` **debug=True → False**（werkzeug reloader 子进程里 import torch 触发 2.12.0.dev 的 dsl_registry 循环导入，上传识别 500）；`LOW_CONF_THRESHOLD 0.6 → 0.75`（宠物等域外图高置信误判最高 0.94，见 config.py 注释）；`classifier/predictor.py` 首调 `model.predictor is None` bug
+- [ ] 待办（答辩前可选）：清理 kg.json 档案出处里残留的「待人工核对」字样（用户已核对完）；「甘草+海藻」口径决策待用户答复（歌诀有、药典未认定的展示口径，review_items 留档）

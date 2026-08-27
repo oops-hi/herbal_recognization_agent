@@ -165,9 +165,10 @@ TOOLS = [
 # 白名单分发表：name → 实现
 REGISTRY = {t["name"]: t["fn"] for t in TOOLS}
 
-# 供 core.py 组装的 LLM 可见 schema（去掉 fn 字段）
+# 供 core.py 组装的 LLM 可见 schema（OpenAI 格式：type="function" 包裹 + 去掉 fn 字段）
 TOOL_SCHEMAS = [
-    {k: v for k, v in t.items() if k != "fn"} for t in TOOLS
+    {"type": "function", "function": {k: v for k, v in t.items() if k != "fn"}}
+    for t in TOOLS
 ]
 
 ALLOWED_TOOL_NAMES = set(REGISTRY)
