@@ -1,0 +1,27 @@
+# ================================================================
+# ⚠️⚠️⚠️  重要警告，先读再安装  ⚠️⚠️⚠️
+#   本机 torch 为 cu128 nightly 构建（RTX 5060 Blackwell sm_120 必需），
+#   直接 `pip install -r requirements.txt` 或裸装 ultralytics/timm/torch
+#   会把 torch 换成稳定版 → 显卡直接不可用（训练全挂）。
+#
+#   正确做法：除下表中明确标注的包外，一律不装。
+#   ultralytics 用：pip install --no-deps ultralytics ultralytics-thop py-cpuinfo seaborn
+#   完整步骤见 CLAUDE.md「环境红线」。
+# ================================================================
+
+# Web 层（普通安装）
+flask>=3.0
+python-dotenv>=1.0
+requests>=2.31
+
+# 共性工具（本机已装，无需重复安装）
+pillow>=10.0
+matplotlib>=3.7
+scikit-learn>=1.3
+tqdm>=4.60
+networkx>=3.0
+
+# ⚠️ 仅记录，勿经 pip install -r 安装：
+# ultralytics>=8.4        → 必须 --no-deps
+# opencv-python==4.9.0.80 → 4.10+ 要求 numpy>=2，与本机 numpy 1.23.5 冲突
+# torch>=2.6 / torchvision>=0.21 → 已装 cu128 nightly，禁止任何变动

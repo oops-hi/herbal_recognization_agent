@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# 环境变量（含密钥，绝不提交）
+.env
+
+# 数据（体积大，手动下载）
+data/raw/
+data/herbs_cls/
+uploads/
+
+# 训练产物与运行缓存
+models/*.pt
+runs/
+
+# IDE
+.idea/
