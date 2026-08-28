@@ -1,0 +1,37 @@
+appId: com.oopsherbal.agent
+productName: HerbalAgent
+# 国内网络：electron/NSIS 工具链下载走 npmmirror 镜像（GitHub CDN 被墙会 ETIMEDOUT）
+# 另可用环境变量 ELECTRON_SKIP_BINARY_DOWNLOAD=1 直接用 node_modules/electron/dist
+electronDownload:
+  mirror: https://npmmirror.com/mirrors/electron/
+directories:
+  buildResources: build
+  output: ../release
+files:
+  - 'out/**'
+  - 'package.json'
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+# 后端 PyInstaller onedir 原样拷入 resources/（绝不进 asar —— 2GB 级 torch DLL + 可执行文件）
+extraResources:
+  - from: ../dist-backend/herbal-backend
+    to: herbal-backend
+    filter:
+      - '**/*'
+win:
+  icon: build/icon.ico
+  executableName: HerbalAgent
+  target:
+    - nsis
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  shortcutName: 中草药识别智能体
+  artifactName: HerbalAgent-Setup-${version}.exe
+  uninstallDisplayName: 中草药识别智能体
+  createDesktopShortcut: always
+npmRebuild: false
