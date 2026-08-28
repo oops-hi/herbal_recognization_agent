@@ -6,7 +6,8 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     { path: '/', name: 'home', component: HomeView },
-    { path: '/graph', name: 'graph', component: () => import('../views/GraphView.vue') }
+    { path: '/graph', name: 'graph', component: () => import('../views/GraphView.vue') },
+    { path: '/settings', name: 'settings', component: () => import('../views/SettingsView.vue') }
   ]
 })
 

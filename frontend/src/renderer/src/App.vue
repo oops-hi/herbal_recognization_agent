@@ -18,6 +18,7 @@ onMounted(() => {
       <span class="badge" :class="model.cls" :title="model.title">{{ model.text }}</span>
       <span class="badge" :class="api.cls">{{ api.text }}</span>
       <router-link to="/graph" class="badge" style="text-decoration: none">📊 知识图谱</router-link>
+      <router-link to="/settings" class="badge" style="text-decoration: none">⚙️ 设置</router-link>
     </div>
   </header>
 
