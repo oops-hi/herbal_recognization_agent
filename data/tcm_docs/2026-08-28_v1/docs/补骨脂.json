@@ -1,0 +1,86 @@
+{
+  "herb": "补骨脂",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "补骨脂",
+      "section": "性味归经",
+      "text": "补骨脂（Psoraleae Fructus）性味辛、苦，温，归肾、脾经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "7a094d7e97194d6adebee76f0ef58ec17aeb95f55d7b6955ef1fa7209afa167a"
+    },
+    {
+      "herb": "补骨脂",
+      "section": "功效",
+      "text": "补骨脂（Psoraleae Fructus）功效：温肾助阳，纳气平喘，温脾止泻；外用消风祛斑。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "1a572915e25f6dd79f30422faca47c392ade6eaf1fedf31dcc7e10fef4b76a7f"
+    },
+    {
+      "herb": "补骨脂",
+      "section": "主治",
+      "text": "补骨脂（Psoraleae Fructus）主治：肾阳不足，阳痿遗精，遗尿尿频，腰膝冷痛，肾虚作喘，五更泄泻；外用白癜风、斑秃。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "f88ee134b8cbbff062cfbe4eb63197b96350fc789d4117b574527aa2d906e6a1"
+    },
+    {
+      "herb": "补骨脂",
+      "section": "用量",
+      "text": "补骨脂（Psoraleae Fructus）用法用量：6～10g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "64d4421eb7e4657801357da3770e0f2c80574078fec8f4b210849fcf4324dd65"
+    },
+    {
+      "herb": "补骨脂",
+      "section": "毒性",
+      "text": "补骨脂（Psoraleae Fructus）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "daa5c813e075d6588179621891551d9721da06cb668ed055b791216db72a9753"
+    },
+    {
+      "herb": "补骨脂",
+      "section": "禁忌",
+      "text": "补骨脂（Psoraleae Fructus）用药禁忌：阴虚火旺、大便秘结者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "c21bed71d5f1ca7d1031ca2712bdcfc2a1f82ff6d7af7dbf22652436d1cd1a23"
+    },
+    {
+      "herb": "补骨脂",
+      "section": "性状",
+      "text": "补骨脂（Psoraleae Fructus）性状：呈肾形，略扁，长 3～5mm，宽 2～4mm，厚约 1.5mm。表面黑色、黑褐色或灰褐色，具细微网状皱纹。顶端钝圆，有一小突起，凹侧有果梗痕。质坚硬。破开后可见种子，种皮膜质，浅棕色，子叶 2，黄白色，有油性。气香，味辛、微苦。",
+      "source": "《中国药典》2020 年版一部·补骨脂【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "6c7e1cc78e6648290eb74f20cbf0484846fb280c0cbddbcd53027e1a9e9d5396"
+    },
+    {
+      "herb": "补骨脂",
+      "section": "炮制",
+      "text": "补骨脂（Psoraleae Fructus）炮制：补骨脂：除去杂质。盐补骨脂：取净补骨脂，照盐水炙法（通则 0213）炒至微鼓起。",
+      "source": "《中国药典》2020 年版一部·补骨脂【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "b72e527dd4a695358a43406ec566d92eda4a234b181c5e65b19c7ec6a5ce9f64"
+    },
+    {
+      "herb": "补骨脂",
+      "section": "产地",
+      "text": "补骨脂（Psoraleae Fructus）产地：主产于四川、河南、安徽（本品为补骨脂 Psoralea corylifolia L. 的干燥成熟果实）",
+      "source": "《中药学》教材·补骨脂（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "2ee34b6afbac478b2372a72eabee7045b012d9303e8a60c435a86d6ccf60ca25"
+    },
+    {
+      "herb": "补骨脂",
+      "section": "鉴别要点",
+      "text": "补骨脂（Psoraleae Fructus）鉴别要点：肾形略扁，表面黑色或黑褐色、具细微网状皱纹，质坚硬，破开后子叶黄白色有油性，气香，味辛微苦。",
+      "source": "《中国药典》2020 年版一部·补骨脂【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d9531be1e3ceb5e8e741e6884350ca0d7773a3e5250da907e43ce06c481a5d6f"
+    }
+  ]
+}

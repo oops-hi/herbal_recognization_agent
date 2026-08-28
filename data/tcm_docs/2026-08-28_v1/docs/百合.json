@@ -1,0 +1,86 @@
+{
+  "herb": "百合",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "百合",
+      "section": "性味归经",
+      "text": "百合（Lilii Bulbus）性味甘，寒，归心、肺经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "c6d738bb426f7aff5a76291d739cfd3a382ced7d391cf5f26d4a0d9850868a01"
+    },
+    {
+      "herb": "百合",
+      "section": "功效",
+      "text": "百合（Lilii Bulbus）功效：养阴润肺，清心安神。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d3484d4f6fb1ed020bb7562c8433046d4cb8c55020845de81c3bc10b9d265d35"
+    },
+    {
+      "herb": "百合",
+      "section": "主治",
+      "text": "百合（Lilii Bulbus）主治：阴虚燥咳，劳嗽咳血，虚烦惊悸，失眠多梦，精神恍惚。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "8ce09c26e4c7551831ac7c3a4248345139c597f161f53369bb3de9bbc7d62be8"
+    },
+    {
+      "herb": "百合",
+      "section": "用量",
+      "text": "百合（Lilii Bulbus）用法用量：6～12g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "b89141e7a4363ee26ffa56949c3c591e59f7aeca6786d3bbf71912d642e045ee"
+    },
+    {
+      "herb": "百合",
+      "section": "毒性",
+      "text": "百合（Lilii Bulbus）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "a3d9a7d91a73b6d2a6c822359af87601e302b5a964691adc8f735c229eb41366"
+    },
+    {
+      "herb": "百合",
+      "section": "禁忌",
+      "text": "百合（Lilii Bulbus）用药禁忌：风寒咳嗽及中寒便溏者忌服。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "dccac65d90d876e3e373499bc8e0e9358806e6eb3249e05fc5a5a92a9aede2d4"
+    },
+    {
+      "herb": "百合",
+      "section": "性状",
+      "text": "百合（Lilii Bulbus）性状：呈长椭圆形，长 2～5cm，宽 1～2cm，中部厚 1.3～4mm。表面类白色、淡棕黄色或微带紫色，有数条纵直平行的白色维管束。顶端稍尖，基部较宽，边缘薄，微波状，略向内弯曲。质硬而脆，断面较平坦，角质样。气微，味微苦。",
+      "source": "《中国药典》2020 年版一部·百合【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "6b2059dd5b4f77e85120a9074fb022f2f7e4c3f960864d6f3711e10757668d50"
+    },
+    {
+      "herb": "百合",
+      "section": "炮制",
+      "text": "百合（Lilii Bulbus）炮制：百合：除去杂质，洗净，干燥。蜜百合：取净百合，照蜜炙法（通则 0213）炒至不粘手。",
+      "source": "《中国药典》2020 年版一部·百合【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "bd25e216b52aacf79a3a120e592d1116ca82845e70b168f17cbd6eeaa8c11d04"
+    },
+    {
+      "herb": "百合",
+      "section": "产地",
+      "text": "百合（Lilii Bulbus）产地：主产于湖南（道地“湘百合”）、甘肃（兰州百合）、浙江（本品为百合科植物卷丹 Lilium lancifolium Thunb.、百合 L. brownii F. E. Brown var. viridulum Baker 或细叶百合 L. pumilum DC. 的干燥肉质鳞叶）",
+      "source": "《中国药典》2020 年版一部·百合【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "54fd7cc5e195af4b997140fbadd7764acf4c26f75d74f960efd8d14a0d9a9285"
+    },
+    {
+      "herb": "百合",
+      "section": "鉴别要点",
+      "text": "百合（Lilii Bulbus）鉴别要点：长椭圆鳞片状，表面类白色或微带紫色、有数条纵直平行的白色维管束，顶端稍尖、边缘薄微波状略向内弯曲，质硬而脆、断面角质样，味微苦。",
+      "source": "《中国药典》2020 年版一部·百合【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "2c77f3e346cc606b8fa6edcc7858ebb3b402618c07a3cff19654f0052837e9cf"
+    }
+  ]
+}

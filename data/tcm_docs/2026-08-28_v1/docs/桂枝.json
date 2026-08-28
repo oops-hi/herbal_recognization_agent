@@ -1,0 +1,86 @@
+{
+  "herb": "桂枝",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "桂枝",
+      "section": "性味归经",
+      "text": "桂枝（Cinnamomi Ramulus）性味辛、甘，温，归心、肺、膀胱经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "74b8194d77582d1f5d83f64b338b0788986afc073051a4e6c3a5e2eb748d866b"
+    },
+    {
+      "herb": "桂枝",
+      "section": "功效",
+      "text": "桂枝（Cinnamomi Ramulus）功效：发汗解肌，温通经脉，助阳化气，平冲降气。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ee42af027a769c241188308eadb5163752e6ab6b6231421564ca59ddc9768c79"
+    },
+    {
+      "herb": "桂枝",
+      "section": "主治",
+      "text": "桂枝（Cinnamomi Ramulus）主治：风寒感冒，脘腹冷痛，血寒经闭，关节痹痛，痰饮，水肿，心悸，奔豚。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "a006ce961ea2eb15f9c43ac70d487392043c5229e87262303cf979fd874f1224"
+    },
+    {
+      "herb": "桂枝",
+      "section": "用量",
+      "text": "桂枝（Cinnamomi Ramulus）用法用量：3～10g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d767da4710a530c0d771b59d69df8c8398e7121f480873d77c1ab73b20f24cab"
+    },
+    {
+      "herb": "桂枝",
+      "section": "毒性",
+      "text": "桂枝（Cinnamomi Ramulus）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "b08b12debe048bfd021d1d1afa8829ce500f05a2e67fedc4bf150c056199477c"
+    },
+    {
+      "herb": "桂枝",
+      "section": "禁忌",
+      "text": "桂枝（Cinnamomi Ramulus）用药禁忌：阴虚火旺、血热妄行者忌用；孕妇及月经过多者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "4b80a00b0811ae3801feed121310af2762b2835549262b16f1cb4aa4882cb691"
+    },
+    {
+      "herb": "桂枝",
+      "section": "性状",
+      "text": "桂枝（Cinnamomi Ramulus）性状：呈类圆形或椭圆形厚片。切面皮部红棕色，木部黄白色至浅黄棕色，髓部略呈方形，皮部与木部交界处常见断裂（环裂）。周边棕红色或红棕色，有纵棱线。质硬而脆。气清香，味甜、微辛，皮部味较浓。",
+      "source": "《中国药典》2020 年版一部·桂枝【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e4f31c23b499869437add5341c9f7a24f826fc51232ca8b252d9266cdcaaf9c5"
+    },
+    {
+      "herb": "桂枝",
+      "section": "炮制",
+      "text": "桂枝（Cinnamomi Ramulus）炮制：除去杂质，稍泡，洗净，润透，切厚片，干燥。",
+      "source": "《中国药典》2020 年版一部·桂枝【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "a56bc44bdea98763a8ab921c4a70775f836a49ea241f5e65f4a4c63018904c11"
+    },
+    {
+      "herb": "桂枝",
+      "section": "产地",
+      "text": "桂枝（Cinnamomi Ramulus）产地：主产于广西、广东、云南（本品为樟科植物肉桂 Cinnamomum cassia Presl 的干燥嫩枝）",
+      "source": "《中国药典》2020 年版一部·桂枝【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d3b227a7714123b95d1206b26293673b5155839b0cedd8a7e7897630c758f724"
+    },
+    {
+      "herb": "桂枝",
+      "section": "鉴别要点",
+      "text": "桂枝（Cinnamomi Ramulus）鉴别要点：类圆形厚片，切面皮部红棕色、木部黄白色至浅黄棕色、髓部略呈方形，皮部与木部交界处常见环裂，气清香，味甜微辛。",
+      "source": "《中国药典》2020 年版一部·桂枝【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "8822469bcb6bed897e9d0e057385a8c7385d0cfc383713a787d9cb6181c4c70e"
+    }
+  ]
+}

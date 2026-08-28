@@ -1,0 +1,86 @@
+{
+  "herb": "杜仲",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "杜仲",
+      "section": "性味归经",
+      "text": "杜仲（Eucommiae Cortex）性味甘，温，归肝、肾经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "039e48fa3703471b0660c7deb729cbde9eaa5c670ad14dedc9ea94068e57d3a2"
+    },
+    {
+      "herb": "杜仲",
+      "section": "功效",
+      "text": "杜仲（Eucommiae Cortex）功效：补肝肾，强筋骨，安胎。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "8c23fc2f34b522a79d102a9c1867bac2f1e1343091dd64611b636741ba902587"
+    },
+    {
+      "herb": "杜仲",
+      "section": "主治",
+      "text": "杜仲（Eucommiae Cortex）主治：肝肾不足，腰膝酸痛，筋骨无力，头晕目眩，妊娠漏血，胎动不安。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "af28ea743771ea0b889d0f5657a72bcf6cba7e38dcc3d596800b88ce5664f9e7"
+    },
+    {
+      "herb": "杜仲",
+      "section": "用量",
+      "text": "杜仲（Eucommiae Cortex）用法用量：6～10g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "547c75f7a881091d40b7b904974ca8b177c4993956d9d38d64ddc880e9219c1c"
+    },
+    {
+      "herb": "杜仲",
+      "section": "毒性",
+      "text": "杜仲（Eucommiae Cortex）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "afaea954a4159a8dd7b199c9a75a5b8bcad2a9507b39fc36cf198501466371a1"
+    },
+    {
+      "herb": "杜仲",
+      "section": "禁忌",
+      "text": "杜仲（Eucommiae Cortex）用药禁忌：无。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "c9448465f9e88603b6e4067702c761f574a93ed887818e1aa89701aff172b8d2"
+    },
+    {
+      "herb": "杜仲",
+      "section": "性状",
+      "text": "杜仲（Eucommiae Cortex）性状：呈小方块或丝状。外表面淡棕色或灰褐色，有明显的皱纹或纵裂槽纹，有的树皮较薄，未去粗皮，可见明显的皮孔。内表面暗紫色，光滑。断面有细密、银白色、富弹性的橡胶丝相连。气微，味稍苦。",
+      "source": "《中国药典》2020 年版一部·杜仲【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "7517469eed5354848dfeb702d99f73cc86c96ca22d0fe456cc85ece68f37d0b9"
+    },
+    {
+      "herb": "杜仲",
+      "section": "炮制",
+      "text": "杜仲（Eucommiae Cortex）炮制：杜仲：刮去残留粗皮，洗净，切块或丝，干燥。盐杜仲：取杜仲块或丝，照盐水炙法（通则 0213）炒至焦黑色，丝易断时，取出，晾干。",
+      "source": "《中国药典》2020 年版一部·杜仲【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "4eef2567006aa3d76975f66b50e54a3d6bf775d4694fe3c10e81c45088ae0dd9"
+    },
+    {
+      "herb": "杜仲",
+      "section": "产地",
+      "text": "杜仲（Eucommiae Cortex）产地：主产于四川（青川）、贵州、湖北、陕西（本品为杜仲科植物杜仲 Eucommia ulmoides Oliv. 的干燥树皮）",
+      "source": "《中国药典》2020 年版一部·杜仲【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "b042db9932a710f8510b39c7ff0d022dfc1310eb7d66bdf36be95bd04f4b385b"
+    },
+    {
+      "herb": "杜仲",
+      "section": "鉴别要点",
+      "text": "杜仲（Eucommiae Cortex）鉴别要点：小方块或丝状，内表面暗紫色光滑，断面有细密银白色富弹性的橡胶丝相连（扯断见“白丝”为杜仲经典鉴别特征），味稍苦。",
+      "source": "《中国药典》2020 年版一部·杜仲【性状】归纳 + 中药鉴定学教材（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "fb8f6b58cecb04dae8084fe2030741f62ebcb1840f3d04ad843694dd29209b71"
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "herb": "川乌",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "川乌",
+      "section": "性味归经",
+      "text": "川乌（Aconiti Radix）性味辛、苦，热，归心、肝、肾、脾经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "a8da3c1a6de4079f90d919aa3c9b5a9ffe7b904ec715e283e6ec9da60530aee9"
+    },
+    {
+      "herb": "川乌",
+      "section": "功效",
+      "text": "川乌（Aconiti Radix）功效：祛风除湿，温经止痛。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "345838c454a791e9d44f623a55302f3c9431db63904386b9d54c3084902277d9"
+    },
+    {
+      "herb": "川乌",
+      "section": "主治",
+      "text": "川乌（Aconiti Radix）主治：风寒湿痹，关节疼痛，心腹冷痛，寒疝作痛。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d58406622a0aa8ac20d74c30b493c943747fa8f3bac23f0aca870add77af38e7"
+    },
+    {
+      "herb": "川乌",
+      "section": "用量",
+      "text": "川乌（Aconiti Radix）用法用量：制川乌 1.5～3g，先煎、久煎。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "116d3b24953105c1411165c75044e53d17299e87150117fed069af709fadd218"
+    },
+    {
+      "herb": "川乌",
+      "section": "毒性",
+      "text": "川乌（Aconiti Radix）毒性：大毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "b88352a2b4bac11e0a948966ed10be760d4bdec40415cbf6039d927f7dd128d3"
+    },
+    {
+      "herb": "川乌",
+      "section": "禁忌",
+      "text": "川乌（Aconiti Radix）用药禁忌：孕妇禁用；不宜与半夏、瓜蒌、贝母、白蔹、白及同用（十八反）。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "f936a97f8a2e3a640c118c0cd2422df6b6487f5721e8206cbad2a5a6b2569bf9"
+    },
+    {
+      "herb": "川乌",
+      "section": "性状",
+      "text": "川乌（Aconiti Radix）性状：呈不规则的圆锥形，稍弯曲，顶端常有残茎，中部多向一侧膨大，长 2～7.5cm，直径 1.2～2.5cm。表面棕褐色或灰棕色，皱缩，有小瘤状侧根及子根脱离后的痕迹。质坚实，断面类白色或浅灰黄色，形成层环纹呈多角形。气微，味辛辣、麻舌。",
+      "source": "《中国药典》2020 年版一部·川乌【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "198df5d4498964f8ead1be6863b85a625e1cba93f18f83abf235adc49d63eba3"
+    },
+    {
+      "herb": "川乌",
+      "section": "炮制",
+      "text": "川乌（Aconiti Radix）炮制：制川乌：取净川乌，大小分开，用水浸泡至内无干心，取出，加水煮沸 4～6 小时（或蒸 6～8 小时）至取大个及实心者切开内无白心，口尝微有麻舌感时，取出，晾至六成干，切厚片，干燥。生川乌供外用或内服须严格炮制，不可直接煎服。",
+      "source": "《中国药典》2020 年版一部·川乌【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ff47acc765f2b8aa0f691e4ee42724e96d9a86027b15ca91f79aa1bd58c7ae91"
+    },
+    {
+      "herb": "川乌",
+      "section": "产地",
+      "text": "川乌（Aconiti Radix）产地：主产于四川（江油，道地）、陕西（汉中）；本品为乌头 Aconitum carmichaelii Debx. 的干燥母根",
+      "source": "《中国药典》2020 年版一部·川乌【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d9c96c7eced82881b38daea6cd63737003307de6133bdfcf81dc497d2fda3d0c"
+    },
+    {
+      "herb": "川乌",
+      "section": "鉴别要点",
+      "text": "川乌（Aconiti Radix）鉴别要点：不规则圆锥形，中部多向一侧膨大，断面形成层环纹呈多角形，味辛辣、麻舌（乌头类共有特征）。与草乌区别：川乌圆锥形、多向一侧膨大，草乌长圆锥形略弯曲、顶端有枯萎芽与不定根残基。",
+      "source": "《中国药典》2020 年版一部·川乌/草乌【性状】归纳 + 中药鉴定学教材（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "f9a7de3fd528b03f15b4cb2d673fa8920858b7273881ecc3fd251dc06d8bccf2"
+    },
+    {
+      "herb": "川乌",
+      "section": "相似对比",
+      "text": "川乌（Aconiti Radix）与「草乌」鉴别（同为乌头类块根，断面多角形环纹、辛辣麻舌，外观相近）：本品（川乌）：不规则圆锥形，中部多向一侧膨大，表面棕褐色或灰棕色、皱缩有小瘤状侧根痕，为乌头 Aconitum carmichaelii 的干燥母根；对比药（草乌）：长圆锥形略弯曲，顶端常有残茎和少数不定根残基，表面灰褐色或黑棕褐色、有纵皱纹，为北乌头 Aconitum kusnezoffii 的干燥块根",
+      "source": "中药鉴定学教材/药典对照（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "72191034e261023dac4f221fc9d7eb4f027ccbeca9dc6a6a0c9ee67f354b9e08"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "herb": "栀子",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "栀子",
+      "section": "性味归经",
+      "text": "栀子（Gardeniae Fructus）性味苦，寒，归心、肺、三焦经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "7e1b213bd2407e7e0438434d8584400a0e7c9794984666e612f77cacae5b8242"
+    },
+    {
+      "herb": "栀子",
+      "section": "功效",
+      "text": "栀子（Gardeniae Fructus）功效：泻火除烦，清热利湿，凉血解毒；外用消肿止痛。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "4f5654c02f538f1d35a23240d558a42eef0915db880a128746ce5e0a455acebe"
+    },
+    {
+      "herb": "栀子",
+      "section": "主治",
+      "text": "栀子（Gardeniae Fructus）主治：热病心烦，湿热黄疸，淋证涩痛，血热吐衄，目赤肿痛，火毒疮疡；外用扭挫伤痛。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "c3a2c01b3a43268ff1587478796cbaa2c3baf49e45cf8d20d7276c1f5436d580"
+    },
+    {
+      "herb": "栀子",
+      "section": "用量",
+      "text": "栀子（Gardeniae Fructus）用法用量：6～10g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "aabd1ddf40f9ab74e391dcbc31cd7649b0be2deee4780007588fa39f86c3c719"
+    },
+    {
+      "herb": "栀子",
+      "section": "毒性",
+      "text": "栀子（Gardeniae Fructus）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "500cbf5006f173003924866a62acfdddd620aa592e274f2f14dc074250e169b1"
+    },
+    {
+      "herb": "栀子",
+      "section": "禁忌",
+      "text": "栀子（Gardeniae Fructus）用药禁忌：脾虚便溏者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "dca3db79b9403726acc83c88f54a7ae38c95cd7cc4f148ba4644d95a4972a9a5"
+    },
+    {
+      "herb": "栀子",
+      "section": "性状",
+      "text": "栀子（Gardeniae Fructus）性状：呈长卵圆形或椭圆形，长 1.5～3.5cm，直径 1～1.5cm。表面红黄色或棕红色，具 6 条翅状纵棱，棱间常有 1 条明显的纵脉纹，并有分枝。顶端残存萼片，基部稍尖，有残留果梗。果皮薄而脆，略有光泽；内表面色较浅，有光泽，具 2～3 条隆起的假隔膜。种子多数，扁卵圆形，集结成团，深红色或红黄色，表面密具细小疣状突起。气微，味微酸而苦。",
+      "source": "《中国药典》2020 年版一部·栀子【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "649d302aeca26d3285064aec93c03544bb7afb322508304c6da1c068e41e9d1d"
+    },
+    {
+      "herb": "栀子",
+      "section": "炮制",
+      "text": "栀子（Gardeniae Fructus）炮制：栀子：除去杂质，碾碎。炒栀子：取净栀子，照清炒法（通则 0213）炒至黄褐色。焦栀子：取净栀子，照炒焦法（通则 0213）炒至焦褐色。",
+      "source": "《中国药典》2020 年版一部·栀子【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e0f5151a9707cf895243c6f1d78c56199d2874467e702196186b4568dfbd99c6"
+    },
+    {
+      "herb": "栀子",
+      "section": "产地",
+      "text": "栀子（Gardeniae Fructus）产地：主产于江西（道地“江栀子”）、湖南、湖北、四川、福建（本品为栀子 Gardenia jasminoides Ellis 的干燥成熟果实）",
+      "source": "《中药学》教材·栀子（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "5a5db68b24efab0c370b3d41f98ce80d4632b6a456178b62841254a4bd4eb111"
+    },
+    {
+      "herb": "栀子",
+      "section": "鉴别要点",
+      "text": "栀子（Gardeniae Fructus）鉴别要点：长卵圆形，表面红黄色或棕红色、具 6 条翅状纵棱，果皮薄而脆，种子多数扁卵圆形、深红色、密具细小疣状突起，味微酸而苦。",
+      "source": "《中国药典》2020 年版一部·栀子【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "f74c7426cdda0a4f9634b61760f272de90c7c3d5882dd1fca1d046e81cfded66"
+    }
+  ]
+}

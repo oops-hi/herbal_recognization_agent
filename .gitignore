@@ -15,6 +15,10 @@ uploads/
 models/*.pt
 runs/
 
+# 向量检索产物与权重（kg_rag 可从 data/tcm_docs + models/bge-small-zh 重建）
+kg_rag/
+models/bge-small-zh/
+
 # IDE
 .idea/
 

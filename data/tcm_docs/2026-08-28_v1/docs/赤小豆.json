@@ -1,0 +1,86 @@
+{
+  "herb": "赤小豆",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "赤小豆",
+      "section": "性味归经",
+      "text": "赤小豆（Vignae Semen）性味甘、酸，平，归心、小肠经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "7bb666f963d6aa51b11448bc6baca1bc43b0f44227e9af870351dadb71046d4b"
+    },
+    {
+      "herb": "赤小豆",
+      "section": "功效",
+      "text": "赤小豆（Vignae Semen）功效：利水消肿，解毒排脓。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "48c0468416e2ef37d08caab6253985c17bc6cec7d084b2d0e2afc7ff717020ef"
+    },
+    {
+      "herb": "赤小豆",
+      "section": "主治",
+      "text": "赤小豆（Vignae Semen）主治：水肿胀满，脚气浮肿，黄疸尿赤，风湿热痹，痈肿疮毒，肠痈腹痛。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "f6de8c0ee6b318ef88da64031f799c32a115dbf8ee479ca77ff399c99d3c4045"
+    },
+    {
+      "herb": "赤小豆",
+      "section": "用量",
+      "text": "赤小豆（Vignae Semen）用法用量：9～30g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "a1b1a5f23e4d3f548ff2c2577ff1a06b2a27ec1c378ca0ca2457c2e76ffcd061"
+    },
+    {
+      "herb": "赤小豆",
+      "section": "毒性",
+      "text": "赤小豆（Vignae Semen）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "6b042bacc79a8a5085dad0588cabe3fca389761380a61acdc04eab04c20aa126"
+    },
+    {
+      "herb": "赤小豆",
+      "section": "禁忌",
+      "text": "赤小豆（Vignae Semen）用药禁忌：阴虚而无湿热者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "f3a7fa63153c4bfd34def949205dd03ca2cc6935fcdd67f87883f2252cf1ad4a"
+    },
+    {
+      "herb": "赤小豆",
+      "section": "性状",
+      "text": "赤小豆（Vignae Semen）性状：呈长圆形而稍扁，长 5～8mm，直径 3～5mm。表面紫红色，无光泽或微有光泽；一侧有线形突起的白色种脐，偏向一端，白色，约为全长 2/3，中间凹陷成纵沟；另侧有 1 条不明显的棱脊。质硬，不易破碎。子叶 2，乳白色。气微，味微甘。",
+      "source": "《中国药典》2020 年版一部·赤小豆【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ed5606294ddcfbe5429d03d34b6721a97241230d0ddb0e938f310f6f037337e2"
+    },
+    {
+      "herb": "赤小豆",
+      "section": "炮制",
+      "text": "赤小豆（Vignae Semen）炮制：除去杂质，洗净，干燥。",
+      "source": "《中国药典》2020 年版一部·赤小豆【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "1b6792e1c2272cbf7740570174e9b61ee23eb155f9f574ba9566d9fa49faf53a"
+    },
+    {
+      "herb": "赤小豆",
+      "section": "产地",
+      "text": "赤小豆（Vignae Semen）产地：主产于广东（道地“广赤豆”）、广西、江西（本品为豆科植物赤小豆 Vigna umbellata Ohwi et Ohashi 或赤豆 V. angularis Ohwi et Ohashi 的干燥成熟种子）",
+      "source": "《中国药典》2020 年版一部·赤小豆【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d83831831004113a7775534d3892f9562eaf010820a53beac88e929080467f47"
+    },
+    {
+      "herb": "赤小豆",
+      "section": "鉴别要点",
+      "text": "赤小豆（Vignae Semen）鉴别要点：长圆形稍扁，表面紫红色，一侧有白色线形种脐偏向一端、约占全长 2/3、中间凹陷成纵沟，质硬不易破碎，味微甘。与红小豆（赤豆）区别：赤小豆长圆、种脐长约占 2/3；赤豆近圆形、种脐短。",
+      "source": "《中国药典》2020 年版一部·赤小豆【性状】归纳 + 中药鉴定学教材（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ee467294f1e99217dc4f20c5269eb44212f8c731ec4f9833df44eeb4fc8aada4"
+    }
+  ]
+}

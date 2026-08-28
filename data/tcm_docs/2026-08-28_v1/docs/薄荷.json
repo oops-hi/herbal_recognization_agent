@@ -1,0 +1,86 @@
+{
+  "herb": "薄荷",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "薄荷",
+      "section": "性味归经",
+      "text": "薄荷（Menthae Haplocalycis Herba）性味辛，凉，归肺、肝经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "1839d973be38a1b685d179ad7df1d243d1d640da2b57dffa14fc17a6bd0fb91a"
+    },
+    {
+      "herb": "薄荷",
+      "section": "功效",
+      "text": "薄荷（Menthae Haplocalycis Herba）功效：疏散风热，清利头目，利咽，透疹，疏肝行气。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ffcf6cc05ae4e7dd05a7da6cd93e7b859f31aadcae84d5766ef4f56eee38a858"
+    },
+    {
+      "herb": "薄荷",
+      "section": "主治",
+      "text": "薄荷（Menthae Haplocalycis Herba）主治：风热感冒，风温初起，头痛，目赤，喉痹，口疮，风疹，麻疹，胸胁胀闷。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "22b8bbb86b4539939fdd7921037c38f74d745546c53c4b1579c4b30202641c10"
+    },
+    {
+      "herb": "薄荷",
+      "section": "用量",
+      "text": "薄荷（Menthae Haplocalycis Herba）用法用量：3～6g，后下。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "0107ef18f96492e5affd20ca3f9eb0c8f9e96f046b0a5ccc256b7619a6b741f0"
+    },
+    {
+      "herb": "薄荷",
+      "section": "毒性",
+      "text": "薄荷（Menthae Haplocalycis Herba）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "7fd2357a8cf5c0c4d3a45e3f3af07f86b687bc889a0cd5c1b53c71cb1b3fadc3"
+    },
+    {
+      "herb": "薄荷",
+      "section": "禁忌",
+      "text": "薄荷（Menthae Haplocalycis Herba）用药禁忌：体虚多汗者不宜使用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "f0d3dce253747be9b426f0fd46b058ec41e97d5cbe68266a5da3986c7ad7f533"
+    },
+    {
+      "herb": "薄荷",
+      "section": "性状",
+      "text": "薄荷（Menthae Haplocalycis Herba）性状：呈不规则的段。茎呈方柱形，有对生分枝，表面紫棕色或淡绿色，棱角处具茸毛，节间长 2～5cm。叶对生，有短柄；叶片皱缩卷曲，完整者展平后呈宽披针形、长椭圆形或卵形，长 2～7cm，宽 1～3cm，上表面深绿色，下表面灰绿色，稀被茸毛，有凹点状腺鳞。轮伞花序腋生，花萼钟状，先端 5 齿裂，花冠淡紫色。揉搓后有特殊清凉香气，味辛凉。",
+      "source": "《中国药典》2020 年版一部·薄荷【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d2ddafa65647c68570c3151907293328d509f39572441df7ccbbc619e2f967ae"
+    },
+    {
+      "herb": "薄荷",
+      "section": "炮制",
+      "text": "薄荷（Menthae Haplocalycis Herba）炮制：除去老茎及杂质，喷淋清水，稍润，切短段，及时低温干燥。",
+      "source": "《中国药典》2020 年版一部·薄荷【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "405da46bdd415e8c9b657a3abdcbf4cc3f5f6e39201615ceb6ac8bb3dd847ca4"
+    },
+    {
+      "herb": "薄荷",
+      "section": "产地",
+      "text": "薄荷（Menthae Haplocalycis Herba）产地：主产于江苏（太仓，道地）、浙江、安徽（本品为薄荷 Mentha haplocalyx Briq. 的干燥地上部分）",
+      "source": "《中国药典》2020 年版一部·薄荷【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e3b72eca96b468e037fd54b133c5a11f319144be95ebe9a80a843e1782ddee03"
+    },
+    {
+      "herb": "薄荷",
+      "section": "鉴别要点",
+      "text": "薄荷（Menthae Haplocalycis Herba）鉴别要点：茎方柱形、棱角处具茸毛，叶皱缩卷曲、上深绿下灰绿、有凹点状腺鳞，揉搓后有特殊清凉香气，味辛凉（薄荷脑凉感）。",
+      "source": "《中国药典》2020 年版一部·薄荷【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d9d8bbc470d2bf81e5dc9ada6153e866ac8309313fd61ad906a5022ca11feb55"
+    }
+  ]
+}

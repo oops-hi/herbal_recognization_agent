@@ -1,0 +1,86 @@
+{
+  "herb": "熟地黄",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "熟地黄",
+      "section": "性味归经",
+      "text": "熟地黄（Rehmanniae Radix Praeparata）性味甘，微温，归肝、肾经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "657c17eba8bf6031cf55de7efeafc3b114ea1efb291b8acf7c0437fed2dfaffa"
+    },
+    {
+      "herb": "熟地黄",
+      "section": "功效",
+      "text": "熟地黄（Rehmanniae Radix Praeparata）功效：补血滋阴，益精填髓。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "017e06a79cfb9de670d797c62ff60c85db5374d81dd68326af685d5a846c1b56"
+    },
+    {
+      "herb": "熟地黄",
+      "section": "主治",
+      "text": "熟地黄（Rehmanniae Radix Praeparata）主治：血虚萎黄，心悸怔忡，月经不调，崩漏下血，肝肾阴虚，腰膝酸软，骨蒸潮热，盗汗遗精，内热消渴，眩晕，耳鸣，须发早白。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "43a3ef959206972010eb0d1bffa1b82295ec6489224789a5a4e25ba7520168f7"
+    },
+    {
+      "herb": "熟地黄",
+      "section": "用量",
+      "text": "熟地黄（Rehmanniae Radix Praeparata）用法用量：9～15g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "a3ea0e5e393d036e1d244ebfe6f5011c85f60428df7039b60276387180d1fa81"
+    },
+    {
+      "herb": "熟地黄",
+      "section": "毒性",
+      "text": "熟地黄（Rehmanniae Radix Praeparata）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "842b89cdefd1e064294e59ea5547459c41c6a811a24b739270a3124c38ac60c6"
+    },
+    {
+      "herb": "熟地黄",
+      "section": "禁忌",
+      "text": "熟地黄（Rehmanniae Radix Praeparata）用药禁忌：脾虚湿滞、腹满便溏者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "af8429aa9f214df1b232e51613c64f212e52713c94af78e3883bd3ab5f0ddf4b"
+    },
+    {
+      "herb": "熟地黄",
+      "section": "性状",
+      "text": "熟地黄（Rehmanniae Radix Praeparata）性状：为不规则的块片、碎块，大小、厚薄不一。表面乌黑色，有光泽，黏性大。质柔软而带韧性，不易折断，断面乌黑色，有光泽。气微，味甜。",
+      "source": "《中国药典》2020 年版一部·熟地黄【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "0113c00e51034337d9fb7b6327e49fdf3809e6478abdfbf2c8085b02ee37d95c"
+    },
+    {
+      "herb": "熟地黄",
+      "section": "炮制",
+      "text": "熟地黄（Rehmanniae Radix Praeparata）炮制：取生地黄，照酒炖法（通则 0213）炖至酒吸尽，取出，晾晒至外皮黏液稍干时，切厚片或块，干燥；或照蒸法（通则 0213）蒸至黑润，取出，晒至约八成干时，切厚片或块，干燥。",
+      "source": "《中国药典》2020 年版一部·熟地黄【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "7066aa2f0d4a7a3a811e1a321ff6ae2dbd6bc35356feda0b88e3c12dd5da0395"
+    },
+    {
+      "herb": "熟地黄",
+      "section": "产地",
+      "text": "熟地黄（Rehmanniae Radix Praeparata）产地：主产于河南（焦作，道地“怀地黄”）；本品为地黄 Rehmannia glutinosa Libosch. 的新鲜或干燥块根经炮制加工品",
+      "source": "《中国药典》2020 年版一部·熟地黄【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ba0498e9804417564fc5a1d9d4150606a4d20b644f5fffabac4a173cd3b2646a"
+    },
+    {
+      "herb": "熟地黄",
+      "section": "鉴别要点",
+      "text": "熟地黄（Rehmanniae Radix Praeparata）鉴别要点：乌黑色块片，表面有光泽、黏性大，质柔软带韧性，断面乌黑色有光泽，味甜。与生地黄区别：生地黄棕黑色、质软润、味微甜微苦；熟地黄乌黑色、黏性强、味甜。",
+      "source": "《中国药典》2020 年版一部·熟地黄【性状】归纳 + 中药鉴定学教材（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "dfe970a05690c2813a1131cf3a139f5397a14589f4f079c1dcd5fe93487f363a"
+    }
+  ]
+}

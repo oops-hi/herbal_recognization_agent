@@ -1,0 +1,86 @@
+{
+  "herb": "生姜",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "生姜",
+      "section": "性味归经",
+      "text": "生姜（Zingiberis Rhizoma Recens）性味辛，微温，归肺、脾、胃经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "3bbcdb97e51b88eb0ae45c001f89984e62dc17d881a8bcd9ef76d43b761cfd6a"
+    },
+    {
+      "herb": "生姜",
+      "section": "功效",
+      "text": "生姜（Zingiberis Rhizoma Recens）功效：解表散寒，温中止呕，化痰止咳，解鱼蟹毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "f58237f97aa27ed8cb7a1d5516fb7fe1d7bcf95c4f4c4a40cd1e94898fd34eb8"
+    },
+    {
+      "herb": "生姜",
+      "section": "主治",
+      "text": "生姜（Zingiberis Rhizoma Recens）主治：风寒感冒，胃寒呕吐，寒痰咳嗽，鱼蟹中毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "bbf84d3e42813a25c70896116d6fa970b57b7bff388b82d506837d3f71ce0296"
+    },
+    {
+      "herb": "生姜",
+      "section": "用量",
+      "text": "生姜（Zingiberis Rhizoma Recens）用法用量：3～10g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "a1cd669b3f60aae6549d2acef8852938c884adaaa77413feeb7ec988af42b29a"
+    },
+    {
+      "herb": "生姜",
+      "section": "毒性",
+      "text": "生姜（Zingiberis Rhizoma Recens）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "deb33fc10972a9e91fc8289ffe4a702cb478b5718d0d0d8fe0ee6b81aa5c9479"
+    },
+    {
+      "herb": "生姜",
+      "section": "禁忌",
+      "text": "生姜（Zingiberis Rhizoma Recens）用药禁忌：阴虚内热及实热证者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "101a6763ee287063ffd3a5a3c88df249a6a461be27a42381b3adb7f109bbeebf"
+    },
+    {
+      "herb": "生姜",
+      "section": "性状",
+      "text": "生姜（Zingiberis Rhizoma Recens）性状：呈不规则的长条形块状或片状。表面黄褐色或灰棕色，有环节，具纵皱纹。切面浅黄色，内皮层环纹明显，维管束散在。质脆，易折断，断面有纤维性。气香特异，味辛辣。",
+      "source": "《中国药典》2020 年版一部·生姜【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "fcb408cb4bf98df047a37c507f93636f2af6818292ee16405e9af3b7f1de2549"
+    },
+    {
+      "herb": "生姜",
+      "section": "炮制",
+      "text": "生姜（Zingiberis Rhizoma Recens）炮制：生姜：除去杂质，洗净，用时切厚片。干姜：取生姜，除去杂质，洗净，切片，干燥。",
+      "source": "《中国药典》2020 年版一部·生姜【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "89eec33eaeb966f2845ee21d25db2d8281002fd7997da27fd7853cf01967c470"
+    },
+    {
+      "herb": "生姜",
+      "section": "产地",
+      "text": "生姜（Zingiberis Rhizoma Recens）产地：主产于四川（犍为，道地）、山东、贵州（本品为姜科植物姜 Zingiber officinale Rosc. 的新鲜根茎）",
+      "source": "《中国药典》2020 年版一部·生姜【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "9870b02ae5aa065d4e9fbd396099d9bfb3cd78b55df0f53ea55f02851828cdf3"
+    },
+    {
+      "herb": "生姜",
+      "section": "鉴别要点",
+      "text": "生姜（Zingiberis Rhizoma Recens）鉴别要点：不规则长条形块状，表面黄褐色或灰棕色、有环节，切面浅黄色、内皮层环纹明显、维管束散在，质脆易断、断面有纤维性，气香特异，味辛辣。",
+      "source": "《中国药典》2020 年版一部·生姜【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "6137526e02db82b7f5b900601c608e7165c7913f7c6e8572ebb7dd23150de82f"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "herb": "细辛",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "细辛",
+      "section": "性味归经",
+      "text": "细辛（Asari Radix et Rhizoma）性味辛，温，归心、肺、肾经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "3e6415791b811e73bbe3adc70d31fe481615e14add03c8fd864c5603929fa467"
+    },
+    {
+      "herb": "细辛",
+      "section": "功效",
+      "text": "细辛（Asari Radix et Rhizoma）功效：解表散寒，祛风止痛，通窍，温肺化饮。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "7ae5aad17b9c43fab1c33abf6e2deeaf4636484145a15ae316cc0a69c01f8717"
+    },
+    {
+      "herb": "细辛",
+      "section": "主治",
+      "text": "细辛（Asari Radix et Rhizoma）主治：风寒感冒，头痛，牙痛，鼻塞流涕，鼻鼽，鼻渊，风湿痹痛，痰饮喘咳。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "479ffa89bf1e49fce3d01a29191e00e04c21d2ba4b50f8accecdec45ed4092bd"
+    },
+    {
+      "herb": "细辛",
+      "section": "用量",
+      "text": "细辛（Asari Radix et Rhizoma）用法用量：1～3g；散剂每次服 0.5～1g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ef341d6e9e74b9a800a2ac675eb6fcafe15729524ef3e824bbd12380231719f8"
+    },
+    {
+      "herb": "细辛",
+      "section": "毒性",
+      "text": "细辛（Asari Radix et Rhizoma）毒性：有小毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "44681a0c56b93088e0a65ca7d221c3232bb5896e0b1af9b3db87957a21c373ec"
+    },
+    {
+      "herb": "细辛",
+      "section": "禁忌",
+      "text": "细辛（Asari Radix et Rhizoma）用药禁忌：不宜与藜芦同用；阴虚阳亢头痛、肺燥伤阴干咳者忌用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "552e0e6911f8d3dc7996a225702d92488c729e253b52a10f643f8d0a84f06903"
+    },
+    {
+      "herb": "细辛",
+      "section": "性状",
+      "text": "细辛（Asari Radix et Rhizoma）性状：呈不规则的段。根茎呈不规则的圆柱形，有环形的节，节间长 0.2～1cm，根细，密生于节上，表面灰黄色，平滑或具纵皱纹，有须根及须根痕。切面黄白色或白色。气辛香，味辛辣、麻舌。",
+      "source": "《中国药典》2020 年版一部·细辛【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "9ba810e11101f0a06f943bda96c3acc4de28bafb538048b66b2af9a4f114c6a7"
+    },
+    {
+      "herb": "细辛",
+      "section": "炮制",
+      "text": "细辛（Asari Radix et Rhizoma）炮制：除去杂质，喷淋清水，稍润，切段，阴干。",
+      "source": "《中国药典》2020 年版一部·细辛【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "bbee35b88979622f0e8cbabc6312a5b2086674ce426680ee0f9a5a371ac88c80"
+    },
+    {
+      "herb": "细辛",
+      "section": "产地",
+      "text": "细辛（Asari Radix et Rhizoma）产地：主产于辽宁（道地“北细辛”）、吉林、黑龙江（本品为马兜铃科植物北细辛 Asarum heterotropoides Fr. Schmidt var. mandshuricum（Maxim.）Kitag. 的干燥根和根茎）",
+      "source": "《中国药典》2020 年版一部·细辛【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "addf105c36eff12554cdabf54974b2996dfad05f948efcc97c44e9ee6c70330e"
+    },
+    {
+      "herb": "细辛",
+      "section": "鉴别要点",
+      "text": "细辛（Asari Radix et Rhizoma）鉴别要点：根细、密生于根茎节上，根茎有环形节，表面灰黄色，切面黄白色或白色，气辛香，味辛辣、麻舌。药典设马兜铃酸 I 限量检查项（含马兜铃酸 I 不得过 0.001%）。",
+      "source": "《中国药典》2020 年版一部·细辛【性状】归纳 + 药典含量测定项（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "700b710667bedd560a4037d29660a8690e61629e2e45a4d9fa2b7cde7614d032"
+    }
+  ]
+}

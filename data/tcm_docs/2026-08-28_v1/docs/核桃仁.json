@@ -1,0 +1,86 @@
+{
+  "herb": "核桃仁",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "核桃仁",
+      "section": "性味归经",
+      "text": "核桃仁（Juglandis Semen）性味甘，温，归肾、肺、大肠经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "03155eb788e8850ffc1fdf195287144cc331972e197163977dccef1e39d32f0e"
+    },
+    {
+      "herb": "核桃仁",
+      "section": "功效",
+      "text": "核桃仁（Juglandis Semen）功效：补肾，温肺，润肠。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "5851e9302a611211b92421ebd0a91b9acec16fbc8a2e700845d2045c5aac7a23"
+    },
+    {
+      "herb": "核桃仁",
+      "section": "主治",
+      "text": "核桃仁（Juglandis Semen）主治：肾阳不足，腰膝酸软，阳痿遗精，虚寒喘嗽，肠燥便秘。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "a4ced434641a0d49841d874014c1f099f06190ff8f872efc8db2793ff46c926c"
+    },
+    {
+      "herb": "核桃仁",
+      "section": "用量",
+      "text": "核桃仁（Juglandis Semen）用法用量：6～9g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ac6fe8fea47ff95ad26726df0af88b9328c640a874b48539893c23dcfb73f14c"
+    },
+    {
+      "herb": "核桃仁",
+      "section": "毒性",
+      "text": "核桃仁（Juglandis Semen）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "356870e279568706c679b3b0236095543f6068925e9233ddc9da66fe22efda52"
+    },
+    {
+      "herb": "核桃仁",
+      "section": "禁忌",
+      "text": "核桃仁（Juglandis Semen）用药禁忌：阴虚火旺、痰热咳嗽及便溏者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "592ae77357a7eeb251813891d33304a5cd34838f0f90568a662580ddac1b4243"
+    },
+    {
+      "herb": "核桃仁",
+      "section": "性状",
+      "text": "核桃仁（Juglandis Semen）性状：呈类圆形片状或碎块。外表面棕褐色或淡棕色，有浅色的网纹及沟纹，种皮菲薄，有的剥落，露出乳白色子叶。质脆。气微，味甘，富油性。",
+      "source": "《中国药典》2020 年版一部·核桃仁【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d815fb972cf8c725ba5cdb17cabe0ee6b69d213a665e5a8289de938a5c9b1873"
+    },
+    {
+      "herb": "核桃仁",
+      "section": "炮制",
+      "text": "核桃仁（Juglandis Semen）炮制：除去杂质，筛去碎壳。",
+      "source": "《中国药典》2020 年版一部·核桃仁【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "183ec0f12fb302e69fcce55440452df8d91043c51c5fe58dac743d6ba014d00b"
+    },
+    {
+      "herb": "核桃仁",
+      "section": "产地",
+      "text": "核桃仁（Juglandis Semen）产地：主产于河北、山西、陕西、新疆（本品为胡桃科植物胡桃 Juglans regia L. 的干燥成熟种子）",
+      "source": "《中国药典》2020 年版一部·核桃仁【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "70f27de33e606054d44886f124e19f1be1f8172a8e67506c408962bc5e0cf167"
+    },
+    {
+      "herb": "核桃仁",
+      "section": "鉴别要点",
+      "text": "核桃仁（Juglandis Semen）鉴别要点：类圆形片状，外表面棕褐色或淡棕色、有浅色网纹及沟纹，种皮菲薄易剥落、露出乳白色子叶，质脆，味甘，富油性。",
+      "source": "《中国药典》2020 年版一部·核桃仁【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "7cad638ab5f06124418e18eeeacfc01eb67950776ef585d88c5a637fc7546469"
+    }
+  ]
+}

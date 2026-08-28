@@ -1,0 +1,86 @@
+{
+  "herb": "胖大海",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "胖大海",
+      "section": "性味归经",
+      "text": "胖大海（Sterculiae Lychnophorae Semen）性味甘，寒，归肺、大肠经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "c0a420ee9f99c3fdfb927ce1b9ab1584ed89eaeae583203ab478d0bca64bd065"
+    },
+    {
+      "herb": "胖大海",
+      "section": "功效",
+      "text": "胖大海（Sterculiae Lychnophorae Semen）功效：清热润肺，利咽开音，润肠通便。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "df233df77fc7e4182eb0bbc19d4081262c54f47ebbd9c1dce8d3fc9cd942d4ea"
+    },
+    {
+      "herb": "胖大海",
+      "section": "主治",
+      "text": "胖大海（Sterculiae Lychnophorae Semen）主治：肺热声哑，干咳无痰，咽喉干痛，热结便闭，头痛目赤。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "b52f2847e8e32f3c90cd5c24362ec86f5c162e495a0d404c48b10ea10e0a8133"
+    },
+    {
+      "herb": "胖大海",
+      "section": "用量",
+      "text": "胖大海（Sterculiae Lychnophorae Semen）用法用量：2～3 枚，沸水泡服或煎服。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ce0933843e5f788afefd9d2cb45cd4de99a81e8859380dc8420fcac762129e21"
+    },
+    {
+      "herb": "胖大海",
+      "section": "毒性",
+      "text": "胖大海（Sterculiae Lychnophorae Semen）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "568ca1ca399587299c55f81b7d19ccaf707b2d5ada4b1d23c85bdc6acf32e29d"
+    },
+    {
+      "herb": "胖大海",
+      "section": "禁忌",
+      "text": "胖大海（Sterculiae Lychnophorae Semen）用药禁忌：便溏者忌用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "091d9f880b834f57683f8e1bd588ae966aba6fef439d24c16ebeb0763bbeb326"
+    },
+    {
+      "herb": "胖大海",
+      "section": "性状",
+      "text": "胖大海（Sterculiae Lychnophorae Semen）性状：呈纺锤形或椭圆形，长 2～3cm，直径 1～1.5cm。先端钝圆，基部略尖而歪，具浅色的圆形种脐。表面棕色或暗棕色，微有光泽，具不规则的干缩皱纹。外层种皮极薄，质脆，易脱落。中层种皮较厚，黑褐色，质松易碎，遇水膨胀成海绵状。断面可见散在的树脂状小点。气微，味淡，嚼之有黏性。",
+      "source": "《中国药典》2020 年版一部·胖大海【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "9c42e8e130a23cd0578be245811b43a41f8d20189d4729b680a589e2f9ab0122"
+    },
+    {
+      "herb": "胖大海",
+      "section": "炮制",
+      "text": "胖大海（Sterculiae Lychnophorae Semen）炮制：除去杂质，筛去灰屑。",
+      "source": "《中国药典》2020 年版一部·胖大海【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "64795758b5c305d7e7e513c7de12bf89cfe1ef674a6e844d54ab3f3b2f7790e7"
+    },
+    {
+      "herb": "胖大海",
+      "section": "产地",
+      "text": "胖大海（Sterculiae Lychnophorae Semen）产地：主产于东南亚（越南、泰国、马来西亚），为进口药材（本品为梧桐科植物胖大海 Sterculia lychnophora Hance 的干燥成熟种子）",
+      "source": "《中国药典》2020 年版一部·胖大海【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d68e65e79fb39bc7a0bf0d7c88d49815f8bb8f92ce52b4b086a1a061e8a71158"
+    },
+    {
+      "herb": "胖大海",
+      "section": "鉴别要点",
+      "text": "胖大海（Sterculiae Lychnophorae Semen）鉴别要点：纺锤形或椭圆形，表面棕色或暗棕色、具不规则的干缩皱纹，中层种皮黑褐色、质松易碎、遇水膨胀成海绵状（泡水膨胀为胖大海经典鉴别特征），嚼之有黏性。",
+      "source": "《中国药典》2020 年版一部·胖大海【性状】归纳 + 中药鉴定学教材（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "73506d0a9361924061e3b0239ba6586b8db85b3a9ed75e5921305eb65a0d9c1c"
+    }
+  ]
+}

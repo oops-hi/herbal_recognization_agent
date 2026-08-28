@@ -1,0 +1,86 @@
+{
+  "herb": "人参",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "人参",
+      "section": "性味归经",
+      "text": "人参（Ginseng Radix et Rhizoma）性味甘、微苦，微温，归脾、肺、心、肾经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e243eac806da1815ccf004f13ebe0f5e5114a6c141431959c165fec00e37b4d2"
+    },
+    {
+      "herb": "人参",
+      "section": "功效",
+      "text": "人参（Ginseng Radix et Rhizoma）功效：大补元气，复脉固脱，补脾益肺，生津养血，安神益智。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ac0aa57ab649c7af69de5988e2dd14535a945aff3eb9cc6cf09823a0943aa14e"
+    },
+    {
+      "herb": "人参",
+      "section": "主治",
+      "text": "人参（Ginseng Radix et Rhizoma）主治：体虚欲脱，肢冷脉微，脾虚食少，肺虚喘咳，津伤口渴，内热消渴，气血亏虚，久病虚羸，惊悸失眠，阳痿宫冷。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "5b92f02f6e92ed9db73a277940fcc5551c3b4ac4bb5a6570cc44fc7d344f1ec7"
+    },
+    {
+      "herb": "人参",
+      "section": "用量",
+      "text": "人参（Ginseng Radix et Rhizoma）用法用量：3～9g，另煎兑服。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "b8524e1fb51e3af59a6ff787090f804448536d1b38e4d04df0edd01fe4e26552"
+    },
+    {
+      "herb": "人参",
+      "section": "毒性",
+      "text": "人参（Ginseng Radix et Rhizoma）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "0970ecad48ab0e6d56587820764452b5e65ffc61559c0b872dc4faa28517ad35"
+    },
+    {
+      "herb": "人参",
+      "section": "禁忌",
+      "text": "人参（Ginseng Radix et Rhizoma）用药禁忌：不宜与藜芦同用（十八反）；实证、热证而正气不虚者忌服（注：与五灵脂同用属十九畏，本项目按歌诀有、药典未认定口径展示，见禁忌边双源字段）。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "2d7f63d00a74347e6e11fe59fb113d6156016c87ada33a2e2150cfeaea8521fe"
+    },
+    {
+      "herb": "人参",
+      "section": "性状",
+      "text": "人参（Ginseng Radix et Rhizoma）性状：呈圆形或类圆形薄片。切面黄白色，有浅棕色树脂道斑点散在，形成层环纹明显，略显放射状纹理。周边淡黄棕色，具纵皱纹及横环纹。质脆，易折断。气特异而浓，味微苦、甘。",
+      "source": "《中国药典》2020 年版一部·人参【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "711bd7725006211b589c04a8e35a4e00e5fa8a0e697ea73c1a4f02a7c1af46b5"
+    },
+    {
+      "herb": "人参",
+      "section": "炮制",
+      "text": "人参（Ginseng Radix et Rhizoma）炮制：除去杂质，润透，切薄片，干燥。或研粉。",
+      "source": "《中国药典》2020 年版一部·人参【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "6e3490a9db3cdb5c050dc8dbc8020cce3628fdc4b1ed791e760d15bb0ab36d0b"
+    },
+    {
+      "herb": "人参",
+      "section": "产地",
+      "text": "人参（Ginseng Radix et Rhizoma）产地：主产于吉林（抚松，道地）、辽宁、黑龙江（本品为五加科植物人参 Panax ginseng C. A. Mey. 的干燥根和根茎）",
+      "source": "《中国药典》2020 年版一部·人参【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "f9a0b76eb19d572f7ee671facfaf18487c41b90cc12cf6d24352fe9696739e54"
+    },
+    {
+      "herb": "人参",
+      "section": "鉴别要点",
+      "text": "人参（Ginseng Radix et Rhizoma）鉴别要点：圆形薄片，切面黄白色、有浅棕色树脂道斑点、形成层环纹明显，气特异而浓，味微苦、甘。生晒参气浓味苦甘；红参（蒸制）切面红棕色、半透明角质样。",
+      "source": "《中国药典》2020 年版一部·人参【性状】归纳 + 中药鉴定学教材（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "3454434079752ff977dec759fcb809273e984a8f2a76d9a511e4e92667aa9762"
+    }
+  ]
+}

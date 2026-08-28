@@ -15,6 +15,7 @@ import argparse
 import json
 
 from . import builder
+from . import retrieval
 
 # 歌诀全文（溯源时附带）
 VERSE_18 = "十八反歌诀：半蒌贝蔹及攻乌，藻戟遂芫俱战草，诸参辛芍叛藜芦"
@@ -220,6 +221,37 @@ def similar_herbs(herb: str) -> str:
     return f"与「{herb}」同方共现的药材（可作同方类比参考）：\n" + "\n".join(f"- {x}" for x in names)
 
 
+def retrieve_doc(query: str, top_k: int = 5) -> str:
+    """FR-12 混合检索：图谱精确优先 → 向量模糊召回（方案 §5.2「图谱给准确，RAG 给全面」）。
+
+    两条路径：
+    1. 图谱精确：query 直接解析到已收录药材（含别名）→ 返回完整档案（get_profile，带溯源）
+    2. 未覆盖开放问题：bge-small-zh 向量召回 top-k（kg/retrieval.py），命中带 source/hash/score
+    —— top-1 低于 MIN_SCORE 视为无证据（知识缺口拒答，不硬答）；检索服务不可用则友好降级。
+    """
+    q = (query or "").strip()
+    if not q:
+        return "请提供检索问题，如「哪种药能明目」。"
+
+    # ---- 路径 1：图谱精确（含别名解析）----
+    if builder.resolve(q) is not None:
+        return get_profile(q)
+
+    # ---- 路径 2：向量模糊召回 ----
+    hits = retrieval.search(q, top_k=top_k)
+    if hits is None:
+        return (
+            f"检索服务暂不可用（本地向量库或模型缺失），未能覆盖「{q}」。"
+            f"图谱精确检索不受影响，可换用已收录药材名查询。"
+        )
+    if not hits or hits[0]["score"] < retrieval.MIN_SCORE:
+        return f"知识库未收录与「{q}」相关的内容，无法提供依据（知识缺口，拒绝凭记忆作答）。"
+    return (
+        f"「{q}」的检索结果（依据知识库语料，非药典原文）：\n"
+        + retrieval.format_hits(hits)
+    )
+
+
 def graph_stats() -> str:
     """图规模统计（前端/调试用）。"""
     g = builder.load()
@@ -299,6 +331,8 @@ def main():
     ap.add_argument("--symptom", help="按症状推荐方剂")
     ap.add_argument("--search", help="按性味/归经/功效反向检索")
     ap.add_argument("--similar", help="相似药推荐")
+    ap.add_argument("--retrieve", help="混合检索（图谱精确优先 → 向量召回）")
+    ap.add_argument("--top-k", type=int, default=5, help="向量召回条数（配合 --retrieve）")
     ap.add_argument("--graph", action="store_true", help="输出全量拓扑 JSON（/api/graph 冒烟）")
     ap.add_argument("--stats", action="store_true", help="图规模统计")
     args = ap.parse_args()
@@ -319,6 +353,8 @@ def main():
         print(search_herbs(args.search))
     elif args.similar:
         print(similar_herbs(args.similar))
+    elif args.retrieve:
+        print(retrieve_doc(args.retrieve, top_k=args.top_k))
     else:
         ap.print_help()
 

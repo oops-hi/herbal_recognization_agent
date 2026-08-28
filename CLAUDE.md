@@ -49,15 +49,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 │   ├── data/records/*.json     # 每味一个完整节点（唯一事实来源，review_status: draft|reviewed）
 │   ├── data/review_ledger.json # 版本化核对台账（merge 派生产物，勿手写）
 │   ├── builder.py         # JSON → networkx.MultiDiGraph
-│   ├── query.py           # 图查询（智能体工具的底层；get_profile 含 L1 鉴别参考段）
+│   ├── query.py           # 图查询（智能体工具的底层；get_profile 含 L1 鉴别参考段；retrieve_doc 混合检索）
 │   ├── v2_merge.py        # records + whitelist + v1 → kg.json v2 + ledger（幂等/--strict）
 │   ├── validate.py        # 起草期 --records / 全量 --strict 校验（验收口径 12.1 统计）
+│   ├── build_docs.py      # records → data/tcm_docs/<version>/ 语料（674 条，带 source+sha256）
+│   ├── retrieval.py       # 自研 numpy 向量检索（bge-small-zh 本地 embedding，幂等入库/fail-soft）
 │   └── viz.py             # matplotlib 静态图 → PNG（离线可用，依赖本地中文字体）
 ├── agent/
 │   ├── tools.py           # 6 个工具函数 + JSON Schema
 │   ├── prompts.py         # System Prompt（中文，含溯源/拒答/合规规则）
 │   └── core.py            # ReAct 循环 ★核心
 ├── demo_agent.py          # 命令行智能体（先于 Flask 跑通调试）
+├── eval_rag.py            # P1 混合检索评测（20 问 top-5 命中 ≥ 0.9）
 ├── app.py                 # Flask（动态端口握手 + Vue 产物托管 + 旧模板兜底）
 ├── frontend/              # ★ Vue3 + Electron 桌面版（electron-vite 工程）
 │   ├── src/main/          # 主进程：spawn 后端 → stdout HERB_READY_PORT 握手 → 窗口
@@ -66,7 +69,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ├── herbal-backend.spec    # PyInstaller onedir（datas：models/kg.json/frontend/out/renderer）
 ├── scripts/               # build-backend.bat（仅后端）/ build-all.bat（一键出包，staging 英文路径）
 ├── templates/  static/  uploads/
-└── data/raw/  data/herbs_cls/
+└── data/raw/  data/herbs_cls/  data/tcm_docs/（P1 检索语料，版本目录+MANIFEST）
 ```
 
 ## 数据
@@ -144,8 +147,7 @@ scripts\build-all.bat                        # 一键出包 → C:\herbal_stage\
 
 - [x] **二期升级实施方案文档**（2026-08-28）：`docs/二期升级实施方案.md`（对齐参考立项报告的 14 章结构；R01–R12 差距表、五道闸门、六子 Agent 编排、P0–P5 里程碑、验收口径、附录 B 评审问题；含**云端 VLM 辅助验证 V2-A6 可选增强**完整设计 §8.5——触发灰区三条件 / 双通道决策矩阵 / 断网 fail-soft / 结构白名单 / 独立 VISION 配置，默认关闭）。详细排期与验收见该文档，本节只列要点待办
 - [x] **二期 P0 知识底座**（2026-08-28）：档案药 22→**64 味**（24 existing + 26 upgraded + 14 new，白名单 `kg/data/whitelist.json`）；kg.json 升 `schema_version=2`（`kg/v2_merge.py` 程序化合并 records + whitelist + v1，幂等/--strict/--check-idempotent，`builder.py`/query.py 其余 8 函数**零改动**）；records 64 味全 draft（L2 七字段 + L1 性状/炮制/产地/鉴别要点/similar_herbs/来源标注，口径=《中国药典》2020 年版一部，**2025 切换走台账重核机制**）；review_ledger 64 行版本台账；`kg/validate.py` 起草期/全量双模式（验收 12.1：L2 448/448、L1 256/256、source 64/64、残留 0）；get_profile 追加【鉴别参考】段 + 核对状态行（query.py 唯一改动）。**已知纠偏**：菊花/甘草 v1 缺毒性键已补、甘草禁忌临时注记已清理（`KNOWN_L2_DRIFT` 显式放行）；**修复 merge bug**：upgraded 26 味从 minor 升级后透传重复节点（v2_merge 跳过白名单 id）。⚠️ **人工核对待办（用户主责，红线）**：64 味 L1/L2 逐字对照药典核对 + 高危 8 味（附子/细辛/川乌/草乌/半夏/苦杏仁/桃仁/人参）双人复核，清单见 `kg/data/records/README.md`，通过后改 meta.review_status=reviewed 并重跑 merge
-- [ ] 待办（二期 · 知识侧 P1 剩余，**L2 口径已拍板 2020 版**）：③ 混合检索：chromadb + bge-small-zh 本地 embedding + `data/tcm_docs/` 版本目录（哈希溯源），`kg/query.py` 新增 `retrieve_doc`；④ 新增 `eval_rag.py` 评测（20 问 top-5 命中 ≥ 0.9）
-- [ ]
-- 待办（二期 · 智能体侧 P2~P3）：① `agent/core.py` 增轻量 Router（意图分类→子 Agent→汇总，仍手写不引 LangChain），MAX_TURNS 改按子 Agent 配额；② `agent/tools.py` 6 工具按六子 Agent 重组（识药/鉴别/药性/方剂/安全/学习），新增 `similar_compare` 鉴别工具；③ 五道闸门全落地 + `refuse_reason` 四类结构化（知识缺口/置信不足/域外图/合规边界）；④ 证据链条目 UI（前端展示来源+版本）；⑤ 安全专项 10 条零剂量/诊断输出、工具调用成功率 ≥ 90%、溯源率 100%
+- [x] **二期 P1 混合检索**（2026-08-28，知识侧）：③+④ 完成——**选型偏离**：不装 chromadb（1.5.9 拖 40+ 依赖含 kubernetes/onnxruntime 且代理下载不稳），自研 numpy 向量检索 `kg/retrieval.py`（bge-small-zh-v1.5 本地 embedding，transformers 4 轻包 `--no-deps` 已装，CPU 可跑 ~1s 加载 / 674 条 16s 入库；归一化内积 + 多 query 同义词扩展并集取 max + MIN_SCORE=0.45 拒答 + 幂等指纹入库 + fail-soft）；语料 `data/tcm_docs/2026-08-28_v1/`（`kg/build_docs.py` 从 records 派生 64 味 674 条，每条带 source/source_edition/sha256，MANIFEST 版本指纹 + source_records_hash 失配即拒收）；`kg/query.py` 新增 `retrieve_doc`（FR-12 混合检索：图谱精确优先→别名解析→向量召回，无证据拒答走知识缺口）；`eval_rag.py` 评测 **20/20 通过（100% ≥ 90%）**。模型 `models/bge-small-zh/`（95MB，gitignore）与向量库 `kg_rag/`（gitignore，可重建）不入库。⚠️ 口径：向量召回文本为「依据知识库语料，非药典原文」；P2 六子 Agent 重组时挂「学习 Agent」+ 证据链条目 UI
+- [ ] 待办（二期 · 智能体侧 P2~P3）：① `agent/core.py` 增轻量 Router（意图分类→子 Agent→汇总，仍手写不引 LangChain），MAX_TURNS 改按子 Agent 配额；② `agent/tools.py` 6 工具按六子 Agent 重组（识药/鉴别/药性/方剂/安全/学习），新增 `similar_compare` 鉴别工具；③ 五道闸门全落地 + `refuse_reason` 四类结构化（知识缺口/置信不足/域外图/合规边界）；④ 证据链条目 UI（前端展示来源+版本）；⑤ 安全专项 10 条零剂量/诊断输出、工具调用成功率 ≥ 90%、溯源率 100%
 - [ ] 待办（二期 · VLM 辅助验证 V2-A6，**可选增强，默认关闭**）：前置三条齐备才开启——① `config.py` 独立 VISION 组（`VISION_API_URL/MODEL/KEY/TIMEOUT=5/ENABLED=False`）+ `save_vision_config()/vision_state()`；② `agent/core.py` 增 `_vlm_verify_request`（image_url base64、复用 429/402/fail-soft 模式）；③ `agent/tools.py` 增 `vlm_verify` 工具（挂识药 Agent）+ 设置页"视觉验证"卡片 + `/api/vision-config` 接口；④ 效果评测集（混淆对 20 张 + 宠物图 3 张，离线对比本地基线，目标优于基线 + 宠物拒答率 100%）
 - [ ] 待办（二期 · 评审待确认，见报告附录 B）：60+ 味白名单范围（**已定**：就地取材 64 味 = 24 现有 + 26 minor 升级 + 14 新增调补茶饮药，见 `kg/data/whitelist.json`）、高风险相似对 ≤10 对清单（**已定 9 对**：见 whitelist.required_similar_pairs）、未收录药拒答口径（⚠️ 演示用例 12.2#8「决明子」已收录，改用例或换未收录药）、12.2 新增演示用例（第 8~13 条）是否作答辩验收、药典版本口径（**已拍板**：维持 2020 版）、三期（视觉侧/工程侧）是否纳入范围、VLM 供应商与密钥管理

@@ -1,0 +1,86 @@
+{
+  "herb": "白术",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "白术",
+      "section": "性味归经",
+      "text": "白术（Atractylodis Macrocephalae Rhizoma）性味苦、甘，温，归脾、胃经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e5c077dfdc8a106f00833844a86d72036561b8cd24fc7a91eb391ae1008b58e4"
+    },
+    {
+      "herb": "白术",
+      "section": "功效",
+      "text": "白术（Atractylodis Macrocephalae Rhizoma）功效：健脾益气，燥湿利水，止汗，安胎。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "eb2e64a9a098fb5e454494e57d6648d563f0bea4f23b56bf5e5f164d5249af1f"
+    },
+    {
+      "herb": "白术",
+      "section": "主治",
+      "text": "白术（Atractylodis Macrocephalae Rhizoma）主治：脾虚食少，腹胀泄泻，痰饮眩悸，水肿，自汗，胎动不安。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "200001671a7d971121e7739d4c966682128ab9e34a8738df90ff4bbbc4398a91"
+    },
+    {
+      "herb": "白术",
+      "section": "用量",
+      "text": "白术（Atractylodis Macrocephalae Rhizoma）用法用量：6～12g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "8864246388014ea0bcb918c7b14e64394e51d7fa3d77be7e92a431877530aa97"
+    },
+    {
+      "herb": "白术",
+      "section": "毒性",
+      "text": "白术（Atractylodis Macrocephalae Rhizoma）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "1b258ee10fd1fc28502c350ad8a80e0de796d17e1bb03f9fc96b28e35c0e70fc"
+    },
+    {
+      "herb": "白术",
+      "section": "禁忌",
+      "text": "白术（Atractylodis Macrocephalae Rhizoma）用药禁忌：阴虚内热、津液亏耗者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "05bdb9e927b122a7622e0657a04971ac7edcb45ce3dc16abf1025ad1727818c2"
+    },
+    {
+      "herb": "白术",
+      "section": "性状",
+      "text": "白术（Atractylodis Macrocephalae Rhizoma）性状：呈不规则的厚片。切面黄白色至淡棕色，有棕黄色的点状油室散在；木部具放射状纹理。周边灰棕色或灰黄色，有瘤状突起及断续的纵皱和沟纹。质坚实，断面略呈角质样，有裂隙。气清香，味甘、微辛，嚼之略带黏性。",
+      "source": "《中国药典》2020 年版一部·白术【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ec656c20db87adf1bf1b1cc033a74a9297e5047c3871b795f89e34994c052e60"
+    },
+    {
+      "herb": "白术",
+      "section": "炮制",
+      "text": "白术（Atractylodis Macrocephalae Rhizoma）炮制：白术：除去杂质，洗净，润透，切厚片，干燥。麸炒白术：取净白术片，照麸炒法（通则 0213）炒至黄褐色，筛去麸皮。",
+      "source": "《中国药典》2020 年版一部·白术【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ef0c8bfefe4a94a2b73fca02bf5d279ff193348a77eb4234695a5da759dcc0f3"
+    },
+    {
+      "herb": "白术",
+      "section": "产地",
+      "text": "白术（Atractylodis Macrocephalae Rhizoma）产地：主产于浙江（磐安，道地“浙白术”）、安徽、湖南（本品为菊科植物白术 Atractylodes macrocephala Koidz. 的干燥根茎）",
+      "source": "《中国药典》2020 年版一部·白术【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "0c50d3cdacc4c56e9e758aa5c11985ae8a2f060b8634b59a7bb0234a8b3debfd"
+    },
+    {
+      "herb": "白术",
+      "section": "鉴别要点",
+      "text": "白术（Atractylodis Macrocephalae Rhizoma）鉴别要点：不规则厚片，切面黄白色至淡棕色、有棕黄色点状油室散在，周边灰棕色、有瘤状突起及断续纵皱，气清香，味甘微辛、嚼之略带黏性。",
+      "source": "《中国药典》2020 年版一部·白术【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e03885d5c80d38f15202e4517af49f1e17f0237b3aadc634896c3f31e2588965"
+    }
+  ]
+}

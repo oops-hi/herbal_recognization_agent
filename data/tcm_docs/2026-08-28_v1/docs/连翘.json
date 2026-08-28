@@ -1,0 +1,86 @@
+{
+  "herb": "连翘",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "连翘",
+      "section": "性味归经",
+      "text": "连翘（Forsythiae Fructus）性味苦，微寒，归肺、心、小肠经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "74173ad8b3a278d7f07efebd8d6f30e437fa04b50049678b9fa1f12dccc9c1fb"
+    },
+    {
+      "herb": "连翘",
+      "section": "功效",
+      "text": "连翘（Forsythiae Fructus）功效：清热解毒，消肿散结，疏散风热。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "8adfe07ed873991cce9dc8b3152d90b424a72d46be28b42afc19610cdcabbfb5"
+    },
+    {
+      "herb": "连翘",
+      "section": "主治",
+      "text": "连翘（Forsythiae Fructus）主治：痈疽，瘰疬，乳痈，丹毒，风热感冒，温病初起，温热入营，高热烦渴，神昏发斑，热淋尿闭。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e4d547105c7adc9f0b0093db1dab4f97da47c05317ab53b1b5271be3e2d20e55"
+    },
+    {
+      "herb": "连翘",
+      "section": "用量",
+      "text": "连翘（Forsythiae Fructus）用法用量：6～15g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "16ad65246fac2c95b0564426758e5a8d1f2c9610d8b24dc8c414fe4023d0c632"
+    },
+    {
+      "herb": "连翘",
+      "section": "毒性",
+      "text": "连翘（Forsythiae Fructus）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "986215d6c00abbf05e3a6878afe6df663e229b6dce8bc01a265aa23fab9a56a4"
+    },
+    {
+      "herb": "连翘",
+      "section": "禁忌",
+      "text": "连翘（Forsythiae Fructus）用药禁忌：脾胃虚寒、气虚脓清者不宜使用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "6287cfde724af862b07b1ef8caa8dcfb7580dd77427932887c3c5b22e12fc7fb"
+    },
+    {
+      "herb": "连翘",
+      "section": "性状",
+      "text": "连翘（Forsythiae Fructus）性状：呈长卵形至卵形，稍扁，长 1.5～2.5cm，直径 0.5～1.3cm。表面有不规则的纵皱纹及多数突起的小斑点，两面各有 1 条明显的纵沟。顶端锐尖，基部有小果梗或已脱落。“青翘”多不开裂，表面绿褐色，突起的灰白色小斑点较少，质硬；种子多数，黄绿色，细长，一侧有翅。“老翘”自顶端开裂或裂成两瓣，表面黄棕色或红棕色，内表面多为浅黄棕色，平滑，具一纵隔；质脆；种子棕色，多已脱落。气微香，味苦。",
+      "source": "《中国药典》2020 年版一部·连翘【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ef513da813332e457defe29ae5a2e5d58da301a4ee3c69ad2479915ccd4ade21"
+    },
+    {
+      "herb": "连翘",
+      "section": "炮制",
+      "text": "连翘（Forsythiae Fructus）炮制：除去杂质，切段。",
+      "source": "《中国药典》2020 年版一部·连翘【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "3021825bee5db0a9aebe4aa6ba4dee3573b28640e5e12d11026379cc34d389b8"
+    },
+    {
+      "herb": "连翘",
+      "section": "产地",
+      "text": "连翘（Forsythiae Fructus）产地：主产于山西、陕西、河南（本品为连翘 Forsythia suspensa（Thunb.）Vahl 的干燥果实）",
+      "source": "《中药学》教材·连翘（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "22c41737746df085df860a084b18c6ce2d3da1cb5478f175dcc93ed5153cbf68"
+    },
+    {
+      "herb": "连翘",
+      "section": "鉴别要点",
+      "text": "连翘（Forsythiae Fructus）鉴别要点：长卵形稍扁，两面各有 1 条明显纵沟，表面有突起小斑点；青翘绿褐色多不开裂、质硬，老翘黄棕色开裂成两瓣、质脆。",
+      "source": "《中国药典》2020 年版一部·连翘【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "4fbeaa864793873a7cb63cdd2e402f9dfafb11654462cc7f71798d4daced61d5"
+    }
+  ]
+}

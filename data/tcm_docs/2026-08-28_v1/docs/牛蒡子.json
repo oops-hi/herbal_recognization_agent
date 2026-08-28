@@ -1,0 +1,86 @@
+{
+  "herb": "牛蒡子",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "牛蒡子",
+      "section": "性味归经",
+      "text": "牛蒡子（Arctii Fructus）性味辛、苦，寒，归肺、胃经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "cda24d6fc7bb611f44d6013d9e3ef3531ef9c7c0b1a7b7bddd3fea256f4ec78e"
+    },
+    {
+      "herb": "牛蒡子",
+      "section": "功效",
+      "text": "牛蒡子（Arctii Fructus）功效：疏散风热，宣肺透疹，解毒利咽。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "82a2ff0a9ef798bc4182168c3ce33c6156b918b59ae0f3cce1a7431f77925cba"
+    },
+    {
+      "herb": "牛蒡子",
+      "section": "主治",
+      "text": "牛蒡子（Arctii Fructus）主治：风热感冒，咳嗽痰多，麻疹，风疹，咽喉肿痛，痄腮，丹毒，痈肿疮毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "3d778167a93a9a448812e12ed8b9628f16196900ccaadc101cbe52fc3287289d"
+    },
+    {
+      "herb": "牛蒡子",
+      "section": "用量",
+      "text": "牛蒡子（Arctii Fructus）用法用量：6～12g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "958f4def8ef812853897dd49e934578b94ffec7af2ed16f5dae2676070a7074a"
+    },
+    {
+      "herb": "牛蒡子",
+      "section": "毒性",
+      "text": "牛蒡子（Arctii Fructus）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "631c616380accc64a07e228dbb5ee6680edc73356066e9b3dae7f5bfc8428eba"
+    },
+    {
+      "herb": "牛蒡子",
+      "section": "禁忌",
+      "text": "牛蒡子（Arctii Fructus）用药禁忌：气虚便溏者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "98aff0a906b16bf2fa1b4fb98983b0e9e4fb3cdc6f714e0c4eebdfc21a8759b4"
+    },
+    {
+      "herb": "牛蒡子",
+      "section": "性状",
+      "text": "牛蒡子（Arctii Fructus）性状：呈长倒卵形，略扁，微弯曲，长 5～7mm，宽 2～3mm。表面灰褐色，带紫黑色斑点，有数条纵棱，通常中间 1～2 条较明显。顶端钝圆，稍宽，顶面有圆环，中间具点状花柱残迹；基部略窄，着生面色较淡。果皮较硬，子叶 2，淡黄白色，富油性。无臭，味苦后微辛而稍麻舌。",
+      "source": "《中国药典》2020 年版一部·牛蒡子【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "db44348c988da6e57a7f9290483431f05902e927654b0e7061bf2669834a8b0f"
+    },
+    {
+      "herb": "牛蒡子",
+      "section": "炮制",
+      "text": "牛蒡子（Arctii Fructus）炮制：牛蒡子：除去杂质，洗净，干燥。炒牛蒡子：取净牛蒡子，照清炒法（通则 0213）炒至略鼓起、微有香气。",
+      "source": "《中国药典》2020 年版一部·牛蒡子【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ad803cb0434236986084cc220bf92b6497e1dfb0ff170ff52d744991c0ecef5b"
+    },
+    {
+      "herb": "牛蒡子",
+      "section": "产地",
+      "text": "牛蒡子（Arctii Fructus）产地：主产于东北、河北、浙江（本品为牛蒡 Arctium lappa L. 的干燥成熟果实）",
+      "source": "《中国药典》2020 年版一部·牛蒡子【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "121a2964e1b4f56f43194fb9ac8a67c783c735570385b892a97972135cd3bd17"
+    },
+    {
+      "herb": "牛蒡子",
+      "section": "鉴别要点",
+      "text": "牛蒡子（Arctii Fructus）鉴别要点：长倒卵形略扁微弯曲，表面灰褐色、带紫黑色斑点，有数条纵棱（中间 1～2 条明显），果皮较硬，味苦后微辛而稍麻舌。",
+      "source": "《中国药典》2020 年版一部·牛蒡子【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "3e6baf4f60162a107ac4fced06e649184e50995053dbad489951d20fefa5fc04"
+    }
+  ]
+}

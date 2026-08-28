@@ -1,0 +1,94 @@
+{
+  "herb": "陈皮",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "陈皮",
+      "section": "性味归经",
+      "text": "陈皮（Citri Reticulatae Pericarpium）性味苦、辛，温，归肺、脾经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "6e23c6c8e99238e49cbff41a5ed85812cf74eee34f587b6d3cf13ae910280288"
+    },
+    {
+      "herb": "陈皮",
+      "section": "功效",
+      "text": "陈皮（Citri Reticulatae Pericarpium）功效：理气健脾，燥湿化痰。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "8459103a28a8aa26fdeafd20b7c4f00bc1f0e3461e29c46f137166900b0fd536"
+    },
+    {
+      "herb": "陈皮",
+      "section": "主治",
+      "text": "陈皮（Citri Reticulatae Pericarpium）主治：脘腹胀满，食少吐泻，咳嗽痰多。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "11fcc00e09d8a72809706c6f3c4d7bc2ad0c572f3fa30274b9a6c20bdfabef2c"
+    },
+    {
+      "herb": "陈皮",
+      "section": "用量",
+      "text": "陈皮（Citri Reticulatae Pericarpium）用法用量：3～10g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "3e5fa84ea1e0e41169f1507368f9a3b23c57254f8f73571bd2ce98592fe81144"
+    },
+    {
+      "herb": "陈皮",
+      "section": "毒性",
+      "text": "陈皮（Citri Reticulatae Pericarpium）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "a14ac934bf8e26b0af381edaa4c27b221077e51f0676a596cb9023e732fc938d"
+    },
+    {
+      "herb": "陈皮",
+      "section": "禁忌",
+      "text": "陈皮（Citri Reticulatae Pericarpium）用药禁忌：气虚、阴虚燥咳、吐血者慎用；实热者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "8cf4891250bc73f0c94dfd127c87fffd9973c00889d042b930c6125e780704af"
+    },
+    {
+      "herb": "陈皮",
+      "section": "性状",
+      "text": "陈皮（Citri Reticulatae Pericarpium）性状：呈不规则的条状或丝状。外表面橙红色或红棕色，有细皱纹和凹下的点状油室；内表面浅黄白色，粗糙，附黄白色或黄棕色筋络状纤维管束。质稍硬而脆。气香，味辛、苦。",
+      "source": "《中国药典》2020 年版一部·陈皮【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "b72597056c43f9331d80e3c566615bc0a238cf6dc8d07e5c73dae4e8b3063a86"
+    },
+    {
+      "herb": "陈皮",
+      "section": "炮制",
+      "text": "陈皮（Citri Reticulatae Pericarpium）炮制：陈皮：除去杂质，喷淋水，润透，切丝，干燥。",
+      "source": "《中国药典》2020 年版一部·陈皮【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "1cd11b9e62c0f8e53e592467b2c59388e981ac0b677d9569aee4f12f96fb5fc6"
+    },
+    {
+      "herb": "陈皮",
+      "section": "产地",
+      "text": "陈皮（Citri Reticulatae Pericarpium）产地：主产于广东（新会，道地“广陈皮”）、浙江、四川、福建（本品为橘 Citrus reticulata Blanco 及其栽培变种的干燥成熟果皮）",
+      "source": "《中国药典》2020 年版一部·陈皮【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "58c83fcafe8c72f9b1a419f75fac0cfe5f6dc5095a9103551e11db48e493cfd5"
+    },
+    {
+      "herb": "陈皮",
+      "section": "鉴别要点",
+      "text": "陈皮（Citri Reticulatae Pericarpium）鉴别要点：丝状或条状，外表面橙红色或红棕色、有细皱纹和凹下的点状油室，内表面浅黄白色、附筋络状纤维管束，气香（陈香），味辛苦。与瓜蒌皮区别：瓜蒌皮外表面橙黄、内表面有网状果络、具焦糖气；陈皮橙红、点状油室、陈香。",
+      "source": "《中国药典》2020 年版一部·陈皮【性状】归纳 + 中药鉴定学教材（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "7c384587af2bd38de5dc381e204098e54045e6425a462aea606c9278ba654134"
+    },
+    {
+      "herb": "陈皮",
+      "section": "相似对比",
+      "text": "陈皮（Citri Reticulatae Pericarpium）与「瓜蒌皮」鉴别（同为皮类丝状饮片，橙黄色系，易混淆）：本品（陈皮）：条状或丝状，外表面橙红色或红棕色、有凹下的点状油室，内表面浅黄白色、附筋络状纤维管束，气香（陈香），味辛苦；对比药（瓜蒌皮）：卷曲丝状，外表面橙黄色或橙红色、皱缩，内表面黄白色、可见网状果络，质脆易断，具焦糖气，味淡微酸",
+      "source": "中药鉴定学教材/药典对照（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "be05eb0a942c2a1aacf259c076173106280471b96138cf55b73c3d8d70b44495"
+    }
+  ]
+}

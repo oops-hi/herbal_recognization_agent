@@ -1,0 +1,102 @@
+{
+  "herb": "山楂",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "山楂",
+      "section": "性味归经",
+      "text": "山楂（Crataegi Fructus）性味酸、甘，微温，归脾、胃、肝经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "22c4e9002fa3ce6fda6fbd5486bd3689d64616882545f658da0c234395a31a75"
+    },
+    {
+      "herb": "山楂",
+      "section": "功效",
+      "text": "山楂（Crataegi Fructus）功效：消食健胃，行气散瘀，化浊降脂。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e6073a4967095d059f36c634dfa0f1c69722755a135fbc01ee93b1856bef9a69"
+    },
+    {
+      "herb": "山楂",
+      "section": "主治",
+      "text": "山楂（Crataegi Fructus）主治：肉食积滞，胃脘胀满，泻痢腹痛，瘀血经闭，产后瘀阻，心腹刺痛，胸痹心痛，疝气疼痛，高脂血症。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "9c2c8ba1bb6bcb37045321cc79aa73541708328dd11854b96be6dc1a9146ba42"
+    },
+    {
+      "herb": "山楂",
+      "section": "用量",
+      "text": "山楂（Crataegi Fructus）用法用量：9～12g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "5c0e3236c7057254c15d641c15579ccf46c04fadd306d3b55af3d9a8a86ae582"
+    },
+    {
+      "herb": "山楂",
+      "section": "毒性",
+      "text": "山楂（Crataegi Fructus）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "cf7609ffe29cd88a33985407e88c7628dabe8bf633eb0b42ae9e659df8a11c1f"
+    },
+    {
+      "herb": "山楂",
+      "section": "禁忌",
+      "text": "山楂（Crataegi Fructus）用药禁忌：胃酸分泌过多者慎用；脾胃虚弱而无积滞者慎用；孕妇慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "3b79937a12d9492b4777fd0ec227d2bfe35016ecb24d5fd6cbb3cc9bddaf81e5"
+    },
+    {
+      "herb": "山楂",
+      "section": "性状",
+      "text": "山楂（Crataegi Fructus）性状：为圆形片，皱缩不平，直径 1～2.5cm，厚 0.2～0.4cm。外皮红色，具皱纹，有灰白小斑点。果肉深黄色至浅棕色。中部横切片具 5 粒浅黄色果核，但核多脱落而中空。有的片上可见短而细的果梗或花萼残迹。气微清香，味酸、微甜。",
+      "source": "《中国药典》2020 年版一部·山楂【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e55852cbf6e0bb7050a1bb2d1f9808d82e718c4748c3cba2bc70a39459a719a9"
+    },
+    {
+      "herb": "山楂",
+      "section": "炮制",
+      "text": "山楂（Crataegi Fructus）炮制：净山楂：除去杂质及脱落的核。炒山楂：取净山楂，照清炒法（通则 0213）炒至色变深。焦山楂：取净山楂，照炒焦法（通则 0213）炒至表面焦褐色，内部黄褐色。",
+      "source": "《中国药典》2020 年版一部·山楂【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "30118fea019abb674639beae9a60aec3d5ced119b6dc6110df6f57c2b9e0067b"
+    },
+    {
+      "herb": "山楂",
+      "section": "产地",
+      "text": "山楂（Crataegi Fructus）产地：主产于河北、山东、河南、辽宁（本品为山里红 Crataegus pinnatifida Bge. var. major N. E. Br. 或山楂 C. pinnatifida Bge. 的干燥成熟果实）",
+      "source": "《中药学》教材·山楂（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "04a834a5592576bc3ea7388af3ac099f570684fda6cdafce82b83466f1cf4186"
+    },
+    {
+      "herb": "山楂",
+      "section": "鉴别要点",
+      "text": "山楂（Crataegi Fructus）鉴别要点：圆形果片，外皮红色具皱纹、有灰白小斑点，果肉深黄色，横切面可见 5 粒果核（多脱落中空），味酸微甜。与金樱子区别：金樱子为倒卵形纵剖瓣、表面有刺残基、内壁有黄色绒毛。",
+      "source": "《中国药典》2020 年版一部·山楂【性状】归纳 + 中药鉴定学教材（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "88cb7cc11deefee8196f3043cdcf2dec8912abdff695d5a72fb430c84161ef4e"
+    },
+    {
+      "herb": "山楂",
+      "section": "相似对比",
+      "text": "山楂（Crataegi Fructus）与「金樱子」鉴别（同为果实类饮片，红棕色系，易混淆）：本品（山楂）：圆形果片，外皮红色具皱纹、有灰白小斑点，无刺残基，种子 5 粒、浅黄色光滑，味酸微甜；对比药（金樱子）：倒卵形纵剖瓣，表面红黄色、有突起棕色小点（刺残基），内壁有黄色绒毛，味甘微涩",
+      "source": "中药鉴定学教材/药典对照（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "b23b10fbe917b1e8d2c634c9e4f0cc72ab8ea8d4c7c9a59ada8a25baf21b1bc0"
+    },
+    {
+      "herb": "山楂",
+      "section": "相似对比",
+      "text": "山楂（Crataegi Fructus）与「木瓜」鉴别（同为红色果实类饮片，色泽相近）：本品（山楂）：圆形果片，外皮红色、具皱纹，横切面可见 5 粒果核，味酸微甜；对比药（木瓜）：长圆形纵剖瓣，外表面紫红色或红棕色、有不规则深皱纹，果肉红棕色，味酸",
+      "source": "中药鉴定学教材/药典对照（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "cf46f907f726da86c2cf853bf854119ffe558930f14a6acfd1ff7e90cc799f55"
+    }
+  ]
+}

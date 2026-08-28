@@ -1,0 +1,86 @@
+{
+  "herb": "菊花",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "菊花",
+      "section": "性味归经",
+      "text": "菊花（Chrysanthemi Flos）性味甘、苦，微寒，归肺、肝经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "7fb3dc9c14758557e268037d702ff5d3420fb3655a9d3b0fd3ee26f0b62c64f3"
+    },
+    {
+      "herb": "菊花",
+      "section": "功效",
+      "text": "菊花（Chrysanthemi Flos）功效：疏散风热，平抑肝阳，清肝明目，清热解毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "3767f52bb09b1979a07c911a0f5b5e05b06d2d2c245f3d9b2bc605d5571461db"
+    },
+    {
+      "herb": "菊花",
+      "section": "主治",
+      "text": "菊花（Chrysanthemi Flos）主治：风热感冒，头痛眩晕，目赤肿痛，眼目昏花，疮痈肿毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "c967a78901ce4fab19899bb47b52cdf78d2b9b491b22a92ed17f1909de7160a3"
+    },
+    {
+      "herb": "菊花",
+      "section": "用量",
+      "text": "菊花（Chrysanthemi Flos）用法用量：5～10g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "1ed21c7b4ffc15a72c6b16509d10092e3df8083c2104ee3692d50de5244e2c9f"
+    },
+    {
+      "herb": "菊花",
+      "section": "毒性",
+      "text": "菊花（Chrysanthemi Flos）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "95bc897ec2e6f581d50a91c8ef7f88d7806ab4e38811aa3e28616486c448bd60"
+    },
+    {
+      "herb": "菊花",
+      "section": "禁忌",
+      "text": "菊花（Chrysanthemi Flos）用药禁忌：气虚胃寒、食少泄泻者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ef97208af56d430419b2e16f70ddd1e9141afb3cf5cc2c41704934022f0c7d6d"
+    },
+    {
+      "herb": "菊花",
+      "section": "性状",
+      "text": "菊花（Chrysanthemi Flos）性状：呈倒圆锥形或圆筒形，有时稍压扁呈扇形，直径 1.5～3cm，离散。总苞碟状；总苞片 3～4 层，卵形或椭圆形，草质，黄绿色或褐绿色，外面被柔毛，边缘膜质。花托半球形。舌状花数层，位于外围，类白色，劲直，上举，纵向折缩，散生金黄色腺点；管状花多数，位于中央，黄色。体轻，质柔润，干时松脆。气清香，味甘、微苦。",
+      "source": "《中国药典》2020 年版一部·菊花【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e0d073f5eba3829762a8044d137b3eee206b0dc395cbd8b96fcd37f5ecd80d1b"
+    },
+    {
+      "herb": "菊花",
+      "section": "炮制",
+      "text": "菊花（Chrysanthemi Flos）炮制：除去杂质、花梗，阴干或焙干，或蒸后晒干。",
+      "source": "《中国药典》2020 年版一部·菊花【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "247a51799b41b914a2718e77bb08adeade4e8a1ad02cd9a6d171885051ef39e3"
+    },
+    {
+      "herb": "菊花",
+      "section": "产地",
+      "text": "菊花（Chrysanthemi Flos）产地：主产于安徽（亳菊、滁菊、贡菊）、浙江（杭菊）、河南（怀菊）；本品为菊 Chrysanthemum morifolium Ramat. 的干燥头状花序",
+      "source": "《中药学》教材·菊花（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "ea4b0efa1034798ea6c18583a788c4d527f0b32d15a4ff9b8e222d9aacd29fef"
+    },
+    {
+      "herb": "菊花",
+      "section": "鉴别要点",
+      "text": "菊花（Chrysanthemi Flos）鉴别要点：干燥头状花序，舌状花类白色、劲直上举、纵向折缩，散生金黄色腺点，气清香，味甘微苦。与野菊花区别：野菊花头状花序较小、舌状花黄色、味苦。",
+      "source": "《中国药典》2020 年版一部·菊花【性状】归纳 + 中药鉴定学教材（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "f28d2597228a6f5890176fd90c84e98b3e1a0eda9ed549ccdb554f880fd1e2ed"
+    }
+  ]
+}

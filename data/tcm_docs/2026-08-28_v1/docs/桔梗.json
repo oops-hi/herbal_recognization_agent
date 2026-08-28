@@ -1,0 +1,86 @@
+{
+  "herb": "桔梗",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "桔梗",
+      "section": "性味归经",
+      "text": "桔梗（Platycodonis Radix）性味苦、辛，平，归肺经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "1e8333e349a1700fc48876040dbdd00317e425b1f009a4236e14ed62c1f9609b"
+    },
+    {
+      "herb": "桔梗",
+      "section": "功效",
+      "text": "桔梗（Platycodonis Radix）功效：宣肺，利咽，祛痰，排脓。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "8ce5cae69b0a7a4503fa5d8a41f6cd5abe95cceffc6a2db4867764a116f619da"
+    },
+    {
+      "herb": "桔梗",
+      "section": "主治",
+      "text": "桔梗（Platycodonis Radix）主治：咳嗽痰多，胸闷不畅，咽痛音哑，肺痈吐脓。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "15f5d6c21eaee7857892c77a7ce73ebad4c7a0b6005c4534c976ec5cc7237f90"
+    },
+    {
+      "herb": "桔梗",
+      "section": "用量",
+      "text": "桔梗（Platycodonis Radix）用法用量：3～10g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "40e6b130983f261203890fceb32283bf0760d530078e1762520b6d7c8febab5b"
+    },
+    {
+      "herb": "桔梗",
+      "section": "毒性",
+      "text": "桔梗（Platycodonis Radix）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "23107fb90d16bd51ee624bdf141c21e8d4d15ff901f97e535e1e74de47c255bc"
+    },
+    {
+      "herb": "桔梗",
+      "section": "禁忌",
+      "text": "桔梗（Platycodonis Radix）用药禁忌：阴虚久咳及咯血者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "31a967e8dda3c326c3be9cf4900d60334547be90612b25246914d482f07f842a"
+    },
+    {
+      "herb": "桔梗",
+      "section": "性状",
+      "text": "桔梗（Platycodonis Radix）性状：呈圆形或不规则厚片，切面皮部黄白色，较窄；形成层环纹明显，棕色；木部宽，有较多裂隙。外皮多已除去，或偶呈黄棕色。质脆。气微，味微甜后苦。",
+      "source": "《中国药典》2020 年版一部·桔梗【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "75d2f5dcc63803c759de21bc561a27c4a7f0fbdcebe623288665b73f977ebb43"
+    },
+    {
+      "herb": "桔梗",
+      "section": "炮制",
+      "text": "桔梗（Platycodonis Radix）炮制：除去杂质，洗净，润透，切厚片，干燥。",
+      "source": "《中国药典》2020 年版一部·桔梗【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "8a90f45d470573f4da6539f16f2e1a4118488e8ce7c604ce0b50c94cefdc31c6"
+    },
+    {
+      "herb": "桔梗",
+      "section": "产地",
+      "text": "桔梗（Platycodonis Radix）产地：主产于安徽（太和）、山东、河南、东北（本品为桔梗 Platycodon grandiflorum（Jacq.）A. DC. 的干燥根）",
+      "source": "《中国药典》2020 年版一部·桔梗【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e0891dd60c16b3f66f723e29781335ae0a93d19b75722cc9bce63ab3b21d30a6"
+    },
+    {
+      "herb": "桔梗",
+      "section": "鉴别要点",
+      "text": "桔梗（Platycodonis Radix）鉴别要点：圆形厚片，切面皮部黄白色较窄、形成层环纹明显棕色、木部宽有较多裂隙，质脆，味微甜后苦（先甜后苦为桔梗经典特征）。",
+      "source": "《中国药典》2020 年版一部·桔梗【性状】归纳 + 中药鉴定学教材（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d6c869aba03ce9e8ce1b1e89c8fe72a74a1015b94f659d75a1807224462d1c07"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "herb": "酸枣仁",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "酸枣仁",
+      "section": "性味归经",
+      "text": "酸枣仁（Ziziphi Spinosae Semen）性味甘、酸，平，归肝、胆、心经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "372c0f8d761d8781a54d8abef2dc07c214dbf46e2a1f823331f9dbed4a2ce433"
+    },
+    {
+      "herb": "酸枣仁",
+      "section": "功效",
+      "text": "酸枣仁（Ziziphi Spinosae Semen）功效：养心补肝，宁心安神，敛汗，生津。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "0307508ef9773ab5e3f5f3eec046f70eeb9583223a309bd9ae96e2c11c411f33"
+    },
+    {
+      "herb": "酸枣仁",
+      "section": "主治",
+      "text": "酸枣仁（Ziziphi Spinosae Semen）主治：虚烦不眠，惊悸多梦，体虚多汗，津伤口渴。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "0196496852e24d716b965f147558ea583a6004cc8871f66906ddfb3211ca78b8"
+    },
+    {
+      "herb": "酸枣仁",
+      "section": "用量",
+      "text": "酸枣仁（Ziziphi Spinosae Semen）用法用量：10～15g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "57f2eb9e8888237b18cee1beebe44136489f306744f98d0f229d0236b3f6726f"
+    },
+    {
+      "herb": "酸枣仁",
+      "section": "毒性",
+      "text": "酸枣仁（Ziziphi Spinosae Semen）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "57415114aee64edf822069e57c6a10e202ba37ca9bf3159c35c6ed929a6c1066"
+    },
+    {
+      "herb": "酸枣仁",
+      "section": "禁忌",
+      "text": "酸枣仁（Ziziphi Spinosae Semen）用药禁忌：实邪郁火及大便溏泄者慎用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d9482fad04487426693215e274454460188679bfa843820b80291cb059ad7c36"
+    },
+    {
+      "herb": "酸枣仁",
+      "section": "性状",
+      "text": "酸枣仁（Ziziphi Spinosae Semen）性状：呈扁圆形或扁椭圆形，长 5～9mm，宽 5～7mm，厚约 3mm。表面紫红色或紫褐色，平滑有光泽，有的有裂纹。有的两面均呈圆隆状突起；有的一面较平坦，中间或有 1 条隆起的纵线纹；另一面微隆起，边缘略薄。一端凹陷，可见线形种脐；另端有细小突起的合点。种皮较脆，胚乳白色，子叶 2，浅黄色，富油性。气微，味淡。",
+      "source": "《中国药典》2020 年版一部·酸枣仁【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "b2ed64d6c5eac5dd776d5154d163c97cd53d41f6a53ae16ab398cb8cd98ff733"
+    },
+    {
+      "herb": "酸枣仁",
+      "section": "炮制",
+      "text": "酸枣仁（Ziziphi Spinosae Semen）炮制：酸枣仁：除去残留核壳。炒酸枣仁：取净酸枣仁，照清炒法（通则 0213）炒至鼓起，色微变深。",
+      "source": "《中国药典》2020 年版一部·酸枣仁【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e21d41b76d7c137828d54f73136bdaac86a47777a30204c75e4795ab09f6e0da"
+    },
+    {
+      "herb": "酸枣仁",
+      "section": "产地",
+      "text": "酸枣仁（Ziziphi Spinosae Semen）产地：主产于河北（邢台，道地）、辽宁、山西、陕西（本品为鼠李科植物酸枣 Ziziphus jujuba Mill. var. spinosa（Bunge）Hu ex H. F. Chou 的干燥成熟种子）",
+      "source": "《中国药典》2020 年版一部·酸枣仁【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "19d226c477aecf149bc49d7b2d6feba52e6504571bf6115cee7f98a81ffdb81f"
+    },
+    {
+      "herb": "酸枣仁",
+      "section": "鉴别要点",
+      "text": "酸枣仁（Ziziphi Spinosae Semen）鉴别要点：扁圆形或扁椭圆形，表面紫红色或紫褐色、平滑有光泽，一面较平坦、中间或有 1 条隆起的纵线纹，一端凹陷可见线形种脐，子叶浅黄色富油性。",
+      "source": "《中国药典》2020 年版一部·酸枣仁【性状】归纳（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "fbbdab2605d16383f6d600e29867340e2d83ff3573b495fcda5e5d74237e97bb"
+    }
+  ]
+}

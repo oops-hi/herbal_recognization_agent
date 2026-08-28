@@ -1,0 +1,94 @@
+{
+  "herb": "甘草",
+  "edition": "《中国药典》2020 年版一部",
+  "docs": [
+    {
+      "herb": "甘草",
+      "section": "性味归经",
+      "text": "甘草（Glycyrrhizae Radix et Rhizoma）性味甘，平，归心、肺、脾、胃经。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "3adf65d6cb91812e2e6b3584a410e763d4cec56bf494cb1aeb4b4b4187f8b9ff"
+    },
+    {
+      "herb": "甘草",
+      "section": "功效",
+      "text": "甘草（Glycyrrhizae Radix et Rhizoma）功效：补脾益气，清热解毒，祛痰止咳，缓急止痛，调和诸药。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "179273fa5372384499432df1af060f2d70a5bccd64aa447443ea195c48ea4a0b"
+    },
+    {
+      "herb": "甘草",
+      "section": "主治",
+      "text": "甘草（Glycyrrhizae Radix et Rhizoma）主治：脾胃虚弱，倦怠乏力，心悸气短，咳嗽痰多，脘腹、四肢挛急疼痛，痈肿疮毒；缓解药物毒性、烈性。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "c72de936e35ce826da547d2c84237192d1c9db7c61d2dfe727ec3b8a4986bc6b"
+    },
+    {
+      "herb": "甘草",
+      "section": "用量",
+      "text": "甘草（Glycyrrhizae Radix et Rhizoma）用法用量：2～10g。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "321a94690821658f5bf564de5d176f784402491915025c263f1f528983018274"
+    },
+    {
+      "herb": "甘草",
+      "section": "毒性",
+      "text": "甘草（Glycyrrhizae Radix et Rhizoma）毒性：无毒。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "b0c4a64ff8d9f6ff2b3051a7db42e08364d5ea5bd0b41ff5032dc31b7112fa52"
+    },
+    {
+      "herb": "甘草",
+      "section": "禁忌",
+      "text": "甘草（Glycyrrhizae Radix et Rhizoma）用药禁忌：不宜与海藻、京大戟、红大戟、甘遂、芫花同用（十八反；本项目按歌诀有、药典未认定口径展示，见禁忌边 verse/pharmacopoeia 双源字段）；湿盛胀满、水肿者不宜用。",
+      "source": "《中国药典》2020 年版一部",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "d0f7054f6caa2362afc71ac4bd31420dbd887c0f4c86219622b891f832e70701"
+    },
+    {
+      "herb": "甘草",
+      "section": "性状",
+      "text": "甘草（Glycyrrhizae Radix et Rhizoma）性状：根呈圆柱形，长 25～100cm，直径 0.6～3.5cm。外皮松紧不一，红棕色或灰棕色，具显著的纵皱纹、沟纹、皮孔及稀疏的细根痕。质坚实，断面略显纤维性，黄白色，粉性，形成层环明显，射线放射状，有的有裂隙。根茎呈圆柱形，表面有芽痕，断面中部有髓。气微，味甜而特殊。",
+      "source": "《中国药典》2020 年版一部·甘草【性状】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "a5264372613164249d5937ed26e42e0dddb7467a45163b486e6fc25629b63993"
+    },
+    {
+      "herb": "甘草",
+      "section": "炮制",
+      "text": "甘草（Glycyrrhizae Radix et Rhizoma）炮制：甘草：除去杂质，洗净，润透，切厚片，干燥。炙甘草：取净甘草片，照蜜炙法（通则 0213）炒至黄色至深黄色，不粘手时取出，晾凉。",
+      "source": "《中国药典》2020 年版一部·甘草【炮制】（A 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "e472021a8f6c56f7660d0f8a2069a33b646e60976a3cf3b33aac2e67ccbc1b27"
+    },
+    {
+      "herb": "甘草",
+      "section": "产地",
+      "text": "甘草（Glycyrrhizae Radix et Rhizoma）产地：主产于内蒙古、甘肃、新疆、宁夏、山西；本品为甘草 Glycyrrhiza uralensis Fisch.、胀果甘草 G. inflata Bat. 或光果甘草 G. glabra L. 的干燥根和根茎",
+      "source": "《中国药典》2020 年版一部·甘草【来源】（A 档）+ 教材（B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "05e5a60bc943b5b7c437c78bfd666b0f16342f8a9e24ae1ae0884d0ebd75de6a"
+    },
+    {
+      "herb": "甘草",
+      "section": "鉴别要点",
+      "text": "甘草（Glycyrrhizae Radix et Rhizoma）鉴别要点：根圆柱形，外皮红棕色或灰棕色、具显著纵皱纹，断面黄白色、粉性、形成层环明显，味甜而特殊。与黄芪区别：黄芪断面皮部黄白色、木部淡黄色呈放射状纹理（菊花心），嚼之微有豆腥气，味微甜；甘草断面粉性更足、味甜而特殊。",
+      "source": "《中国药典》2020 年版一部·甘草【性状】归纳 + 中药鉴定学教材（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "51798341815cc96dfa7bdf6a6296255b8eb50f0e5857f5dbd0ef84b09db455c8"
+    },
+    {
+      "herb": "甘草",
+      "section": "相似对比",
+      "text": "甘草（Glycyrrhizae Radix et Rhizoma）与「黄芪」鉴别（同为根类饮片，圆柱形、黄白色系，易混淆）：本品（甘草）：根圆柱形，外皮红棕色或灰棕色，断面黄白色、粉性强、形成层环明显，味甜而特殊；对比药（黄芪）：根圆柱形，外皮淡棕黄色，断面纤维性强、皮部黄白色、木部淡黄色呈放射状（菊花心），嚼之微有豆腥气，味微甜",
+      "source": "中药鉴定学教材/药典对照（A/B 档）",
+      "source_edition": "《中国药典》2020 年版一部",
+      "hash": "cb8759f6d96f81989fd503b952b0e0956fe9a77d68fddd0a40d8c732dc7010c0"
+    }
+  ]
+}
