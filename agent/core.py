@@ -215,7 +215,7 @@ def _inject_image_context(messages: list[dict], image_path: str) -> None:
         "content": (
             f"[系统注入] 用户上传了图片 {image_path}，模型识别 Top-3：\n{lines}\n"
             f"本轮对话以识别结果 {top[0][0]} 为当前药材。"
-            f"若候选间难以区分（如桃仁/苦杏仁），可调用 similar_compare 输出鉴别要点对比。"
+            f"若候选间难以区分（如桃仁/苦杏仁），可调用 vlm_verify 获取云端第二通道复核。"
         ),
     })
 

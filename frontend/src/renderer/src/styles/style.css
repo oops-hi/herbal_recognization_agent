@@ -272,6 +272,22 @@ main {
 
 /* 输入区 */
 .chat-input { display: flex; gap: 8px; margin-top: 12px; }
+
+/* 二期 V2-A6：云端 VLM 双通道裁决徽章（consistent 绿 / conflict·none 黄 / non_herb 红 / skipped 灰） */
+.vision-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: #f4f4f4;
+  color: var(--gray);
+}
+.vision-badge[data-state="consistent"] { background: var(--green-soft); color: var(--green-dark); border-color: #cfe0d4; }
+.vision-badge[data-state="conflict"],
+.vision-badge[data-state="none"] { background: #f6e8c8; color: #8a6d1f; border-color: #ead9a8; }
+.vision-badge[data-state="non_herb"] { background: var(--red-soft); color: var(--red); border-color: #e6c9c2; }
 .chat-input textarea {
   flex: 1;
   resize: none;

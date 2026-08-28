@@ -1,5 +1,6 @@
 <script setup lang="ts">
-/* 设置页：通用 OpenAI 兼容 LLM 配置（API 地址 / Key / 模型名）→ 保存到 exe 旁 .env，立即生效 */
+/* 设置页：通用 OpenAI 兼容 LLM 配置（API 地址 / Key / 模型名）+ 视觉验证（二期 V2-A6 云端 VLM）
+   两卡独立：聊天配置（/api/config）与视觉验证（/api/vision-config）互不干扰，均写 exe 旁 .env 立即生效 */
 import { onMounted, ref } from 'vue'
 import { useHealth } from '../composables/useHealth'
 
@@ -13,12 +14,25 @@ const keyInput = ref('')       // 密码框；留空 = 保留已保存 Key
 const clearKey = ref(false)    // 勾选 = 保存时删除已保存 Key
 const currentConfigured = ref(false)
 
+// ---------- 视觉验证配置快照（GET /api/vision-config 回显，V2-A6） ----------
+const vBaseUrl = ref('')
+const vModel = ref('')
+const vKeyMasked = ref('')
+const vKeyInput = ref('')
+const vClearKey = ref(false)
+const vEnabled = ref(false)
+const vConfigured = ref(false)
+
 // ---------- 反馈条 ----------
 const busy = ref(false)
+const vBusy = ref(false)
 const msg = ref<{ kind: 'ok' | 'err'; text: string } | null>(null)
+const vMsg = ref<{ kind: 'ok' | 'err'; text: string } | null>(null)
 
 function showOk(text: string): void { msg.value = { kind: 'ok', text } }
 function showErr(text: string): void { msg.value = { kind: 'err', text } }
+function vShowOk(text: string): void { vMsg.value = { kind: 'ok', text } }
+function vShowErr(text: string): void { vMsg.value = { kind: 'err', text } }
 
 async function loadConfig(): Promise<void> {
   try {
@@ -30,6 +44,89 @@ async function loadConfig(): Promise<void> {
     currentConfigured.value = !!j.configured
   } catch (e) {
     showErr('无法读取当前配置（后端服务不可用）')
+  }
+}
+
+async function loadVisionConfig(): Promise<void> {
+  try {
+    const r = await fetch('/api/vision-config')
+    const j = await r.json()
+    vBaseUrl.value = j.base_url || ''
+    vModel.value = j.model || ''
+    vKeyMasked.value = j.key_masked || ''
+    vEnabled.value = !!j.enabled
+    vConfigured.value = !!j.configured
+  } catch (e) {
+    vShowErr('无法读取视觉验证配置（后端服务不可用）')
+  }
+}
+
+// ---------- 视觉验证：前端校验 ----------
+function vValidate(): string | null {
+  const url = vBaseUrl.value.trim()
+  if (!url) return 'API 地址不能为空'
+  if (!/^https?:\/\//.test(url)) return 'API 地址必须以 http:// 或 https:// 开头'
+  if (!vModel.value.trim()) return '模型名不能为空'
+  if (!vClearKey.value && !vKeyInput.value.trim() && !vKeyMasked.value) return '尚未保存过 Key：请填写 API Key'
+  return null
+}
+
+// ---------- 视觉验证：保存 / 测试 ----------
+async function vSave(): Promise<void> {
+  const err = vValidate()
+  if (err) { vShowErr(err); return }
+  vBusy.value = true
+  try {
+    const r = await fetch('/api/vision-config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        base_url: vBaseUrl.value.trim(),
+        api_key: vKeyInput.value.trim(),
+        model: vModel.value.trim(),
+        enabled: vEnabled.value,
+        clear_key: vClearKey.value
+      })
+    })
+    const j = await r.json()
+    if (!r.ok) { vShowErr(j.error || '保存失败'); return }
+    vKeyInput.value = ''
+    vKeyMasked.value = j.key_masked || ''
+    vEnabled.value = !!j.enabled
+    vConfigured.value = !!j.configured
+    vShowOk(vEnabled.value
+      ? '已保存并开启视觉验证：低置信 / 混淆对识别将自动调用云端复核'
+      : '已保存（视觉验证关闭，识别行为与之前一致）')
+    vClearKey.value = false
+  } catch (e) {
+    vShowErr('保存失败：网络异常')
+  } finally {
+    vBusy.value = false
+  }
+}
+
+async function vTest(): Promise<void> {
+  const err = vValidate()
+  if (err) { vShowErr(err); return }
+  vBusy.value = true
+  vMsg.value = { kind: 'ok', text: '正在测试连接…' }
+  try {
+    const r = await fetch('/api/vision-config/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        base_url: vBaseUrl.value.trim(),
+        api_key: vKeyInput.value.trim(),
+        model: vModel.value.trim()
+      })
+    })
+    const j = await r.json()
+    if (!r.ok) { vShowErr(j.error || '连接失败'); return }
+    vShowOk(j.message || '连接成功')
+  } catch (e) {
+    vShowErr('测试失败：网络异常')
+  } finally {
+    vBusy.value = false
   }
 }
 
@@ -102,6 +199,7 @@ async function test(): Promise<void> {
 
 onMounted(() => {
   void loadConfig()
+  void loadVisionConfig()
 })
 </script>
 
@@ -160,6 +258,68 @@ onMounted(() => {
       <p class="foot-note">
         <b>说明：</b>「清除 Key」保存后立即失效并删除本机 .env 中的密钥；
         测试连接仅验证当前输入（不落盘），保存才会写入配置。
+      </p>
+    </div>
+
+    <!-- ============ 第二卡：视觉验证（二期 V2-A6 云端 VLM，默认关闭） ============ -->
+    <div class="card">
+      <h2>视觉验证（云端 VLM 辅助识别）</h2>
+      <p class="sub">可选增强：低置信 / 混淆对识别时调用云端视觉大模型做第二通道复核（双通道一致提信、域外图拒答）。
+        默认关闭，识别行为与之前完全一致；仅灰区触发，不影响正常识别速度。</p>
+
+      <!-- 当前配置快照 -->
+      <div class="state-row">
+        <span class="kv">
+          <b>当前状态：</b>
+          <span class="pill" :class="vEnabled ? 'ok' : 'warn'">
+            {{ vEnabled ? '已开启' : '已关闭' }}
+          </span>
+        </span>
+        <span class="kv"><b>API 地址：</b>{{ vBaseUrl || '—' }}</span>
+        <span class="kv"><b>模型：</b>{{ vModel || '—' }}</span>
+        <span class="kv"><b>API Key：</b>{{ vKeyMasked || '（无）' }}</span>
+      </div>
+
+      <!-- 表单 -->
+      <label class="field">
+        <span>API 地址（base_url）</span>
+        <input v-model="vBaseUrl" type="text" placeholder="https://dashscope.aliyuncs.com/compatible-mode/v1"
+               @keydown.enter.prevent="vSave">
+        <span class="hint">默认阿里云百炼（qwen-vl-max），OpenAI 兼容端点可换其他视觉模型</span>
+      </label>
+
+      <label class="field">
+        <span>API Key</span>
+        <input v-model="vKeyInput" type="password" placeholder="留空 = 保留已保存的 Key"
+               autocomplete="off" @keydown.enter.prevent="vSave">
+        <span class="hint">与聊天密钥相互独立；图片仅临时发送给该服务用于归类判断，不落库</span>
+      </label>
+
+      <label class="field">
+        <span>模型名</span>
+        <input v-model="vModel" type="text" placeholder="qwen-vl-max" @keydown.enter.prevent="vSave">
+      </label>
+
+      <!-- 操作行 -->
+      <div class="actions">
+        <button class="btn" :disabled="vBusy" @click="vTest">测试连接</button>
+        <button class="btn primary" :disabled="vBusy" @click="vSave">保存</button>
+        <label class="clear-box">
+          <input v-model="vClearKey" type="checkbox">
+          清除已保存的 Key
+        </label>
+        <label class="toggle">
+          <input v-model="vEnabled" type="checkbox">
+          开启视觉验证
+        </label>
+      </div>
+
+      <!-- 反馈条 -->
+      <div v-if="vMsg" class="feedback" :class="vMsg.kind">{{ vMsg.text }}</div>
+
+      <p class="foot-note">
+        <b>说明：</b>开启后仅当识别进入灰区（置信度 0.60~0.90、命中混淆对、候选差距小）才调用云端；
+        断网 / 超时 / 余额不足自动跳过（回退本地结论），不影响识别、图谱与对话。默认关闭更省。
       </p>
     </div>
   </div>
@@ -221,6 +381,7 @@ onMounted(() => {
 .btn.primary:hover { background: var(--green-dark); }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .clear-box { font-size: 13px; color: var(--gray); display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.toggle { font-size: 13px; color: var(--green-dark); display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .feedback {
   padding: 8px 12px;
   border-radius: 6px;

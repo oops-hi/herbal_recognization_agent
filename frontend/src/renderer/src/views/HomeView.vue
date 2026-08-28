@@ -19,11 +19,32 @@ interface UploadResp {
   advice?: string[]
   message?: string
   error?: string
+  vision?: VisionMeta // 二期 V2-A6：云端 VLM 二段裁决
+}
+
+// vision.state: consistent(绿) | conflict(黄) | non_herb(红) | none(黄) | skipped/unavailable(灰)
+interface VisionMeta {
+  state: string
+  vlm_top1?: string
+  verdict?: string
+  reason?: string
 }
 
 const recData = ref<RecCardData | null>(null)
 const adviceData = ref<AdviceData | null>(null)
 const uploadError = ref('')
+const visionBadge = ref<VisionMeta | null>(null)
+
+const visionBadgeText = (v: VisionMeta): string => {
+  switch (v.state) {
+    case 'consistent': return '双通道一致（云端复核：' + (v.vlm_top1 || '') + '）'
+    case 'conflict': return '双通道分歧（云端：' + (v.vlm_top1 || '?') + '）未下结论'
+    case 'non_herb': return '云端判定：域外图，拒绝下结论'
+    case 'none': return '云端复核：未能确认，未下结论'
+    case 'unavailable': return '云端复核不可用，已回退本地结论'
+    default: return '云端复核未参与'
+  }
+}
 
 function showError(msg: string): void {
   uploadError.value = msg
@@ -40,6 +61,7 @@ async function onUpload(file: File): Promise<void> {
       showError(j.error || '上传失败')
       return
     }
+    visionBadge.value = j.vision || null
     if (j.status === 'ok') {
       recData.value = {
         top1: j.top1!,
@@ -66,6 +88,7 @@ function onReset(): void {
   recData.value = null
   adviceData.value = null
   uploadError.value = ''
+  visionBadge.value = null
 }
 </script>
 
@@ -78,6 +101,9 @@ function onReset(): void {
 
       <RecCard v-if="recData" :data="recData" />
       <AdviceBox v-if="adviceData" :data="adviceData" />
+      <div class="vision-badge" v-if="visionBadge" :data-state="visionBadge.state">
+        {{ visionBadgeText(visionBadge) }}
+      </div>
       <div class="error-box" v-if="uploadError">{{ uploadError }}</div>
     </section>
 

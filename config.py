@@ -150,3 +150,68 @@ def save_llm_config(base_url, api_key, model, clear_key=False):
 # ---- Web ----
 MAX_UPLOAD_MB = 16          # 上传上限，与 pet_recognition 一致
 ALLOWED_EXT   = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+
+# ---- 云端 VLM 辅助验证（二期 V2-A6，方案 §8.5） ----
+# 与聊天 LLM 配置完全独立（VISION_* 组）：OpenAI 兼容端点 + 独立 key。
+# 仅灰区触发（agent/vision.py should_use_vision），默认关闭（VISION_ENABLED=false）。
+VISION_API_URL = os.environ.get(
+    "VISION_API_URL",
+    "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",  # 阿里云百炼（qwen-vl-max）
+)
+VISION_MODEL   = os.environ.get("VISION_MODEL") or "qwen-vl-max"
+VISION_TIMEOUT = 5          # 秒；超时即跳过（fail-soft），识别/图谱/对话不受影响
+VISION_ENABLED = os.environ.get("VISION_ENABLED", "false").lower() == "true"
+
+
+def vision_state():
+    """VLM 配置快照（设置页回显 + 掩码，绝不返回明文 key）。"""
+    return {
+        "enabled": VISION_ENABLED,
+        "configured": bool(os.environ.get("VISION_API_KEY")),
+        "base_url": VISION_API_URL[: -len(_EP_SUFFIX)] if VISION_API_URL.endswith(_EP_SUFFIX) else VISION_API_URL,
+        "model": VISION_MODEL,
+        "key_masked": _mask_key(os.environ.get("VISION_API_KEY", "")),
+        "defaults": {
+            "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+            "model": "qwen-vl-max",
+        },
+    }
+
+
+def save_vision_config(base_url, api_key, model, enabled, clear_key=False):
+    """保存 VLM 配置：写 .env（VISION_* 键）→ 更新模块属性 + os.environ（立即生效）。
+
+    与 save_llm_config 同模式：空 api_key（未勾清除）＝保留已保存 key。
+    enabled 由前端复选框布尔值传入，写入 .env 后下次启动同样生效。
+    """
+    global VISION_API_URL, VISION_MODEL, VISION_ENABLED
+    ep = normalize_endpoint(base_url)
+    model = (model or "").strip()
+    if not model:
+        raise ValueError("模型名不能为空")
+
+    current_key = os.environ.get("VISION_API_KEY", "")
+    new_key = (api_key or "").strip() if not clear_key else ""
+    if not new_key and not clear_key:
+        new_key = current_key  # 留空 = 保留现有 key
+
+    entries = {
+        "VISION_API_URL": ep,
+        "VISION_MODEL": model,
+        "VISION_ENABLED": "true" if enabled else "false",
+    }
+    if new_key or clear_key:
+        entries["VISION_API_KEY"] = new_key or None  # None → 删行
+    try:
+        ENV_PATH.write_text(_rewrite_env(entries), encoding="utf-8")
+    except OSError as e:
+        raise ValueError(f"配置文件不可写：{ENV_PATH}（{e}）。请检查安装目录权限后重试。")
+
+    # 模块属性 + 环境变量同步（热重载：agent/vision.py 每次调用现读）
+    VISION_API_URL = ep
+    VISION_MODEL = model
+    VISION_ENABLED = bool(enabled)
+    if new_key:
+        os.environ["VISION_API_KEY"] = new_key
+    elif clear_key:
+        os.environ.pop("VISION_API_KEY", None)

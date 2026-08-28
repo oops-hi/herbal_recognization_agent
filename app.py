@@ -32,8 +32,10 @@ from config import (
     llm_state,
     normalize_endpoint,
     save_llm_config,
+    save_vision_config,
+    vision_state,
 )
-from agent import core
+from agent import core, vision as vmod
 from kg import builder, query as kq
 
 app = Flask(__name__)
@@ -157,9 +159,48 @@ def upload():
     top1, conf = top3[0]
     cards = [{"name": n, "confidence": c} for n, c in top3]
 
-    if conf < LOW_CONF_THRESHOLD:
-        # FR-03：低置信度拒绝下结论，给补拍建议（识别结果保留供人工判断）
-        # 二期 P2：refuse_reason 结构化（方案 §6.2 识别闸门）
+    # 可选 VLM 二段验证（二期 V2-A6，方案 §8.5；fail-soft 绝不阻断主流程）。
+    # 灰区触发（conf≥0.60 且命中 T1/T2/T3），双通道一致可提信放行低置信图。
+    vision_meta = {"state": "skipped"}
+    try:
+        if vmod.should_use_vision(top3):
+            vision_meta = vmod.decide(top3, vmod.verify(save_path))
+    except Exception as e:
+        vision_meta = {"state": "unavailable", "reason": f"vision_error:{type(e).__name__}"}
+
+    if vision_meta["state"] in ("non_herb", "none", "conflict"):
+        # 双通道裁决：域外图 / 不确定 / 分歧 → 不硬猜（识别结果保留供人工判断）
+        reason = "域外图" if vision_meta["state"] == "non_herb" else "置信不足"
+        if vision_meta["state"] == "non_herb":
+            advice = [
+                "云端视觉复核判定：图片可能不是中药饮片（域外图），拒绝下结论",
+                "请上传干燥饮片特写（果实种子类）、光照均匀、纯色背景",
+                "若确为药材请重新拍摄后重试",
+            ]
+        elif vision_meta["state"] == "conflict":
+            vlm_top1 = vision_meta.get("vlm_top1", "")
+            advice = [
+                f"本地与云端判定不一致（云端：{vlm_top1}），暂不硬性下结论",
+                "建议补拍：干燥饮片特写、光照均匀、纯色背景",
+                "以下 Top-3 与云端判定供人工参考，请勿自行采食或药用",
+            ]
+        else:  # none
+            advice = [
+                "云端视觉复核未能确认图片所属药材（疑似非药材或拍摄条件不佳）",
+                "建议补拍：干燥饮片特写、光照均匀、纯色背景",
+                "以下 Top-3 供人工参考，请勿自行采食或药用",
+            ]
+        return jsonify({
+            "status": "low_confidence",   # 复用前端既有拒答卡片（后端字段向后兼容扩展）
+            "refuse_reason": reason,
+            "top3": cards,
+            "advice": advice,
+            "vision": vision_meta,
+            "client_id": client_id,
+        }), 200
+
+    # 本地低置信（0.60≤conf<0.75）且 VLM 未确认/未参与 → 原 FR-03 拒答路径（与一期行为一致）
+    if conf < LOW_CONF_THRESHOLD and vision_meta["state"] != "consistent":
         return jsonify({
             "status": "low_confidence",
             "refuse_reason": "置信不足",
@@ -169,10 +210,11 @@ def upload():
                 "建议补拍：干燥饮片特写、光照均匀、纯色背景",
                 "以下 Top-3 供人工参考，请勿自行采食或药用",
             ],
+            "vision": vision_meta,
             "client_id": client_id,
         }), 200
 
-    # 识别成功 → 写入会话上下文（后续『这个/它』指代消解）
+    # 识别成功（双通道一致提信 或 本地高置信云端未参与）→ 写入会话上下文（后续『这个/它』指代消解）
     sess = _get_session(client_id)
     sess["current_herb"] = top1
     return jsonify({
@@ -181,6 +223,7 @@ def upload():
         "confidence": conf,
         "top3": cards,
         "profile": kq.get_profile(top1),
+        "vision": vision_meta,
         "client_id": client_id,
     }), 200
 
@@ -294,6 +337,92 @@ def config_test():
         return jsonify({"error": "无法连接到该地址：请检查 API 地址是否正确、服务是否已启动（本地模型如 Ollama 需先运行）"}), 502
     if resp.status_code == 200:
         return jsonify({"ok": True, "message": f"连接成功（{model}），配置可正常使用"})
+    if resp.status_code in hint:
+        return jsonify({"error": hint[resp.status_code]}), 400
+    return jsonify({"error": f"服务返回异常（{resp.status_code}）：{resp.text[:120]}"}), 400
+
+
+# ---------- VLM 配置（设置页「视觉验证」卡片 · 二期 V2-A6，独立于聊天 LLM 配置） ----------
+
+@app.get("/api/vision-config")
+def vision_config_get():
+    """当前 VLM 配置快照（key 只回显掩码）。"""
+    return jsonify(vision_state())
+
+
+@app.post("/api/vision-config")
+def vision_config_post():
+    """保存 VLM 配置：写 exe 旁 .env（VISION_* 键）→ 热更新运行状态（上传识别立即生效）。
+
+    入参 {base_url, api_key, model, enabled, clear_key}；api_key 留空 = 保留已保存 key。
+    """
+    data = request.get_json(silent=True) or {}
+    try:
+        save_vision_config(
+            data.get("base_url", ""),
+            data.get("api_key", ""),
+            data.get("model", ""),
+            enabled=bool(data.get("enabled")),
+            clear_key=bool(data.get("clear_key")),
+        )
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    return jsonify({"ok": True, **vision_state()})
+
+
+@app.post("/api/vision-config/test")
+def vision_config_test():
+    """用提交的未保存值发最小图像请求验证连通性（1x1 像素图，不落盘）。"""
+    import base64 as _b64
+    import io as _io
+    from PIL import Image as _PIL
+
+    data = request.get_json(silent=True) or {}
+    try:
+        url = normalize_endpoint(data.get("base_url", ""))
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    model = (data.get("model") or "").strip()
+    key = (data.get("api_key") or "").strip()
+    if not model:
+        return jsonify({"error": "模型名不能为空"}), 400
+    if not key:
+        key = os.environ.get("VISION_API_KEY", "")
+        if not key:
+            return jsonify({"error": "未填写 API Key（且当前没有已保存的 Key）"}), 400
+
+    # 内存生成 1x1 红色像素图（测完整图像链路，不落盘）
+    buf = _io.BytesIO()
+    _PIL.new("RGB", (1, 1), (200, 30, 30)).save(buf, "JPEG")
+    data_url = "data:image/jpeg;base64," + _b64.b64encode(buf.getvalue()).decode()
+
+    hint = {
+        401: "鉴权失败（401）：API Key 无效，请检查后重试",
+        402: "账户余额不足（402），请到服务商后台充值",
+        404: "接口路径不存在（404）：请检查 API 地址是否以 /chat/completions 结尾",
+        429: "请求过于频繁（429）：请稍后再试",
+    }
+    try:
+        resp = requests.post(
+            url,
+            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+            json={
+                "model": model,
+                "messages": [{"role": "user", "content": [
+                    {"type": "text", "text": "ping"},
+                    {"type": "image_url", "image_url": {"url": data_url}},
+                ]}],
+                "max_tokens": 8,
+                "stream": False,
+            },
+            timeout=10,
+        )
+    except requests.Timeout:
+        return jsonify({"error": "连接超时：请检查 API 地址与网络"}), 502
+    except requests.ConnectionError:
+        return jsonify({"error": "无法连接到该地址：请检查 API 地址是否正确、服务是否已启动"}), 502
+    if resp.status_code == 200:
+        return jsonify({"ok": True, "message": f"连接成功（{model}），视觉验证通道可正常使用"})
     if resp.status_code in hint:
         return jsonify({"error": hint[resp.status_code]}), 400
     return jsonify({"error": f"服务返回异常（{resp.status_code}）：{resp.text[:120]}"}), 400

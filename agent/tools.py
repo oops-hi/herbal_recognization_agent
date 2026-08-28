@@ -31,6 +31,7 @@ from pathlib import Path
 from config import BASE_DIR
 from kg import query as kq
 from classifier import predictor
+from . import vision  # 二期 V2-A6：云端 VLM 辅助验证（可选增强，默认关闭）
 
 FEEDBACK_PATH = BASE_DIR / "kg" / "data" / "feedback.json"
 
@@ -93,6 +94,14 @@ def _retrieve_doc(query: str) -> str:
     return kq.retrieve_doc(_must_str("query", query))
 
 
+def _vlm_verify(image_path: str) -> str:
+    """云端 VLM 复核（二期 V2-A6）：图片归类的第二通道裁决（仅候选+verdict，禁药性功效）。
+
+    未启用/断网/超时 → 返回不可用说明（fail-soft），模型以本地识别结果为准。
+    """
+    return vision.vlm_verify_request(_must_str("image_path", image_path))
+
+
 def _record_feedback(herb: str, corrected_to: str, note: str = "") -> str:
     """学习 Agent：错误样例入核对队列（方案 §8.2 / 演示用例 12）。
 
@@ -148,6 +157,26 @@ TOOLS = [
             "required": ["image_path"],
         },
         "fn": _recognize_herb,
+    },
+    {
+        "name": "vlm_verify",
+        "agent": "识药",
+        "description": (
+            "云端视觉大模型复核一张中药饮片图片（仅当本地识别候选难以区分时调用）："
+            "返回第二通道的候选归类与裁决（verdict=none/non_herb），不含药性内容。"
+            "未启用或云端不可用时返回说明。"
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "image_path": {
+                    "type": "string",
+                    "description": "待复核图片的服务器本地路径",
+                }
+            },
+            "required": ["image_path"],
+        },
+        "fn": _vlm_verify,
     },
     {
         "name": "get_herb_profile",
@@ -315,7 +344,7 @@ ALLOWED_TOOL_NAMES = set(REGISTRY)
 # ---- 六子 Agent（方案 §8.2）：名称 / 触发说明 / 工具集 / ReAct 配额 ----
 AGENTS = {
     "识药": {
-        "tools": ["recognize_herb"],
+        "tools": ["recognize_herb", "vlm_verify"],
         "quota": 3,
         "trigger": "用户上传图片时",
     },
