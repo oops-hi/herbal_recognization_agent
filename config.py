@@ -1,10 +1,25 @@
 """
 config.py
 全局配置：路径、阈值、模型名统一在此管理。
+
+打包（PyInstaller frozen）分支：
+- BASE_DIR 指向 sys._MEIPASS（只读资产根：models/、kg/data/kg.json 随 datas 打进去）
+- 可写目录（uploads/）与用户密钥（.env）改到 exe 旁 —— _MEIPASS 是临时目录，退出即删
 """
+import sys
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent
+FROZEN = getattr(sys, "frozen", False)
+
+if FROZEN:
+    BASE_DIR   = Path(sys._MEIPASS)                     # 只读资产根（datas 落点）
+    EXE_DIR    = Path(sys.executable).resolve().parent  # exe 所在目录（可持久写）
+    UPLOAD_DIR = EXE_DIR / "uploads"
+    ENV_PATH   = EXE_DIR / ".env"                       # 用户自放密钥；.env 绝不打包
+else:
+    BASE_DIR   = Path(__file__).resolve().parent
+    UPLOAD_DIR = BASE_DIR / "uploads"
+    ENV_PATH   = BASE_DIR / ".env"
 
 # ---- 数据 ----
 DATA_DIR = BASE_DIR / "data"
@@ -32,6 +47,5 @@ LLM_TIMEOUT      = 60       # 秒（多轮 ReAct 单次调用上限）
 MAX_TURNS        = 8        # 智能体单次回答最大工具轮次
 
 # ---- Web ----
-UPLOAD_DIR    = BASE_DIR / "uploads"
 MAX_UPLOAD_MB = 16          # 上传上限，与 pet_recognition 一致
 ALLOWED_EXT   = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}

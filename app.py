@@ -12,15 +12,18 @@ Flask Web 后端：上传识别 + 多轮对话（SSE 流式工具链）+ 图谱�
 启动：conda run -n task python app.py  →  http://localhost:5000
 """
 import json
+import os
 import time
 import uuid
 from pathlib import Path
 
-from flask import Flask, Response, jsonify, render_template, request, stream_with_context
+from flask import Flask, Response, jsonify, render_template, request, send_from_directory, stream_with_context
 from PIL import Image, UnidentifiedImageError
+from werkzeug.serving import make_server
 
 from config import (
     BASE_DIR,
+    FROZEN,
     UPLOAD_DIR,
     MAX_UPLOAD_MB,
     ALLOWED_EXT,
@@ -31,6 +34,14 @@ from kg import builder, query as kq
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MB * 1024 * 1024
+
+# ---- Vue 构建产物托管（打包/桌面版） ----
+# prod（frozen）→ 打包进 _MEIPASS 的 frontend_dist；dev（Electron spawn）→ frontend/out/renderer
+# （electron-vite 构建产物目录；裸跑 python app.py 无 dist 时自动回退 Jinja 模板）
+FRONTEND_DIST = Path(os.environ.get(
+    "HERB_DIST_DIR",
+    (BASE_DIR / "frontend_dist") if FROZEN else (BASE_DIR / "frontend" / "out" / "renderer"),
+))
 
 # ---- 会话（服务端 dict，client_id 来自前端 localStorage） ----
 # session[client_id] = {"messages": [...], "current_herb": str|None, "last_active": ts}
@@ -66,14 +77,29 @@ def _cleanup_old_uploads() -> None:
 
 # ---------- 页面 ----------
 
+def _serve_spa():
+    """Vue SPA 壳（hash 路由，#/ 与 #/graph 都是同一个 index.html）。"""
+    return send_from_directory(FRONTEND_DIST, "index.html")
+
+
+@app.get("/assets/<path:filename>")
+def spa_assets(filename: str):
+    """Vue 构建产物静态资源（index.html 引用 /assets/*.js|css|png）。"""
+    return send_from_directory(FRONTEND_DIST / "assets", filename)
+
+
 @app.get("/")
 def index():
-    return render_template("index.html")
+    if os.environ.get("HERB_SERVE_DIST", "1") == "1" and FRONTEND_DIST.is_dir():
+        return _serve_spa()
+    return render_template("index.html")  # 旧 Web 版兜底
 
 
 @app.get("/graph")
 def graph_page():
-    return render_template("graph.html")
+    if os.environ.get("HERB_SERVE_DIST", "1") == "1" and FRONTEND_DIST.is_dir():
+        return _serve_spa()
+    return render_template("graph.html")  # 旧 Web 版兜底
 
 
 # ---------- 上传 + 识别 ----------
@@ -253,7 +279,12 @@ if __name__ == "__main__":
     UPLOAD_DIR.mkdir(exist_ok=True)
     _cleanup_old_uploads()
     builder.load()  # 预热知识图谱
-    # ⚠️ 禁止 debug=True：werkzeug reloader 子进程里 import torch 触发
+    # ⚠️ 禁止 debug=True / reloader：werkzeug reloader 子进程里 import torch 触发
     #    torch 2.12.0.dev 的 _native.dsl_registry 循环导入（上传识别 500），
     #    实测 debug=False 完全正常。答辩演示用非 debug 模式更稳。
-    app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)
+    host = os.environ.get("HERB_HOST", "0.0.0.0")   # 裸跑 python app.py 行为不变
+    port = int(os.environ.get("HERB_PORT", "5000"))
+    with make_server(host, port, app, threaded=True) as srv:
+        # Electron 主进程从 stdout 解析此握手行拿实际端口（HERB_PORT=0 → 系统分配）
+        print(f"HERB_READY_PORT={srv.server_port}", flush=True)
+        srv.serve_forever()

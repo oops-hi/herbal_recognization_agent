@@ -18,15 +18,15 @@ agent/core.py
 import json
 import os
 import time
-from pathlib import Path
 
 import requests
 from dotenv import load_dotenv
 
-from config import DEEPSEEK_API_URL, DEEPSEEK_MODEL, LLM_TIMEOUT, MAX_TURNS
+from config import DEEPSEEK_API_URL, DEEPSEEK_MODEL, ENV_PATH, LLM_TIMEOUT, MAX_TURNS
 from . import prompts, tools
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+# 打包后 .env 在 exe 旁（frozen 分支）；开发态在项目根 —— 统一走 config.ENV_PATH
+load_dotenv(ENV_PATH)
 
 HERB_CTX_PREFIX = "【当前识别上下文】"
 
