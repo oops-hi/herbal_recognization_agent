@@ -44,9 +44,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ├── models/best.pt  class_map.json   # class_map: id → {name_cn, aliases}
 ├── classifier/predictor.py  # YOLO 加载 → predict_topk() → [(中文名, 置信度)]
 ├── kg/
-│   ├── data/kg.json       # 单文件：nodes[] + edges[]
+│   ├── data/kg.json       # 单文件：nodes[] + edges[]（schema v2：herb 64 味带档案）
+│   ├── data/whitelist.json     # 唯一人工权威清单（64 味 tier + 9 对 required 相似对）
+│   ├── data/records/*.json     # 每味一个完整节点（唯一事实来源，review_status: draft|reviewed）
+│   ├── data/review_ledger.json # 版本化核对台账（merge 派生产物，勿手写）
 │   ├── builder.py         # JSON → networkx.MultiDiGraph
-│   ├── query.py           # 图查询（智能体工具的底层）
+│   ├── query.py           # 图查询（智能体工具的底层；get_profile 含 L1 鉴别参考段）
+│   ├── v2_merge.py        # records + whitelist + v1 → kg.json v2 + ledger（幂等/--strict）
+│   ├── validate.py        # 起草期 --records / 全量 --strict 校验（验收口径 12.1 统计）
 │   └── viz.py             # matplotlib 静态图 → PNG（离线可用，依赖本地中文字体）
 ├── agent/
 │   ├── tools.py           # 6 个工具函数 + JSON Schema
@@ -132,4 +137,15 @@ scripts\build-all.bat                        # 一键出包 → C:\herbal_stage\
 - [x] 图谱页 v2（2026-08-27）：`/graph` 升级为 **D3 手写力导向交互图**（Obsidian 双向链接风格、浅色画布）：vendor 本地 d3.v7.9.0（279KB，`static/vendor/`，页面 0 外部请求）；`GET /api/graph`（`kg.query.graph_dataset()`：节点带 degree/has_profile/aliases，禁忌双向 18 条去重为 9，`ensure_ascii=False`）；`static/js/graph.js`（IIFE，暴露 `window.GraphPage.showProfile`）：拖拽 / zoom(0.3~4) / 悬停邻接高亮 + tooltip（禁忌边双源：歌诀+药典）/ 点击聚焦(1.6×) + 档案联动（formula 节点升级显示君臣佐使）/ legend 筛选 / 复位；失败/断网降级静态 PNG + 提示条。**顺带修复数据 bug**：「五仁丸→杏仁」边与节点组成数组 `杏仁`→`苦杏仁`（builder.py 组成边过别名索引双保险；`formulas_by_herb("苦杏仁")` 不再漏报五仁丸，孤立节点 9→8）。已验证：全路由 200、/api/graph 84/84、中文不转义、禁忌 9 条双源齐全；浏览器交互与断网降级待答辩前人工复验
 - [ ] 待办（答辩前可选）：清理 kg.json 档案出处里残留的「待人工核对」字样（用户已核对完）；「甘草+海藻」口径决策待用户答复（歌诀有、药典未认定的展示口径，review_items 留档）
 - [x] 桌面版 vue-electron-exe 分支（2026-08-28，已推送 GitHub）：Vue3+Electron（electron-vite）全量迁移 + 后端 frozen 改造（动态端口握手/托管 Vue 产物）+ PyInstaller onedir（1114 修复：`RUNTIME_EXCLUDE` 剔除 conda 旧版 VC++ 运行时 14.27，依赖系统 14.51+）+ electron-builder NSIS 安装包 **1.93GB**（`C:\herbal_stage\release\HerbalAgent-Setup-1.0.0.exe`）。后端瘦身跨 2GB NSIS mmap 线：剔除 cudnn_adv/cusolverMg/curand/nvperf/cufftw/nvrtc.alt + scipy/pyarrow（**⚠️ cusparse 直接依赖 nvJitLink、torch_cuda 直接依赖 cufft/cusolver/cusparse，这三组永远不能删**）
+- [x] 桌面版迁移 bug 修复（2026-08-28，`python app.py` + 浏览器同现）：Vue 迁移遗留三连 —— ① `style.css` 残留 5 处 `display:none`（旧 Jinja 版 JS toggle 时代的默认隐藏，Vue 改 `v-if` 后没删），图谱查询结果/识别卡/补拍建议/错误提示/断网降级图全被压住；② ChatPanel 时间轴对象未 `reactive` 创建（普通对象 push 进 ref 数组后原引用修改绕过代理 → 工具链不逐条弹出）；③ 时间轴分数组后置渲染（顺序错）+ 缺 `data-collapsed` 折叠 CSS。已修 + 重建，验证通过；排查假线索：`/favicon.ico` 404 误导 + 4 个 app.py 实例争抢 5000 端口（含裸 python base 实例），详见 人机交互.md 第 6 条
 - [ ] 待办（答辩前）：**装机验证**（安装包已就绪，静默装 `/S` 装到 %LOCALAPPDATA%\Programs\HerbalAgent 后跑通识别+图谱）；GitHub 推送走 `ssh://git@ssh.github.com:443/...`（HTTPS 的 .gitconfig socks5 代理端口仍是 1080，clash 实际在 7890 且节点未连——直连 github.com 被墙不可达，SSH 443 已验证可用）
+
+### 二期（2026-08-28，对齐立项报告 14 章，聚焦知识侧 + 智能体侧）
+
+- [x] **二期升级实施方案文档**（2026-08-28）：`docs/二期升级实施方案.md`（对齐参考立项报告的 14 章结构；R01–R12 差距表、五道闸门、六子 Agent 编排、P0–P5 里程碑、验收口径、附录 B 评审问题；含**云端 VLM 辅助验证 V2-A6 可选增强**完整设计 §8.5——触发灰区三条件 / 双通道决策矩阵 / 断网 fail-soft / 结构白名单 / 独立 VISION 配置，默认关闭）。详细排期与验收见该文档，本节只列要点待办
+- [x] **二期 P0 知识底座**（2026-08-28）：档案药 22→**64 味**（24 existing + 26 upgraded + 14 new，白名单 `kg/data/whitelist.json`）；kg.json 升 `schema_version=2`（`kg/v2_merge.py` 程序化合并 records + whitelist + v1，幂等/--strict/--check-idempotent，`builder.py`/query.py 其余 8 函数**零改动**）；records 64 味全 draft（L2 七字段 + L1 性状/炮制/产地/鉴别要点/similar_herbs/来源标注，口径=《中国药典》2020 年版一部，**2025 切换走台账重核机制**）；review_ledger 64 行版本台账；`kg/validate.py` 起草期/全量双模式（验收 12.1：L2 448/448、L1 256/256、source 64/64、残留 0）；get_profile 追加【鉴别参考】段 + 核对状态行（query.py 唯一改动）。**已知纠偏**：菊花/甘草 v1 缺毒性键已补、甘草禁忌临时注记已清理（`KNOWN_L2_DRIFT` 显式放行）；**修复 merge bug**：upgraded 26 味从 minor 升级后透传重复节点（v2_merge 跳过白名单 id）。⚠️ **人工核对待办（用户主责，红线）**：64 味 L1/L2 逐字对照药典核对 + 高危 8 味（附子/细辛/川乌/草乌/半夏/苦杏仁/桃仁/人参）双人复核，清单见 `kg/data/records/README.md`，通过后改 meta.review_status=reviewed 并重跑 merge
+- [ ] 待办（二期 · 知识侧 P1 剩余，**L2 口径已拍板 2020 版**）：③ 混合检索：chromadb + bge-small-zh 本地 embedding + `data/tcm_docs/` 版本目录（哈希溯源），`kg/query.py` 新增 `retrieve_doc`；④ 新增 `eval_rag.py` 评测（20 问 top-5 命中 ≥ 0.9）
+- [ ]
+- 待办（二期 · 智能体侧 P2~P3）：① `agent/core.py` 增轻量 Router（意图分类→子 Agent→汇总，仍手写不引 LangChain），MAX_TURNS 改按子 Agent 配额；② `agent/tools.py` 6 工具按六子 Agent 重组（识药/鉴别/药性/方剂/安全/学习），新增 `similar_compare` 鉴别工具；③ 五道闸门全落地 + `refuse_reason` 四类结构化（知识缺口/置信不足/域外图/合规边界）；④ 证据链条目 UI（前端展示来源+版本）；⑤ 安全专项 10 条零剂量/诊断输出、工具调用成功率 ≥ 90%、溯源率 100%
+- [ ] 待办（二期 · VLM 辅助验证 V2-A6，**可选增强，默认关闭**）：前置三条齐备才开启——① `config.py` 独立 VISION 组（`VISION_API_URL/MODEL/KEY/TIMEOUT=5/ENABLED=False`）+ `save_vision_config()/vision_state()`；② `agent/core.py` 增 `_vlm_verify_request`（image_url base64、复用 429/402/fail-soft 模式）；③ `agent/tools.py` 增 `vlm_verify` 工具（挂识药 Agent）+ 设置页"视觉验证"卡片 + `/api/vision-config` 接口；④ 效果评测集（混淆对 20 张 + 宠物图 3 张，离线对比本地基线，目标优于基线 + 宠物拒答率 100%）
+- [ ] 待办（二期 · 评审待确认，见报告附录 B）：60+ 味白名单范围（**已定**：就地取材 64 味 = 24 现有 + 26 minor 升级 + 14 新增调补茶饮药，见 `kg/data/whitelist.json`）、高风险相似对 ≤10 对清单（**已定 9 对**：见 whitelist.required_similar_pairs）、未收录药拒答口径（⚠️ 演示用例 12.2#8「决明子」已收录，改用例或换未收录药）、12.2 新增演示用例（第 8~13 条）是否作答辩验收、药典版本口径（**已拍板**：维持 2020 版）、三期（视觉侧/工程侧）是否纳入范围、VLM 供应商与密钥管理

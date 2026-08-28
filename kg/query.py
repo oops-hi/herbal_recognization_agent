@@ -27,7 +27,7 @@ def _resolve_or_unknown(herb: str) -> str | None:
 
 
 def get_profile(herb: str) -> str:
-    """FR-04 单味药完整档案：性味/归经/功效/主治/用量/毒性/禁忌 + 出处。"""
+    """FR-04 单味药完整档案：性味/归经/功效/主治/用量/毒性/禁忌 + 出处 + L1 鉴别参考。"""
     node = builder.get_node(builder.load(), herb)
     if node is None:
         return f"知识库未收录「{herb}」，无法提供档案。"
@@ -45,6 +45,33 @@ def get_profile(herb: str) -> str:
         f"禁忌：{p['禁忌']}",
         f"出处：{node.get('source', '未标注')}",
     ]
+    l1 = p.get("L1")
+    if l1:
+        lines.append("")
+        lines.append("【鉴别参考】")
+        for key in ("性状", "炮制", "产地", "鉴别要点"):
+            if l1.get(key):
+                lines.append(f"{key}：{l1[key]}")
+        for s in l1.get("similar_herbs") or []:
+            lines.append(
+                f"相似药材「{s['herb']}」（{s['reason']}）：" + "；".join(s["points"])
+            )
+        srcs = l1.get("来源标注")
+        if srcs:
+            lines.append(
+                "来源等级：" + "；".join(f"{k}（{v}）" for k, v in srcs.items())
+            )
+        meta = node.get("meta", {})
+        edition = p.get("source_edition", "《中国药典》2020 年版一部")
+        if meta.get("review_status") == "reviewed":
+            lines.append(
+                f"核对状态：已人工核对（{meta.get('reviewed_by', '')}，"
+                f"{meta.get('review_date', '')}）；口径={edition}"
+            )
+        else:
+            lines.append(
+                f"核对状态：L1 鉴别参考为 LLM 起草（未人工核对，以{edition}为准）"
+            )
     return "\n".join(lines)
 
 
