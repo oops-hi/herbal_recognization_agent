@@ -22,10 +22,22 @@ def print_trace(trace: list[dict]) -> None:
     print("  工具调用链（由问题驱动，共 %d 次）" % len(trace))
     print("=" * 56)
     for i, step in enumerate(trace, 1):
-        print(f"  [{i}] {step['summary']}")
+        agent_tag = f"（{step.get('agent', '')}）" if step.get("agent") else ""
+        print(f"  [{i}]{agent_tag} {step['summary']}")
         preview = step["result"].replace("\n", "\n      ")
         print(f"      -> {preview}")
     print("=" * 56 + "\n")
+
+
+def print_evidence(evidence: list[dict], refuse_reason: str | None) -> None:
+    """证据链 + 拒识原因（二期 P2 展示）。"""
+    if refuse_reason:
+        print(f"  [拒识原因] {refuse_reason}")
+    if evidence:
+        print("  证据链（回答依据来源）：")
+        for e in evidence:
+            print(f"    - {e['source']}")
+    print()
 
 
 def main():
@@ -49,6 +61,7 @@ def main():
         result = core.run(args.q, messages, image_path=args.image)
         print_trace(result["trace"])
         print(result["answer"])
+        print_evidence(result.get("evidence", []), result.get("refuse_reason"))
         if result["status"] != "ok":
             print(f"\n[状态: {result['status']}]")
         return
@@ -68,6 +81,7 @@ def main():
         result = core.run(q, messages, image_path=args.image)
         print_trace(result["trace"])
         print(result["answer"])
+        print_evidence(result.get("evidence", []), result.get("refuse_reason"))
         if result["status"] != "ok":
             print(f"\n[状态: {result['status']}]")
 

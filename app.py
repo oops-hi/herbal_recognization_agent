@@ -159,8 +159,10 @@ def upload():
 
     if conf < LOW_CONF_THRESHOLD:
         # FR-03：低置信度拒绝下结论，给补拍建议（识别结果保留供人工判断）
+        # 二期 P2：refuse_reason 结构化（方案 §6.2 识别闸门）
         return jsonify({
             "status": "low_confidence",
+            "refuse_reason": "置信不足",
             "top3": cards,
             "advice": [
                 "识别置信度较低，无法确认是否为某一味药材（可能为非药材或拍摄条件不佳）",

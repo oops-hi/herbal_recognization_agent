@@ -4,6 +4,7 @@ import { ref } from 'vue'
 
 export interface ToolStep {
   name: string
+  agent?: string // 二期 P2：工具所属子 Agent（识药/鉴别/药性/方剂/安全/学习）
   arguments: Record<string, unknown>
   result: string
 }
@@ -24,7 +25,8 @@ const shortArg = (args: Record<string, unknown>): string => {
       {{ collapsed ? '▸ 工具调用链（已折叠）' : '▾ 工具调用链' }}
     </div>
     <div class="tl-step" v-for="(s, i) in steps" :key="i" :class="{ bad: isBad(s.result) }">
-      <span class="name">{{ s.name }}</span>{{ shortArg(s.arguments) }}
+      <span class="name">{{ s.name }}</span>
+      <span class="agent" v-if="s.agent">{{ s.agent }}</span>{{ shortArg(s.arguments) }}
       <div class="result">{{ s.result }}</div>
     </div>
   </div>

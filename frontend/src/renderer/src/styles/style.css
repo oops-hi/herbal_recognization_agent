@@ -118,7 +118,6 @@ main {
   border-radius: 8px;
   padding: 12px;
   background: var(--green-soft);
-  display: none;
 }
 .rec-card .top1 { font-size: 18px; font-weight: 700; color: var(--green-dark); }
 .rec-card .conf { font-size: 13px; color: var(--green-dark); margin-top: 2px; }
@@ -140,7 +139,6 @@ main {
   background: var(--red-soft);
   font-size: 13px;
   line-height: 1.8;
-  display: none;
 }
 .advice-box .t { font-weight: 700; color: var(--red); }
 .error-box {
@@ -150,7 +148,6 @@ main {
   padding: 12px;
   background: #faf6ef;
   font-size: 13px;
-  display: none;
 }
 
 /* ---------- 对话区 ---------- */
@@ -187,6 +184,39 @@ main {
 .msg.error .bubble { background: var(--red-soft); color: var(--red); }
 .msg.system-note .bubble { background: transparent; color: var(--gray); font-size: 12px; }
 
+/* 二期 P2：拒识原因标签 + 证据链 */
+.msg .refuse-tag {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 9px;
+  border-radius: 4px;
+  font-size: 12px;
+  background: var(--yellow-soft, #f6e8c8);
+  color: #8a6d1f;
+  border: 1px solid #ead9a8;
+}
+.msg.assistant .refuse-tag { margin-left: 3px; }
+.msg .evidence {
+  margin-top: 8px;
+  padding: 7px 10px;
+  background: #faf8f2;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  max-width: 92%;
+}
+.msg .evidence .ev-ttl {
+  font-size: 11px;
+  color: var(--gray);
+  margin-bottom: 3px;
+}
+.msg .evidence .ev-item {
+  color: var(--text);
+  line-height: 1.6;
+  word-break: break-all;
+}
+.msg.assistant .evidence { margin-left: 3px; }
+
 /* 工具调用时间轴 */
 .timeline {
   margin: 6px 0 12px 8px;
@@ -201,6 +231,8 @@ main {
   user-select: none;
 }
 .timeline .ttl:hover { text-decoration: underline; }
+/* 折叠：点标题切换 data-collapsed，隐藏步骤列表 */
+.timeline[data-collapsed="1"] .tl-step { display: none; }
 .tl-step {
   font-size: 12.5px;
   margin-bottom: 6px;
@@ -216,6 +248,18 @@ main {
   font-family: Consolas, monospace;
   margin-right: 6px;
 }
+/* 二期 P2：工具所属子 Agent 徽章 */
+.tl-step .agent {
+  display: inline-block;
+  background: #efe7d8;
+  color: #8a7a5a;
+  border: 1px solid #e2d8c0;
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-size: 11px;
+  margin-right: 6px;
+}
+.tl-step.bad .agent { display: none; }
 .tl-step .result {
   color: var(--gray);
   font-size: 12px;
@@ -319,7 +363,6 @@ main {
   font-size: 13.5px;
   line-height: 1.8;
   white-space: pre-wrap;
-  display: none;
 }
 
 /* ---------- 图谱页 v2：交互式力导向图（D3，Obsidian 风格浅色画布） ---------- */
@@ -333,7 +376,7 @@ main {
   overflow: hidden;
 }
 #graph-area img#graph-static {
-  display: none; /* 默认隐藏：仅 /api/graph 失败（断网/后端挂）时降级显示 */
+  /* 默认隐藏由 Vue v-if="degraded" 控制（仅 /api/graph 失败时降级显示） */
   width: 100%;
   height: 100%;
   object-fit: contain;

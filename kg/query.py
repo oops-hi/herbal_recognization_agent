@@ -221,6 +221,59 @@ def similar_herbs(herb: str) -> str:
     return f"与「{herb}」同方共现的药材（可作同方类比参考）：\n" + "\n".join(f"- {x}" for x in names)
 
 
+def similar_compare(herb_a: str, herb_b: str) -> str:
+    """FR-13 相似药材鉴别对比：L1 相似对知识（互录 points）+ 双方性状摘录。
+
+    输出「鉴别要点对比 + 结论等级（可判定/部分信息/需人工）」，给用户判断依据，
+    不做二次硬猜（方案 §7.3：『给用户判断依据，而不是二次硬猜』）。
+    """
+    g = builder.load()
+    ra, rb = builder.resolve(herb_a), builder.resolve(herb_b)
+    if ra is None or rb is None:
+        missing = [h for h, r in ((herb_a, ra), (herb_b, rb)) if r is None]
+        return f"知识库未收录：{'、'.join(missing)}，无法进行鉴别对比（知识缺口）。"
+    if ra == rb:
+        return f"「{ra}」与「{rb}」为同一药材，无需鉴别。"
+
+    pa = dict(g.nodes[ra]).get("profile", {})
+    pb = dict(g.nodes[rb]).get("profile", {})
+    la, lb = pa.get("L1", {}), pb.get("L1", {})
+
+    # 互录相似对：A 的 similar_herbs 里有 B（或反向）
+    pair_a = next((s for s in la.get("similar_herbs") or [] if s.get("herb") == rb), None)
+    pair_b = next((s for s in lb.get("similar_herbs") or [] if s.get("herb") == ra), None)
+
+    lines = [f"【鉴别】「{ra}」vs「{rb}」"]
+    if pair_a or pair_b:
+        src = pair_a or pair_b
+        lines.append(f"混淆风险：{src.get('reason', '外观相近')}")
+        for pt in src.get("points", []):
+            lines.append(f"- {pt}")
+        if pair_a and pair_b:
+            level = "可判定"
+        else:
+            level = "部分信息"
+        lines.append(f"结论等级：{level}（双方互录的鉴别知识完整，可据此人工判断）")
+    else:
+        lines.append("知识库未收录这两味的直接鉴别对比条目（非 required 相似对）。")
+
+    # 性状摘录（L1 有则附上，帮助对照）
+    for label, l in (("性状", la), ("性状", lb)):
+        pass
+    for name, l in ((ra, la), (rb, lb)):
+        if l.get("性状"):
+            lines.append(f"「{name}」性状：{l['性状']}")
+        elif l.get("鉴别要点"):
+            lines.append(f"「{name}」鉴别要点：{l['鉴别要点']}")
+
+    has_pair = bool(pair_a or pair_b)
+    if not has_pair and not any(l.get("性状") or l.get("鉴别要点") for l in (la, lb)):
+        lines.append("结论等级：需人工（库内无对比知识，请对照实物或药典核对）")
+    elif not has_pair:
+        lines.append("结论等级：部分信息（无互录条目，仅附双方性状供对照，需人工判断）")
+    return "\n".join(lines)
+
+
 def retrieve_doc(query: str, top_k: int = 5) -> str:
     """FR-12 混合检索：图谱精确优先 → 向量模糊召回（方案 §5.2「图谱给准确，RAG 给全面」）。
 
@@ -332,6 +385,7 @@ def main():
     ap.add_argument("--search", help="按性味/归经/功效反向检索")
     ap.add_argument("--similar", help="相似药推荐")
     ap.add_argument("--retrieve", help="混合检索（图谱精确优先 → 向量召回）")
+    ap.add_argument("--compare", help="相似药材鉴别对比，逗号分隔两味，如 桃仁,苦杏仁")
     ap.add_argument("--top-k", type=int, default=5, help="向量召回条数（配合 --retrieve）")
     ap.add_argument("--graph", action="store_true", help="输出全量拓扑 JSON（/api/graph 冒烟）")
     ap.add_argument("--stats", action="store_true", help="图规模统计")
@@ -355,6 +409,9 @@ def main():
         print(similar_herbs(args.similar))
     elif args.retrieve:
         print(retrieve_doc(args.retrieve, top_k=args.top_k))
+    elif args.compare:
+        a, b = [x.strip() for x in args.compare.split(",")]
+        print(similar_compare(a, b))
     else:
         ap.print_help()
 

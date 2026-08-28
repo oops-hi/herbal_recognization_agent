@@ -1,14 +1,19 @@
 <script setup lang="ts">
 /* 智能体对话区：SSE 流式工具链实时展示（main.js 对话逻辑 + createTimeline 原逻辑） */
-import { nextTick, ref } from 'vue'
+import { nextTick, reactive, ref } from 'vue'
 import ChatMessage from './ChatMessage.vue'
 import TimelineItem, { type ToolStep } from './TimelineItem.vue'
 import { useClientId } from '../composables/useClientId'
 import { postAndStream } from '../composables/useSseStream'
 
+interface Evidence {
+  source: string
+}
 interface ChatMsg {
   kind: string // user | assistant | error | system-note
   text: string
+  refuseReason?: string // 二期 P2：refuse_reason 四类结构化（知识缺口/置信不足/域外图/合规边界）
+  evidence?: Evidence[] // 二期 P2：证据链（回答依据来源，带版本）
 }
 interface StreamEvent {
   type: string
@@ -16,6 +21,9 @@ interface StreamEvent {
   arguments?: Record<string, unknown>
   result?: string
   text?: string
+  agent?: string
+  refuse_reason?: string
+  evidence?: Evidence[]
 }
 
 const clientId = useClientId()
@@ -23,8 +31,13 @@ const chatBody = ref<HTMLElement>()
 const chatInput = ref<HTMLTextAreaElement>()
 const sendBtn = ref<HTMLButtonElement>()
 
-const messages = ref<ChatMsg[]>([])
-const timelines = ref<{ steps: ToolStep[] }[]>([])
+// 按时间顺序的对话单元流：msg（用户/回答/提示）与 timeline（工具链）交错排列
+interface ChatUnit {
+  kind: 'msg' | 'timeline'
+  msg?: ChatMsg
+  steps?: ToolStep[]
+}
+const units = ref<ChatUnit[]>([])
 const streaming = ref(false)
 
 function scrollBottom(): void {
@@ -33,23 +46,35 @@ function scrollBottom(): void {
   })
 }
 
-function addMsg(kind: string, text: string): void {
-  messages.value.push({ kind, text })
+function addMsg(kind: string, text: string, extra?: Partial<ChatMsg>): void {
+  units.value.push({ kind: 'msg', msg: { kind, text, ...extra } })
   scrollBottom()
 }
 
-function handleEvent(ev: StreamEvent, tl: { steps: ToolStep[] }): void {
+function addTimeline(): ChatUnit {
+  // ⚠️ 必须 reactive 创建：普通对象 push 进 ref 数组后被转成代理，
+  //    原引用 steps.push 会绕过代理不触发更新（工具链不逐条弹出）
+  const unit: ChatUnit = { kind: 'timeline', steps: reactive([] as ToolStep[]) }
+  units.value.push(unit)
+  return unit
+}
+
+function handleEvent(ev: StreamEvent, tl: ChatUnit): void {
   switch (ev.type) {
     case 'tool':
-      tl.steps.push({
+      ;(tl.steps as ToolStep[]).push({
         name: ev.name || '',
+        agent: ev.agent,
         arguments: ev.arguments || {},
         result: ev.result || ''
       })
       scrollBottom()
       break
     case 'answer':
-      addMsg('assistant', ev.text || '（无内容）')
+      addMsg('assistant', ev.text || '（无内容）', {
+        refuseReason: ev.refuse_reason,
+        evidence: ev.evidence
+      })
       break
     case 'error':
       addMsg('error', ev.text || '服务异常')
@@ -62,8 +87,7 @@ async function send(): Promise<void> {
   if (!q || streaming.value) return
   if (chatInput.value) chatInput.value.value = ''
   addMsg('user', q)
-  const tl = { steps: [] }
-  timelines.value.push(tl)
+  const tl = addTimeline()
   streaming.value = true
   if (sendBtn.value) sendBtn.value.disabled = true
 
@@ -100,8 +124,11 @@ defineExpose({ pushSystemNote })
 <template>
   <h2>智能体对话 <span class="chat-sub">（工具调用链实时展示）</span></h2>
   <div class="chat-body" ref="chatBody">
-    <ChatMessage v-for="(m, i) in messages" :key="'m' + i" :kind="m.kind" :text="m.text" />
-    <TimelineItem v-for="(tl, i) in timelines" :key="'t' + i" :steps="tl.steps" />
+    <template v-for="(u, i) in units" :key="'u' + i">
+      <ChatMessage v-if="u.kind === 'msg'" :kind="u.msg!.kind" :text="u.msg!.text"
+                   :refuse-reason="u.msg!.refuseReason" :evidence="u.msg!.evidence" />
+      <TimelineItem v-else :steps="u.steps || []" />
+    </template>
   </div>
 
   <div class="chat-input">
