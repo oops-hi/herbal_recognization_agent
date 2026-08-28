@@ -21,6 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ⚠️ **polars 1.44.1（2026-08-27 补装）**：ultralytics 8.4.130 的 `read_results_csv`（保存检查点）**硬依赖** polars，缺它训练第一个 epoch 就挂；二进制与主包拆分，须 `pip install --no-deps polars polars-runtime-32`（后者包名不是 polars-polars）
 - ⚠️ **训练启动会下载 yolo26n.pt 做 AMP 检查**：GitHub 直连极慢（30KB/s 级），表现为"启动后 GPU 0%、进程卡死"；已缓存到项目根 `weights/yolo26n.pt`（已 gitignore），且训练脚本设 `YOLO_OFFLINE=true` 会跳过。勿删 weights/，删了下次训练又要卡十几分钟
 - ⚠️ **Windows DLL 加载顺序**：`import torch` 必须先于 matplotlib/scipy（否则 c10.dll WinError 1114）；evaluate.py 的 ultralytics import 必须放文件最顶部
+- ⚠️ **PyInstaller 打包雷（2026-08-28 修复）**：PyInstaller 会把 conda 环境的旧版 VC++ 运行时（vcruntime140/msvcp140 14.27、ucrtbase 10.0.22621）收进 `_internal`，其 DLL 搜索顺序抢在 System32 之前 → 打包后 exe `import torch` 报 **WinError 1114**（c10.dll 初始化失败）。`herbal-backend.spec` 已有 `RUNTIME_EXCLUDE` 过滤（依赖系统 14.51+/26100+ 运行时）；**改 spec 时不要移除该过滤**，也不要手工往 `_internal` 里补 vcruntime/msvcp DLL
 - ⚠️ **conda run 缓冲输出**：后台跑长任务时 `conda run -n task python` 的 stdout 会缓冲到进程结束才落盘，看不到中途进度；长任务用 `D:\CondaEnv\task\python.exe -u` 直调 + `PYTHONUNBUFFERED=1`
 
 ### 环境红线（违反=显卡直接不可用，训练全挂）
@@ -52,7 +53,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 │   ├── prompts.py         # System Prompt（中文，含溯源/拒答/合规规则）
 │   └── core.py            # ReAct 循环 ★核心
 ├── demo_agent.py          # 命令行智能体（先于 Flask 跑通调试）
-├── app.py                 # Flask
+├── app.py                 # Flask（动态端口握手 + Vue 产物托管 + 旧模板兜底）
+├── frontend/              # ★ Vue3 + Electron 桌面版（electron-vite 工程）
+│   ├── src/main/          # 主进程：spawn 后端 → stdout HERB_READY_PORT 握手 → 窗口
+│   ├── src/renderer/      # Vue3 SPA（hash 路由 #/ #/graph，d3 npm 依赖，0 外部请求）
+│   └── electron-builder.yml  # NSIS 安装包（extraResources 挂后端 onedir）
+├── herbal-backend.spec    # PyInstaller onedir（datas：models/kg.json/frontend/out/renderer）
+├── scripts/               # build-backend.bat（仅后端）/ build-all.bat（一键出包，staging 英文路径）
 ├── templates/  static/  uploads/
 └── data/raw/  data/herbs_cls/
 ```
@@ -88,8 +95,15 @@ conda run -n task python train.py            # 训练（yolo8n-cls → best.pt�
 conda run -n task python evaluate.py         # 跨域测试（Dataset2）+ per-class F1
 conda run -n task python -m kg.query --herb 枸杞子 --compat 瓜蒌皮,川乌 --formulas 山楂
 conda run -n task python demo_agent.py --image <图片> --q "这个能和菊花一起泡水吗？我最近眼睛干"
-conda run -n task python app.py              # http://localhost:5000
+conda run -n task python app.py              # http://localhost:5000（旧 Web 版）
+
+# 桌面版（vue-electron-exe 分支）
+cd frontend && npm run dev                   # 开发：自动拉起 task python 后端 + Electron 窗口
+scripts\build-backend.bat                    # 仅打包后端 exe（PyInstaller）
+scripts\build-all.bat                        # 一键出包 → C:\herbal_stage\frontend\release\*.exe
 ```
+
+**桌面版运行机制**：Electron 主进程 spawn 后端（dev=Conda python app.py / prod=resources 里 PyInstaller exe），stdout 打印 `HERB_READY_PORT=<port>` 握手，窗口 loadURL `http://127.0.0.1:<port>/`（Flask 托管 Vue 产物，同源零 CORS、SSE 原样可用）。退出时 `taskkill /T` 整树杀。**打包红线**：PyInstaller 必须 `D:\CondaEnv\task\python.exe -m`；出包动作走 `C:\herbal_stage` 英文路径（项目路径含中文，PyInstaller/NSIS 有缺陷）；`herbal-backend.spec` 里 excludes 已排 train/evaluate/sklearn/matplotlib/polars（防 DLL 顺序雷 + 省体积）。
 
 ## 验证方法（验收=答辩演示 7 步，见 docs/需求分析.md 第 10 章）
 
