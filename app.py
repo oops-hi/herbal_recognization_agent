@@ -17,6 +17,7 @@ import time
 import uuid
 from pathlib import Path
 
+import requests
 from flask import Flask, Response, jsonify, render_template, request, send_from_directory, stream_with_context
 from PIL import Image, UnidentifiedImageError
 from werkzeug.serving import make_server
@@ -28,6 +29,9 @@ from config import (
     MAX_UPLOAD_MB,
     ALLOWED_EXT,
     LOW_CONF_THRESHOLD,
+    llm_state,
+    normalize_endpoint,
+    save_llm_config,
 )
 from agent import core
 from kg import builder, query as kq
@@ -200,7 +204,7 @@ def chat():
         if not core.is_configured():
             yield sse_event({
                 "type": "error",
-                "text": "未配置 DEEPSEEK_API_KEY，对话服务不可用。请配置 .env 后重启。",
+                "text": "未配置 API 密钥，对话服务不可用。请点击右上角 ⚙️ 设置页配置后立即生效。",
                 "status": "no_key",
             })
             return
@@ -220,6 +224,77 @@ def chat():
             "Connection": "keep-alive",
         },
     )
+
+
+# ---------- LLM 配置（设置页 · 应用内热更新，无需重启） ----------
+
+@app.get("/api/config")
+def config_get():
+    """当前 LLM 配置快照（key 只回显掩码）。"""
+    return jsonify(llm_state())
+
+
+@app.post("/api/config")
+def config_post():
+    """保存 LLM 配置：写 exe 旁 .env → 热更新运行状态（对话立即生效）。
+
+    入参 {base_url, api_key, model, clear_key}；api_key 留空 = 保留已保存 key。
+    """
+    data = request.get_json(silent=True) or {}
+    try:
+        save_llm_config(
+            data.get("base_url", ""),
+            data.get("api_key", ""),
+            data.get("model", ""),
+            clear_key=bool(data.get("clear_key")),
+        )
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    return jsonify({"ok": True, **llm_state()})
+
+
+@app.post("/api/config/test")
+def config_test():
+    """用提交的未保存值发最小 ping 请求，验证连通性（不落盘、不做工具链全链路）。"""
+    data = request.get_json(silent=True) or {}
+    try:
+        url = normalize_endpoint(data.get("base_url", ""))
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    model = (data.get("model") or "").strip()
+    key = (data.get("api_key") or "").strip()
+    if not model:
+        return jsonify({"error": "模型名不能为空"}), 400
+    if not key:
+        # 未填新 key：退回到已保存 key 测试（若都无 → 明确提示）
+        import os
+        key = os.environ.get("DEEPSEEK_API_KEY", "")
+        if not key:
+            return jsonify({"error": "未填写 API Key（且当前没有已保存的 Key）"}), 400
+
+    hint = {
+        401: "鉴权失败（401）：API Key 无效，请检查后重试",
+        402: "账户余额不足（402），请到服务商后台充值",
+        404: "接口路径不存在（404）：请检查 API 地址是否以 /chat/completions 结尾",
+        429: "请求过于频繁（429）：请稍后再试",
+    }
+    try:
+        resp = requests.post(
+            url,
+            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+            json={"model": model, "messages": [{"role": "user", "content": "ping"}],
+                  "max_tokens": 1, "stream": False},
+            timeout=10,
+        )
+    except requests.Timeout:
+        return jsonify({"error": "连接超时：请检查 API 地址与网络"}), 502
+    except requests.ConnectionError:
+        return jsonify({"error": "无法连接到该地址：请检查 API 地址是否正确、服务是否已启动（本地模型如 Ollama 需先运行）"}), 502
+    if resp.status_code == 200:
+        return jsonify({"ok": True, "message": f"连接成功（{model}），配置可正常使用"})
+    if resp.status_code in hint:
+        return jsonify({"error": hint[resp.status_code]}), 400
+    return jsonify({"error": f"服务返回异常（{resp.status_code}）：{resp.text[:120]}"}), 400
 
 
 # ---------- 图谱 / 档案 / 健康 ----------

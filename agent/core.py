@@ -20,13 +20,11 @@ import os
 import time
 
 import requests
-from dotenv import load_dotenv
 
-from config import DEEPSEEK_API_URL, DEEPSEEK_MODEL, ENV_PATH, LLM_TIMEOUT, MAX_TURNS
+import config  # 间接访问常量：设置页 save_llm_config() 热更新后本模块即时生效
 from . import prompts, tools
 
-# 打包后 .env 在 exe 旁（frozen 分支）；开发态在项目根 —— 统一走 config.ENV_PATH
-load_dotenv(ENV_PATH)
+# .env 由 config.py 统一加载（ENV_PATH 含打包 frozen 分支）；本模块只读 os.environ
 
 HERB_CTX_PREFIX = "【当前识别上下文】"
 
@@ -49,7 +47,7 @@ def _chat_completion(messages: list[dict], with_tools: bool = True) -> dict:
         raise RuntimeError("未配置 DEEPSEEK_API_KEY")
 
     payload = {
-        "model": DEEPSEEK_MODEL,
+        "model": config.DEEPSEEK_MODEL,
         "messages": messages,
         "temperature": 0.3,   # 工具调用求稳，压低随机性
         "max_tokens": 1024,
@@ -61,13 +59,13 @@ def _chat_completion(messages: list[dict], with_tools: bool = True) -> dict:
 
     def _post() -> requests.Response:
         return requests.post(
-            DEEPSEEK_API_URL,
+            config.DEEPSEEK_API_URL,
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
             json=payload,
-            timeout=LLM_TIMEOUT,
+            timeout=config.LLM_TIMEOUT,
         )
 
     resp = _post()
@@ -145,11 +143,11 @@ def stream_run(
     messages.append({"role": "user", "content": question})
 
     if not _api_key():
-        yield {"type": "error", "text": "未配置 DEEPSEEK_API_KEY，对话服务不可用（请配置 .env）。", "status": "no_key"}
+        yield {"type": "error", "text": "未配置 API 密钥，对话服务不可用。请点击右上角 ⚙️ 设置页配置。", "status": "no_key"}
         return
 
     turns = 0
-    while turns < MAX_TURNS:
+    while turns < config.MAX_TURNS:
         turns += 1
         try:
             msg = _chat_completion(messages)
@@ -204,7 +202,7 @@ def stream_run(
 
     yield {
         "type": "error",
-        "text": f"已达到最大工具轮次（{MAX_TURNS}），未能收敛出最终回答。请尝试把问题拆细。",
+        "text": f"已达到最大工具轮次（{config.MAX_TURNS}），未能收敛出最终回答。请尝试把问题拆细。",
         "status": "error",
     }
 
