@@ -170,12 +170,14 @@ def upload():
 
     if vision_meta["state"] == "non_herb":
         # 域外图一票否决（VLM 能力实测边界：域外判定可靠，域内细粒度弱于本地——仅此方向有否决权）
+        cat = vision_meta.get("category") or ""
+        hint = f"疑似「{cat}」照片" if cat else "图片可能不是中药饮片"
         return jsonify({
             "status": "low_confidence",   # 复用前端既有拒答卡片（后端字段向后兼容扩展）
             "refuse_reason": "域外图",
             "top3": cards,
             "advice": [
-                "云端视觉复核判定：图片可能不是中药饮片（域外图），拒绝下结论",
+                f"云端视觉复核判定：{hint}，非中药饮片，拒绝下结论",
                 "请上传干燥饮片特写（果实种子类）、光照均匀、纯色背景",
                 "若确为药材请重新拍摄后重试",
             ],

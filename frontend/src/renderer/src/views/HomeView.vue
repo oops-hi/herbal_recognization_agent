@@ -28,6 +28,7 @@ interface VisionMeta {
   vlm_top1?: string
   verdict?: string
   reason?: string
+  category?: string // 域外粗分类（仅 non_herb 时展示，如「猫科动物」）
 }
 
 const recData = ref<RecCardData | null>(null)
@@ -39,7 +40,7 @@ const visionBadgeText = (v: VisionMeta): string => {
   switch (v.state) {
     case 'consistent': return '双通道一致（云端复核：' + (v.vlm_top1 || '') + '）'
     case 'conflict': return '双通道分歧（云端：' + (v.vlm_top1 || '?') + '），维持本地结论'
-    case 'non_herb': return '云端判定：域外图，拒绝下结论'
+    case 'non_herb': return '云端判定：' + (v.category ? '疑似' + v.category + '，' : '') + '域外图，拒绝下结论'
     case 'none': return '云端复核：未能确认，未下结论'
     case 'unavailable': return '云端复核不可用，已回退本地结论'
     default: return '云端复核未参与'

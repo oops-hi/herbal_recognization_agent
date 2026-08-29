@@ -143,11 +143,13 @@ def _build_prompt() -> str:
         "你是中药饮片图像复核助手。请判断图片是否为下列 20 类果实种子类中药饮片之一："
         f"{names}。\n"
         "规则：\n"
-        "1. 只输出 JSON，格式 {\"candidates\": [\"药材名\"], \"verdict\": \"none\" 或 \"non_herb\"}；\n"
+        "1. 只输出 JSON，格式 {\"candidates\": [\"药材名\"], \"verdict\": \"none\" 或 \"non_herb\", \"category\": \"粗分类\"}；\n"
         "2. candidates 只允许上述名单里的药材名（可多个，按匹配度排序）；\n"
-        "3. 图片不是任何一类药材（如动物/风景/人像/其他物品）→ verdict 填 non_herb，candidates 留空；\n"
-        "4. 看不出、不确定 → verdict 填 none，candidates 留空；\n"
-        "5. 严禁输出药性、功效、用量、主治、产地等任何知识内容，只做图像归类判断。"
+        "3. 图片不是任何一类药材（如动物/风景/人像/其他物品）→ verdict 填 non_herb，candidates 留空，\n"
+        "   category 填图片内容的人类可读粗分类（短名词，≤12 字，如\"猫科动物\"\"犬科动物\"\"花草植物\"\n"
+        "   \"日常用品\"\"食物\"\"人像\"\"风景\"等）；\n"
+        "4. 看不出、不确定 → verdict 填 none，candidates 留空，category 留空；\n"
+        "5. 严禁输出药性、功效、用量、主治、产地等任何知识内容，category 严禁写药材名，只做图像归类判断。"
     )
 
 
@@ -155,7 +157,7 @@ def verify(image_path: str | Path) -> dict:
     """调用云端 VLM，返回规范化结果（绝不抛异常，fail-soft）。
 
     返回 dict：
-      {"state": "ok", "candidates": [归一化中文名], "verdict": "none"|"non_herb"}
+      {"state": "ok", "candidates": [归一化中文名], "verdict": "none"|"non_herb", "category": 域外粗分类}
       {"state": "unavailable", "reason": "..."}     # 断网/超时/未配置/白名单校验失败
     """
     if not is_enabled():
@@ -220,11 +222,27 @@ def verify(image_path: str | Path) -> dict:
     return parsed
 
 
+def _clean_category(raw) -> str:
+    """域外粗分类清洗：去引号/括号/标点，限长，禁药名与知识词（越权即丢弃）。"""
+    if not isinstance(raw, str):
+        return ""
+    c = re.sub(r"[「」\"'\[\]（）()、,，。；;]", "", raw).strip()
+    if len(c) > 12:
+        c = c[:12]
+    if not c or _has_banned(c):
+        return ""
+    # 类别里混入名单药材名/别名 → 越权丢弃（category 只允许粗分类，不许写药材）
+    if c in _CLASS_NAMES or any(a in c for a in _ALIASES):
+        return ""
+    return c
+
+
 def _parse_structured(content: str) -> dict | None:
     """解析 + 结构白名单校验（防幻觉/越权输出）。
 
     - verdict 必须 ∈ {none, non_herb}
     - candidates 元素必须 ∈ 20 类名 ∪ 别名（归一化）；有候选但全在名单外 → 整体不可用
+    - category 仅作人类可读粗分类（限长/禁药名/禁知识词，违规置空）
     - 文本含药性/功效/用量等词段 → 整段丢弃
     """
     if not content or _has_banned(content):
@@ -253,7 +271,12 @@ def _parse_structured(content: str) -> dict | None:
     names = [n for n in names if n]                # 名单外名字丢弃（归一化）
     if cands and not names:
         return None                                # 有候选但全在名单外 → 不可信
-    return {"state": "ok", "candidates": names[:5], "verdict": verdict}
+    return {
+        "state": "ok",
+        "candidates": names[:5],
+        "verdict": verdict,
+        "category": _clean_category(data.get("category", "")),
+    }
 
 
 def decide(local_top3: list[tuple[str, float]], vlm: dict) -> dict:
@@ -275,7 +298,9 @@ def decide(local_top3: list[tuple[str, float]], vlm: dict) -> dict:
     local_top1 = local_top3[0][0]
     # 优先级：域外图强裁定 > 候选匹配（含一致/分歧）> 不确定 > 无候选兜底
     if vlm.get("verdict") == "non_herb":
-        return {"state": "non_herb", "vlm_top1": vlm_top1, "verdict": "non_herb"}
+        # category：域外粗分类（仅人类可读展示，如「猫科动物」，不进知识链路）
+        return {"state": "non_herb", "vlm_top1": vlm_top1, "verdict": "non_herb",
+                "category": vlm.get("category", "")}
     if vlm_top1:
         if vlm_top1 == local_top1:
             return {"state": "consistent", "vlm_top1": vlm_top1, "verdict": vlm.get("verdict", "")}

@@ -83,9 +83,11 @@ def main() -> None:
     for img in pets:
         top3 = predictor.predict_topk(str(img), k=3)
         top1, conf = top3[0]
-        state = "skipped"
+        state, cat = "skipped", ""
         if vmod.should_use_vision(top3):
-            state = vmod.decide(top3, vmod.verify(img))["state"]
+            meta = vmod.decide(top3, vmod.verify(img))
+            state = meta["state"]
+            cat = meta.get("category", "")     # 域外粗分类（纯展示，验证能带出）
         if conf >= 0.75 and state == "skipped":
             # 高置信域外图未触发 VLM（0.90+ 边界或 T3 差距大）→ 一期已知局限，warn 不 FAIL
             pet_warn += 1
@@ -95,7 +97,8 @@ def main() -> None:
             pet_fail += 1
             print(f"  [FAIL] {img.name} VLM 放行（{state}），域外图必须拒答")
         else:
-            print(f"  [OK]   {img.name} 已拒答（local={top1} {conf:.2f}, dual={state}）")
+            print(f"  [OK]   {img.name} 已拒答（local={top1} {conf:.2f}, dual={state}"
+                  + (f", category={cat}" if cat else "") + "）")
 
     # ---- fail-soft：未配置时 verify 必须不可用 ----
     from agent import vision as _v
