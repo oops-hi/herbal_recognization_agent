@@ -12,21 +12,25 @@ onMounted(() => {
 
 <template>
   <header>
-    <h1>🌿 多模态中草药识别智能体</h1>
-    <span class="tagline">图像识别 · 知识图谱 · 智能体工具链</span>
+    <!-- 标题可点击返回对话首页（Electron 无浏览器返回按钮，导航必须显式可回） -->
+    <h1><router-link to="/" class="brand-link">🌿 多模态中草药识别智能体</router-link></h1>
     <div class="header-right">
       <span class="badge" :class="model.cls" :title="model.title">{{ model.text }}</span>
       <span class="badge" :class="api.cls">{{ api.text }}</span>
+      <router-link to="/" class="badge" style="text-decoration: none">💬 对话</router-link>
       <router-link to="/graph" class="badge" style="text-decoration: none">📊 知识图谱</router-link>
       <router-link to="/settings" class="badge" style="text-decoration: none">⚙️ 设置</router-link>
     </div>
   </header>
 
-  <router-view />
+  <!-- KeepAlive：切图谱/设置页不丢对话记录（HomeView 保活，含 units/识别卡/统计） -->
+  <router-view v-slot="{ Component }">
+    <keep-alive :include="['HomeView']">
+      <component :is="Component" />
+    </keep-alive>
+  </router-view>
 
   <footer class="disclaimer">
-    <b>免责声明：</b>本工具仅供学习与科普参考，不构成医疗、诊断或用药建议；识别结果存在误差，
-    不能作为药材真伪、安全性或食用/药用依据，请以执业药师或专业机构鉴定为准；
-    有毒药材信息依据《中国药典》标注，请勿自行采食；紧急情况请立即就医。
+    <b>免责声明：</b>本工具仅供学习与科普参考，不构成医疗、诊断或用药建议；识别结果请以执业药师或专业机构鉴定为准。
   </footer>
 </template>

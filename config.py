@@ -25,6 +25,9 @@ else:
     UPLOAD_DIR = BASE_DIR / "uploads"
     ENV_PATH   = BASE_DIR / ".env"
 
+# 运行时数据（对话历史，可持久写；_MEIPASS 是退出即删的临时目录，不能放）
+SESSION_FILE = EXE_DIR / "sessions.json" if FROZEN else BASE_DIR / "sessions.json"
+
 # 加载 .env（统一在此加载一次；agent/core.py 不再自管）。
 # 幂等：已有系统环境变量优先（load_dotenv 默认 override=False）。
 load_dotenv(ENV_PATH)

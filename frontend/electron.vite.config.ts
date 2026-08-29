@@ -19,7 +19,8 @@ export default defineConfig({
       proxy: {
         '/api': { target: DEV_PROXY_TARGET, changeOrigin: true },
         '/upload': { target: DEV_PROXY_TARGET, changeOrigin: true },
-        '/chat': { target: DEV_PROXY_TARGET, changeOrigin: true }
+        '/chat': { target: DEV_PROXY_TARGET, changeOrigin: true },
+        '/uploads': { target: DEV_PROXY_TARGET, changeOrigin: true }
       }
     }
   }

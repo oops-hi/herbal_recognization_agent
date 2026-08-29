@@ -1,42 +1,20 @@
 <script setup lang="ts">
-/* 主页：上传识别（左卡）+ 智能体对话（右卡）（main.js 全量逻辑） */
+/* 主页：识别结果（左卡）+ 智能体对话（右卡，上传入口已并入对话输入框）
+   2026-08-29：上传/识别逻辑下沉到 ChatPanel（@rec-result 事件回填左卡） */
 import { ref } from 'vue'
-import UploadZone from '../components/UploadZone.vue'
 import RecCard, { type RecCardData } from '../components/RecCard.vue'
 import AdviceBox, { type AdviceData } from '../components/AdviceBox.vue'
-import ChatPanel from '../components/ChatPanel.vue'
-import { useClientId } from '../composables/useClientId'
+import ChatPanel, { type RecResultPayload } from '../components/ChatPanel.vue'
 
-const clientId = useClientId()
-const chatPanel = ref<InstanceType<typeof ChatPanel>>()
-
-interface UploadResp {
-  status: 'ok' | 'low_confidence' | 'model_not_ready'
-  top1?: string
-  confidence?: number
-  top3?: { name: string; confidence: number }[]
-  profile?: string
-  advice?: string[]
-  message?: string
-  error?: string
-  vision?: VisionMeta // 二期 V2-A6：云端 VLM 二段裁决
-}
-
-// vision.state: consistent(绿) | conflict(黄) | non_herb(红) | none(黄) | skipped/unavailable(灰)
-interface VisionMeta {
-  state: string
-  vlm_top1?: string
-  verdict?: string
-  reason?: string
-  category?: string // 域外粗分类（仅 non_herb 时展示，如「猫科动物」）
-}
+// keep-alive :include 按组件 name 匹配（script setup 按文件名推断，显式声明最稳）
+defineOptions({ name: 'HomeView' })
 
 const recData = ref<RecCardData | null>(null)
 const adviceData = ref<AdviceData | null>(null)
 const uploadError = ref('')
-const visionBadge = ref<VisionMeta | null>(null)
+const visionBadge = ref<RecResultPayload['visionBadge']>(null)
 
-const visionBadgeText = (v: VisionMeta): string => {
+const visionBadgeText = (v: NonNullable<RecResultPayload['visionBadge']>): string => {
   switch (v.state) {
     case 'consistent': return '双通道一致（云端复核：' + (v.vlm_top1 || '') + '）'
     case 'conflict': return '双通道分歧（云端：' + (v.vlm_top1 || '?') + '），维持本地结论'
@@ -47,59 +25,23 @@ const visionBadgeText = (v: VisionMeta): string => {
   }
 }
 
-function showError(msg: string): void {
-  uploadError.value = msg
-}
-
-async function onUpload(file: File): Promise<void> {
-  const fd = new FormData()
-  fd.append('image', file)
-  fd.append('client_id', clientId)
-  try {
-    const resp = await fetch('/upload', { method: 'POST', body: fd })
-    const j = (await resp.json()) as UploadResp
-    if (!resp.ok) {
-      showError(j.error || '上传失败')
-      return
-    }
-    visionBadge.value = j.vision || null
-    if (j.status === 'ok') {
-      recData.value = {
-        top1: j.top1!,
-        confidence: j.confidence!,
-        top3: j.top3!,
-        profile: j.profile || ''
-      }
-      chatPanel.value?.pushSystemNote(
-        '已识别： ' + j.top1 + '（置信度 ' + (j.confidence! * 100).toFixed(1) +
-        '%）—— 可直接提问，如『这个能和菊花一起泡水吗？』'
-      )
-    } else if (j.status === 'low_confidence') {
-      adviceData.value = { advice: j.advice!, top3: j.top3 || [] }
-    } else if (j.status === 'model_not_ready') {
-      showError(j.message + '。上传已保存，可先体验图谱查询与（配置密钥后的）对话。')
-    }
-  } catch (e) {
-    showError('网络异常：' + (e as Error).message)
-  }
-}
-
-// 上传新图时清掉旧识别卡/建议/错误
-function onReset(): void {
-  recData.value = null
-  adviceData.value = null
-  uploadError.value = ''
-  visionBadge.value = null
+// ChatPanel 识别结果回填（undefined=不改该字段；null=清空）
+function onRecResult(p: RecResultPayload): void {
+  if (p.recData !== undefined) recData.value = p.recData
+  if (p.adviceData !== undefined) adviceData.value = p.adviceData
+  if (p.visionBadge !== undefined) visionBadge.value = p.visionBadge
+  if (p.uploadError !== undefined) uploadError.value = p.uploadError || ''
 }
 </script>
 
 <template>
   <main>
-    <!-- ============ 左：上传识别区 ============ -->
-    <section class="card">
-      <h2>上传中药饮片图片</h2>
-      <UploadZone @upload="onUpload" @error="showError" @reset="onReset" />
-
+    <!-- ============ 左：识别结果（上传入口在右侧对话框 📎） ============ -->
+    <section class="card result-card">
+      <h2>识别结果</h2>
+      <div class="empty-hint" v-if="!recData && !adviceData && !uploadError && !visionBadge">
+        在右侧对话框 📎 添加或拖入图片开始识别
+      </div>
       <RecCard v-if="recData" :data="recData" />
       <AdviceBox v-if="adviceData" :data="adviceData" />
       <div class="vision-badge" v-if="visionBadge" :data-state="visionBadge.state">
@@ -108,9 +50,9 @@ function onReset(): void {
       <div class="error-box" v-if="uploadError">{{ uploadError }}</div>
     </section>
 
-    <!-- ============ 右：对话区 ============ -->
+    <!-- ============ 右：对话区（含图片上传入口） ============ -->
     <section class="card">
-      <ChatPanel ref="chatPanel" />
+      <ChatPanel @rec-result="onRecResult" />
     </section>
   </main>
 </template>

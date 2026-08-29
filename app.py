@@ -13,6 +13,7 @@ Flask Web 后端：上传识别 + 多轮对话（SSE 流式工具链）+ 图谱�
 """
 import json
 import os
+import re
 import time
 import uuid
 from pathlib import Path
@@ -26,6 +27,7 @@ from config import (
     BASE_DIR,
     FROZEN,
     UPLOAD_DIR,
+    SESSION_FILE,
     MAX_UPLOAD_MB,
     ALLOWED_EXT,
     LOW_CONF_THRESHOLD,
@@ -50,9 +52,19 @@ FRONTEND_DIST = Path(os.environ.get(
 ))
 
 # ---- 会话（服务端 dict，client_id 来自前端 localStorage） ----
-# session[client_id] = {"messages": [...], "current_herb": str|None, "last_active": ts}
+# session[client_id] = {"messages": [...], "current_herb": str|None, "last_active": ts,
+#                       "stats": {...上下文统计}, "upload_ctx": str|None(拒识上传注记)}
+# 重启不丢：本次加落盘 sessions.json（原子写 + fail-soft），与 .env 同目录
 sessions: dict[str, dict] = {}
 MAX_SESSIONS = 200
+
+# 与前端 ContextStatsBar 字段对齐（跨重启恢复时补默认值，兼容旧格式）
+SESSION_STATS_DEFAULTS = {
+    "turns": 0, "steps": 0, "llm_time": 0.0, "tool_time": 0.0,
+    "tokens_in": 0, "tokens_out": 0, "cache_hit": 0, "cache_miss": 0,
+}
+
+_SAFE_PATH_SEG = re.compile(r"^[A-Za-z0-9._-]+$")
 
 
 def _get_session(client_id: str) -> dict:
@@ -64,9 +76,94 @@ def _get_session(client_id: str) -> dict:
         "messages": [],
         "current_herb": None,
         "last_active": time.time(),
+        "stats": SESSION_STATS_DEFAULTS.copy(),
+        "upload_ctx": None,
     })
     sess["last_active"] = time.time()
     return sess
+
+
+def _load_sessions() -> None:
+    """启动时从 SESSION_FILE 恢复会话（fail-soft：缺失/损坏/非法条目一律静默丢弃）。
+
+    结构校检：messages 必须 list、current_herb str|None、stats 补默认字段、
+    last_active float 兜底；非法条目丢弃；超出 MAX_SESSIONS 按 last_active 淘汰。
+    """
+    global sessions
+    try:
+        data = json.loads(SESSION_FILE.read_text(encoding="utf-8"))
+        raw = data.get("sessions", {})
+    except (OSError, ValueError):
+        return
+    if not isinstance(raw, dict):
+        return
+    restored: dict[str, dict] = {}
+    for cid, s in raw.items():
+        if not isinstance(cid, str) or not isinstance(s, dict):
+            continue
+        msgs = s.get("messages")
+        if not isinstance(msgs, list):
+            continue
+        cur = s.get("current_herb")
+        if cur is not None and not isinstance(cur, str):
+            continue
+        uc = s.get("upload_ctx")
+        if uc is not None and not isinstance(uc, str):
+            uc = None
+        st = s.get("stats") if isinstance(s.get("stats"), dict) else {}
+        try:
+            last = float(s.get("last_active", 0)) or time.time()
+        except (TypeError, ValueError):
+            last = time.time()
+        restored[cid] = {
+            "messages": [m for m in msgs if isinstance(m, dict)],
+            "current_herb": cur,
+            "last_active": last,
+            "stats": {k: st.get(k, default) for k, default in SESSION_STATS_DEFAULTS.items()},
+            "upload_ctx": uc,
+        }
+    if len(restored) > MAX_SESSIONS:
+        for cid in sorted(restored, key=lambda k: restored[k]["last_active"])[:len(restored) - MAX_SESSIONS]:
+            restored.pop(cid, None)
+    if restored:
+        sessions = restored
+        print(f"[启动] 已恢复 {len(sessions)} 个会话（{SESSION_FILE}）")
+
+
+def _reset_messages_for_new_upload(sess: dict) -> None:
+    """新上传图片 = 新识别语境：历史里关于旧图片的问答全部作废。
+
+    实测（2026-08-29）：只靠提示词注记防不住——模型会照抄自己上一轮的句式
+    （先传猫图被拒、再传山楂，问『这是啥』仍答猫科动物；反向时还编造
+    『当前识别上下文=枸杞子』去调工具）。根因=模型对自身历史回复的自我一致性
+    偏见强于 system 注记。所以新上传时把消息历史整体切除，只留底座 system
+    prompt（HERB_CTX/UPLOAD_CTX 注记由 stream_run 按最新判定重建）。
+    tool_calls 历史随切除消失，不存在悬空 tool_calls（_sanitize_history 兜底仍在）。
+    文本-only 对话不经过 /upload，不受影响；同一张图生命周期内的多轮追问照常累积。
+    """
+    sess["messages"][:] = [
+        m for m in sess["messages"]
+        if m.get("role") == "system"
+        and str(m.get("content", "")).startswith("你是「多模态中草药识别智能体」")
+    ]
+
+
+def _save_sessions() -> None:
+    """会话落盘：原子写（.tmp + os.replace）+ fail-soft（磁盘满/只读不阻塞对话）。
+
+    消息含工具执行结果（未截断），量级答辩演示足够；JSON 序列化失败（TypeError）
+    同样静默，绝不让对话链路崩。
+    """
+    try:
+        blob = {"version": 1, "saved_at": time.time(), "sessions": sessions}
+        tmp = SESSION_FILE.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(blob, ensure_ascii=False), encoding="utf-8")
+        os.replace(tmp, SESSION_FILE)
+    except (OSError, TypeError):
+        pass
+
+
+_load_sessions()
 
 
 def _cleanup_old_uploads() -> None:
@@ -125,16 +222,22 @@ def upload():
         }), 400
 
     client_id = (request.form.get("client_id") or "").strip() or uuid.uuid4().hex
-    _get_session(client_id)
+    # 硬校验：client_id 直接拼文件路径，防目录穿越（非法值回退随机 id）
+    if not _SAFE_PATH_SEG.match(client_id):
+        client_id = uuid.uuid4().hex
+    sess = _get_session(client_id)
 
-    # 保存：uploads/<client_id>/<时间戳><ext>；新图上传时清理该用户旧图（设计 4）
+    # 保存：uploads/<client_id>/<时间戳><ext>；同名目录仅保留最近 5 张
+    # （图片消息跨重启要旧图显示；agent 识药工具按 image_path 需保留最新；24h 启动清理兜底）
+    # ⚠️ 清理必须在保存后执行：保存前算 files[:-5] 会留下 6 张
     user_dir = UPLOAD_DIR / client_id
     user_dir.mkdir(parents=True, exist_ok=True)
-    for old in user_dir.iterdir():
-        if old.is_file():
-            old.unlink(missing_ok=True)
     save_path = user_dir / f"{int(time.time())}{ext}"
     file.save(save_path)
+    files = sorted((p for p in user_dir.iterdir() if p.is_file()), key=lambda p: p.name)
+    for old in files[:-5]:
+        old.unlink(missing_ok=True)
+    image_url = f"/uploads/{client_id}/{save_path.name}"
 
     # 图片完整性校验
     try:
@@ -150,7 +253,7 @@ def upload():
     ready, reason = predictor.is_ready()
     if not ready:
         return jsonify({"status": "model_not_ready", "message": reason,
-                        "client_id": client_id}), 200
+                        "client_id": client_id, "image_url": image_url}), 200
     try:
         top3 = predictor.predict_topk(save_path, k=3)
     except Exception as e:
@@ -168,10 +271,21 @@ def upload():
     except Exception as e:
         vision_meta = {"state": "unavailable", "reason": f"vision_error:{type(e).__name__}"}
 
+    # 新上传 = 新识别语境：下面的每个判定分支都会写 current_herb/upload_ctx，
+    # 先切除旧图片相关的全部问答历史（防模型照抄旧结论——见函数注释的实测）
+    _reset_messages_for_new_upload(sess)
+
     if vision_meta["state"] == "non_herb":
         # 域外图一票否决（VLM 能力实测边界：域外判定可靠，域内细粒度弱于本地——仅此方向有否决权）
         cat = vision_meta.get("category") or ""
         hint = f"疑似「{cat}」照片" if cat else "图片可能不是中药饮片"
+        # 拒识也要进上下文：后续追问『这是什么』时模型知道上传过一张非药材图（清掉旧药材上下文）
+        sess["current_herb"] = None
+        sess["upload_ctx"] = (
+            f"用户上传过一张图片，但判定为非中药饮片（{hint}），已拒绝下结论。"
+            "若用户追问这张图片，请如实告知判定结果，并建议补拍干燥饮片特写、光照均匀、纯色背景。"
+        )
+        _save_sessions()
         return jsonify({
             "status": "low_confidence",   # 复用前端既有拒答卡片（后端字段向后兼容扩展）
             "refuse_reason": "域外图",
@@ -183,10 +297,17 @@ def upload():
             ],
             "vision": vision_meta,
             "client_id": client_id,
+            "image_url": image_url,
         }), 200
 
     if vision_meta["state"] == "none":
         # 云端无法确认 → 置信不足 + 补拍建议（不硬猜）
+        sess["current_herb"] = None
+        sess["upload_ctx"] = (
+            "用户上传过一张图片，但识别置信不足、未能确认药材（可能为非药材或拍摄条件不佳）。"
+            "若用户追问这张图片，请如实告知，并建议补拍干燥饮片特写、光照均匀、纯色背景。"
+        )
+        _save_sessions()
         return jsonify({
             "status": "low_confidence",
             "refuse_reason": "置信不足",
@@ -198,11 +319,18 @@ def upload():
             ],
             "vision": vision_meta,
             "client_id": client_id,
+            "image_url": image_url,
         }), 200
 
     # 本地低置信拒答：conf<0.60 一律拒答（VLM 一致也不放行——本地太弱，防 0.49 猫图
     # 被 VLM 误认药材后提信放行）；0.60~0.75 仅双通道一致（consistent）提信放行
     if conf < LOW_CONF_THRESHOLD and (conf < vmod.LOW_CONF_BOUND[0] or vision_meta["state"] != "consistent"):
+        sess["current_herb"] = None
+        sess["upload_ctx"] = (
+            "用户上传过一张图片，但识别置信度不足，未能确认药材（可能为非药材或拍摄条件不佳）。"
+            "若用户追问这张图片，请如实告知，并建议补拍干燥饮片特写、光照均匀、纯色背景。"
+        )
+        _save_sessions()
         return jsonify({
             "status": "low_confidence",
             "refuse_reason": "置信不足",
@@ -214,11 +342,13 @@ def upload():
             ],
             "vision": vision_meta,
             "client_id": client_id,
+            "image_url": image_url,
         }), 200
 
     # 识别成功（双通道一致提信 或 本地高置信云端未参与）→ 写入会话上下文（后续『这个/它』指代消解）
-    sess = _get_session(client_id)
     sess["current_herb"] = top1
+    sess["upload_ctx"] = None   # 成功识别新图：清掉旧的拒识注记
+    _save_sessions()
     return jsonify({
         "status": "ok",
         "top1": top1,
@@ -227,7 +357,27 @@ def upload():
         "profile": kq.get_profile(top1),
         "vision": vision_meta,
         "client_id": client_id,
+        "image_url": image_url,
     }), 200
+
+
+# ---------- 上传图片静态访问（聊天流图片消息跨重启显示用） ----------
+
+@app.get("/uploads/<client_id>/<filename>")
+def uploads_file(client_id: str, filename: str):
+    """图片静态访问：/uploads/<client_id>/<时间戳>.<ext>（与 /upload 落盘路径一致）。
+
+    防穿越双保险：白名单正则 + realpath 前缀校验（send_from_directory 内部也会拒，双保险确保明确中文错误）。
+    """
+    if not _SAFE_PATH_SEG.match(client_id) or not _SAFE_PATH_SEG.match(filename):
+        return jsonify({"error": "非法文件路径"}), 400
+    base = UPLOAD_DIR.resolve()
+    target = (base / client_id / filename).resolve()
+    if not target.is_relative_to(base):
+        return jsonify({"error": "非法文件路径"}), 400
+    if not target.is_file():
+        return jsonify({"error": "文件不存在或已清理"}), 404
+    return send_from_directory(UPLOAD_DIR, f"{client_id}/{filename}")
 
 
 # ---------- 对话（SSE 流式工具链） ----------
@@ -248,19 +398,31 @@ def chat():
         return f"data: {json.dumps(obj, ensure_ascii=False)}\n\n"
 
     def generate():
-        if not core.is_configured():
-            yield sse_event({
-                "type": "error",
-                "text": "未配置 API 密钥，对话服务不可用。请点击右上角 ⚙️ 设置页配置后立即生效。",
-                "status": "no_key",
-            })
-            return
-        for ev in core.stream_run(
-            question,
-            sess["messages"],
-            current_herb=sess.get("current_herb"),
-        ):
-            yield sse_event(ev)
+        try:
+            if not core.is_configured():
+                yield sse_event({
+                    "type": "error",
+                    "text": "未配置 API 密钥，对话服务不可用。请点击右上角 ⚙️ 设置页配置后立即生效。",
+                    "status": "no_key",
+                })
+                return
+            for ev in core.stream_run(
+                question,
+                sess["messages"],
+                current_herb=sess.get("current_herb"),
+                session_stats=sess.get("stats"),
+                upload_ctx=sess.get("upload_ctx"),
+            ):
+                yield sse_event(ev)
+        except GeneratorExit:
+            raise  # 客户端断开：历史已在 stream_run 内保证完整，正常收尾
+        except Exception as e:  # ⚠️ 任何非预期异常（非 requests 系）都必须给客户端一个 error 帧，
+            #    否则流静默掐断 → 前端「无输出、卡死」（用户实测现象，2026-08-29）
+            yield sse_event({"type": "error", "text": f"服务异常：{e}", "status": "error"})
+        finally:
+            # 落盘历史：正常收尾与客户端断开（GeneratorExit）都执行；
+            # 工具轮次两遍循环已保证历史完整，这里只把结果写入磁盘
+            _save_sessions()
 
     return Response(
         stream_with_context(generate()),
@@ -271,6 +433,58 @@ def chat():
             "Connection": "keep-alive",
         },
     )
+
+
+@app.post("/api/session/reset")
+def session_reset():
+    """重建当前会话（清空对话历史 + 识别上下文 + 上下文统计）。
+
+    client_id 不变（前端 localStorage 持久），仅服务端会话对象重建。
+    """
+    client_id = (request.get_json(silent=True) or {}).get("client_id") or ""
+    if client_id:
+        sessions.pop(client_id, None)
+        _get_session(client_id)
+        # 立刻落盘：否则重启后旧历史又复活
+        _save_sessions()
+    return jsonify({"ok": True})
+
+
+# ---------- 会话列表（历史会话查看/切换/删除，2026-08-29） ----------
+
+@app.get("/api/sessions")
+def sessions_list():
+    """会话列表（按最近活动倒序）：历史会话切换 UI 的数据源。
+
+    title = 首条用户消息（截 20 字，跳过系统注入/空消息，无则「新会话」）；
+    updated = last_active（秒级时间戳）；前端本地索引与本列表合并去重。
+    """
+    items = []
+    for cid, s in sessions.items():
+        title = ""
+        for m in s.get("messages", []):
+            if m.get("role") == "user":
+                t = str(m.get("content", "")).strip()
+                if t and not t.startswith("[系统注入]"):
+                    title = t[:20]
+                    break
+        items.append({
+            "id": cid,
+            "title": title or "新会话",
+            "updated": s.get("last_active", 0),
+            "messages": len(s.get("messages", [])),
+        })
+    items.sort(key=lambda x: x["updated"], reverse=True)
+    return jsonify({"sessions": items})
+
+
+@app.delete("/api/sessions/<client_id>")
+def session_delete(client_id: str):
+    """删除单个会话（历史会话管理）；不存在也返回 ok（幂等）。"""
+    if client_id in sessions:
+        sessions.pop(client_id, None)
+        _save_sessions()
+    return jsonify({"ok": True})
 
 
 # ---------- LLM 配置（设置页 · 应用内热更新，无需重启） ----------
