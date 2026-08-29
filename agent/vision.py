@@ -78,23 +78,23 @@ def is_enabled() -> bool:
 
 
 def should_use_vision(top3: list[tuple[str, float]]) -> bool:
-    """灰区三条件（T1 低置信 / T2 高风险混淆对 / T3 候选差距小），任一命中才调用云端。
+    """是否调用云端复核（2026-08-29 实测修订：全量触发）。
 
-    - conf < 0.60 直接拒答不走云端（省成本，app.py low_confidence 分支兜底）
-    - 0.90+ 本地可信不打扰（T2 混淆对除外——高置信照样可能认错，如宠物图 0.94）
+    原灰区三条件（T1 0.60~0.90 / T2 混淆对 / T3 候选差<0.05）实测暴露漏洞：
+    本地闭集分类器对域外图给任意置信度（0.49 的猫、0.94 的猫都存在），
+    低置信直接拒答不触发、高置信不打扰 → 域外图全部错过 VLM，0.90+ 域外
+    还会被本地错误放行（宠物图实测 0.94 木瓜）。决策矩阵不改（非 non_herb
+    绝不动本地结论，域内图复核零副作用），故放宽为**全部上传都复核**：
+    - conf < 0.60：VLM 只用于域外拒答升级（category）/ none 确认，app.py
+      低置信分支保证即使 consistent 也不放行（本地太弱）
+    - 0.90+：VLM 域外否决唯一能拦高置信域外（一期 0.94 漏洞）
+    成本可接受（每次 <5s、图 ≤1.5MB、qwen-vl-max 约 ¥0.02/次）。
     """
+    if not is_enabled():
+        return False
     if not top3:
         return False
-    top1, conf = top3[0]
-    if conf < LOW_CONF_BOUND[0]:
-        return False
-    if top1 in HIGH_RISK_PAIRS:                      # T2
-        return True
-    if conf < LOW_CONF_BOUND[1]:                     # T1
-        return True
-    if len(top3) >= 2 and conf - top3[1][1] < TOP_GAP:  # T3（Top-1 与 Top-2 差距小）
-        return True
-    return False
+    return True
 
 
 def _fix_exif(img: Image.Image) -> Image.Image:

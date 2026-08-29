@@ -6,9 +6,10 @@ eval_vision.py —— 二期 V2-A6 验收：云端 VLM 辅助验证效果评测�
   本地 top-1 命中 vs 双通道 top-1 命中。修订口径：VLM 域内细粒度弱于本地（实测
   砂仁/豆蔻→草豆蔻、苦杏仁→乌梅等系统性偏差），故 conflict 不再否决本地——
   「弱证据不能否决强证据」，conflict 保留本地结论计命中；仅 none/non_herb 拒答不命中。
-- 宠物图（tests/pets/，域外图）：低置信 3 张走原路径拒答 + 高置信 3 张触发 VLM 域外否决。
-  断言绝不错误放行 —— VLM 参与的（灰区）必须拒答（non_herb/none）；consistent/conflict
-  放行 = FAIL。conf≥0.75 且 VLM 未触发（0.90+ 高置信边界）= 一期已知局限，warn 不 FAIL。
+- 宠物图（tests/pets/，域外图）：6 张全量触发 VLM 域外复核（触发口径 2026-08-29 修订为
+  全量——本地闭集分类器对域外图给任意置信度，灰区条件挡不住 0.94 高置信域外图）。
+  断言绝不错误放行 —— non_herb/none 拒答 = OK；consistent/conflict 放行 = FAIL；
+  skipped（仅断网/未启用 fail-soft）= warn 不 FAIL。
 - fail-soft：VISION 未配置时 verify 必须返回 unavailable（本地结论不受影响）。
 
 用法（需 VISION_API_KEY + 开启，联网）：
@@ -88,10 +89,10 @@ def main() -> None:
             meta = vmod.decide(top3, vmod.verify(img))
             state = meta["state"]
             cat = meta.get("category", "")     # 域外粗分类（纯展示，验证能带出）
-        if conf >= 0.75 and state == "skipped":
-            # 高置信域外图未触发 VLM（0.90+ 边界或 T3 差距大）→ 一期已知局限，warn 不 FAIL
+        if state == "skipped":
+            # 全量触发口径下 skipped 仅剩 fail-soft（断网/未启用）→ warn 不 FAIL
             pet_warn += 1
-            print(f"  [WARN] {img.name} conf={conf:.2f} 未触发 VLM（高置信边界，一期已知局限）")
+            print(f"  [WARN] {img.name} conf={conf:.2f} VLM 未参与（fail-soft）")
         elif state in ("consistent", "conflict"):
             # VLM 参与却放行域外图（consistent 直接放行 / conflict 按新口径保留本地）→ FAIL
             pet_fail += 1

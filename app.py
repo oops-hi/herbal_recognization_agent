@@ -200,8 +200,9 @@ def upload():
             "client_id": client_id,
         }), 200
 
-    # 本地低置信（0.60≤conf<0.75）且 VLM 未确认/未参与 → 原 FR-03 拒答路径（与一期行为一致）
-    if conf < LOW_CONF_THRESHOLD and vision_meta["state"] != "consistent":
+    # 本地低置信拒答：conf<0.60 一律拒答（VLM 一致也不放行——本地太弱，防 0.49 猫图
+    # 被 VLM 误认药材后提信放行）；0.60~0.75 仅双通道一致（consistent）提信放行
+    if conf < LOW_CONF_THRESHOLD and (conf < vmod.LOW_CONF_BOUND[0] or vision_meta["state"] != "consistent"):
         return jsonify({
             "status": "low_confidence",
             "refuse_reason": "置信不足",
