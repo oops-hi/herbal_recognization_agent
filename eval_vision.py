@@ -1,14 +1,14 @@
 """
 eval_vision.py —— 二期 V2-A6 验收：云端 VLM 辅助验证效果评测（方案 §12.1）。
 
-评测口径（对照方案 12.1「混淆对 20 张 + 宠物图 3 张」）：
+评测口径（对照方案 12.1「混淆对 20 张 + 宠物图 3 张」；2026-08-29 实测修订）：
 - 混淆对 20 张（data/herbs_cls/test/ 8 个已知混淆类各 2~3 张，GT=目录名）：
-  本地 top-1 命中 vs 双通道 top-1 命中（双通道 = 本地 + VLM 裁决：consistent 提信放行，
-  conflict/none/non_herb 拒答不命中）。目标：双通道 ≥ 本地（不劣化且应更优）。
-- 宠物图 3 张（tests/pets/，域外图）：
-  断言绝不错误放行 —— VLM 参与的（灰区）必须拒答（non_herb/none/conflict）；
-  本地 conf<0.75 的必须拒答（原路径）。conf≥0.75 且 VLM 未触发（如 0.94 高置信域外图）
-  = 一期已知边界，warn 计数不 FAIL（方案触发条件表：0.90+ 本地可信不打扰）。
+  本地 top-1 命中 vs 双通道 top-1 命中。修订口径：VLM 域内细粒度弱于本地（实测
+  砂仁/豆蔻→草豆蔻、苦杏仁→乌梅等系统性偏差），故 conflict 不再否决本地——
+  「弱证据不能否决强证据」，conflict 保留本地结论计命中；仅 none/non_herb 拒答不命中。
+- 宠物图（tests/pets/，域外图）：低置信 3 张走原路径拒答 + 高置信 3 张触发 VLM 域外否决。
+  断言绝不错误放行 —— VLM 参与的（灰区）必须拒答（non_herb/none）；consistent/conflict
+  放行 = FAIL。conf≥0.75 且 VLM 未触发（0.90+ 高置信边界）= 一期已知局限，warn 不 FAIL。
 - fail-soft：VISION 未配置时 verify 必须返回 unavailable（本地结论不受影响）。
 
 用法（需 VISION_API_KEY + 开启，联网）：
@@ -62,34 +62,38 @@ def main() -> None:
             meta = vmod.decide(top3, vmod.verify(img))
             state = meta["state"]
             vlm_top1 = meta.get("vlm_top1", "")
-        # 命中口径：consistent 提信 / skipped·unavailable（云端未参与或 fail-soft 回退）＝本地结论放行；
-        # 显式拒答（conflict/none/non_herb）＝未下结论，不命中
-        dual_hit_now = l_hit and state in ("consistent", "skipped", "unavailable")
+        # 命中口径（2026-08-29 修订，实测校准）：
+        # VLM 域内细粒度弱于本地（砂仁/豆蔻→草豆蔻等系统性偏差），故 conflict 不再否决本地——
+        # 「弱证据不能否决强证据」：consistent 提信 / skipped·unavailable·conflict 均放行本地结论；
+        # 仅显式拒答（none/non_herb）＝未下结论，不命中
+        dual_hit_now = l_hit and state in ("consistent", "skipped", "unavailable", "conflict")
         dual_hit += dual_hit_now
-        if state in ("non_herb", "none", "conflict"):
+        if state in ("non_herb", "none"):
             refused_by_dual += 1
         mark = "✓" if dual_hit_now else "✗"
         print(f"  [{mark}] {img.name} GT={gt} local={top1} {conf:.2f} | dual={state}"
               + (f" vlm={vlm_top1}" if vlm_top1 else ""))
 
-    # ---- 宠物图：绝不错误放行 ----
+    # ---- 宠物图：绝不错误放行（低置信 3 张走原路径 + 高置信 3 张走 VLM 域外否决） ----
     pets = sorted(PETS_DIR.glob("*.jpg"))
     if len(pets) < 3:
         print(f"[WARN] 宠物图不足 3 张（{len(pets)}），跳过域外断言——请补齐 tests/pets/ 后重跑")
     pet_fail = pet_warn = 0
-    print("\n== 宠物图 3 张（域外拒答）==")
+    print("\n== 宠物图（域外拒答，低置信 3 + 高置信 3）==")
     for img in pets:
         top3 = predictor.predict_topk(str(img), k=3)
         top1, conf = top3[0]
         state = "skipped"
         if vmod.should_use_vision(top3):
             state = vmod.decide(top3, vmod.verify(img))["state"]
-        if state in ("consistent",):                     # VLM 放行域外图 → FAIL
-            pet_fail += 1
-            print(f"  [FAIL] {img.name} VLM 放行（consistent），应为拒答")
-        elif conf >= 0.75 and state == "skipped":        # 高置信域外图未触发 → 一期已知边界
+        if conf >= 0.75 and state == "skipped":
+            # 高置信域外图未触发 VLM（0.90+ 边界或 T3 差距大）→ 一期已知局限，warn 不 FAIL
             pet_warn += 1
-            print(f"  [WARN] {img.name} conf={conf:.2f} 未触发 VLM（0.90+ 高置信边界，一期已知局限）")
+            print(f"  [WARN] {img.name} conf={conf:.2f} 未触发 VLM（高置信边界，一期已知局限）")
+        elif state in ("consistent", "conflict"):
+            # VLM 参与却放行域外图（consistent 直接放行 / conflict 按新口径保留本地）→ FAIL
+            pet_fail += 1
+            print(f"  [FAIL] {img.name} VLM 放行（{state}），域外图必须拒答")
         else:
             print(f"  [OK]   {img.name} 已拒答（local={top1} {conf:.2f}, dual={state}）")
 

@@ -168,33 +168,32 @@ def upload():
     except Exception as e:
         vision_meta = {"state": "unavailable", "reason": f"vision_error:{type(e).__name__}"}
 
-    if vision_meta["state"] in ("non_herb", "none", "conflict"):
-        # 双通道裁决：域外图 / 不确定 / 分歧 → 不硬猜（识别结果保留供人工判断）
-        reason = "域外图" if vision_meta["state"] == "non_herb" else "置信不足"
-        if vision_meta["state"] == "non_herb":
-            advice = [
+    if vision_meta["state"] == "non_herb":
+        # 域外图一票否决（VLM 能力实测边界：域外判定可靠，域内细粒度弱于本地——仅此方向有否决权）
+        return jsonify({
+            "status": "low_confidence",   # 复用前端既有拒答卡片（后端字段向后兼容扩展）
+            "refuse_reason": "域外图",
+            "top3": cards,
+            "advice": [
                 "云端视觉复核判定：图片可能不是中药饮片（域外图），拒绝下结论",
                 "请上传干燥饮片特写（果实种子类）、光照均匀、纯色背景",
                 "若确为药材请重新拍摄后重试",
-            ]
-        elif vision_meta["state"] == "conflict":
-            vlm_top1 = vision_meta.get("vlm_top1", "")
-            advice = [
-                f"本地与云端判定不一致（云端：{vlm_top1}），暂不硬性下结论",
-                "建议补拍：干燥饮片特写、光照均匀、纯色背景",
-                "以下 Top-3 与云端判定供人工参考，请勿自行采食或药用",
-            ]
-        else:  # none
-            advice = [
+            ],
+            "vision": vision_meta,
+            "client_id": client_id,
+        }), 200
+
+    if vision_meta["state"] == "none":
+        # 云端无法确认 → 置信不足 + 补拍建议（不硬猜）
+        return jsonify({
+            "status": "low_confidence",
+            "refuse_reason": "置信不足",
+            "top3": cards,
+            "advice": [
                 "云端视觉复核未能确认图片所属药材（疑似非药材或拍摄条件不佳）",
                 "建议补拍：干燥饮片特写、光照均匀、纯色背景",
                 "以下 Top-3 供人工参考，请勿自行采食或药用",
-            ]
-        return jsonify({
-            "status": "low_confidence",   # 复用前端既有拒答卡片（后端字段向后兼容扩展）
-            "refuse_reason": reason,
-            "top3": cards,
-            "advice": advice,
+            ],
             "vision": vision_meta,
             "client_id": client_id,
         }), 200

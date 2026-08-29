@@ -38,7 +38,7 @@ const visionBadge = ref<VisionMeta | null>(null)
 const visionBadgeText = (v: VisionMeta): string => {
   switch (v.state) {
     case 'consistent': return '双通道一致（云端复核：' + (v.vlm_top1 || '') + '）'
-    case 'conflict': return '双通道分歧（云端：' + (v.vlm_top1 || '?') + '）未下结论'
+    case 'conflict': return '双通道分歧（云端：' + (v.vlm_top1 || '?') + '），维持本地结论'
     case 'non_herb': return '云端判定：域外图，拒绝下结论'
     case 'none': return '云端复核：未能确认，未下结论'
     case 'unavailable': return '云端复核不可用，已回退本地结论'
