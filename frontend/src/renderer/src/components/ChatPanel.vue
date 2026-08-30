@@ -20,6 +20,7 @@ interface ChatMsg {
   image?: string // 图片消息：blob:（上传完成前临时）/ /uploads/...（持久，跨重启显示）
   refuseReason?: string // 二期 P2：refuse_reason 四类结构化（知识缺口/置信不足/域外图/合规边界）
   evidence?: Evidence[] // 二期 P2：证据链（回答依据来源，带版本）
+  animate?: boolean // 打字机效果（仅新收到的 answer 置 true，恢复历史一律 false 不重播）
 }
 interface StreamEvent {
   type: string
@@ -63,6 +64,9 @@ interface UploadResp {
 }
 
 const emit = defineEmits<{ 'rec-result': [payload: RecResultPayload] }>()
+
+// 一键讲解入口（RecCard「📖 讲解」）：注入『讲讲X』+ 强制讲解子 Agent（force_agent，app.py 白名单校验）
+let pendingAgent: string | null = null
 
 // ---- 多会话（2026-08-29）：会话 = 服务端 client_id；本地索引 + 当前 id 由 useSessions 管理 ----
 const sessions = ref<SessionMeta[]>([])
@@ -128,7 +132,8 @@ function handleEvent(ev: StreamEvent, tl: ChatUnit): void {
     case 'answer':
       addMsg('assistant', ev.text || '（无内容）', {
         refuseReason: ev.refuse_reason,
-        evidence: ev.evidence
+        evidence: ev.evidence,
+        animate: true // 打字机逐字输出
       })
       break
     case 'error':
@@ -244,7 +249,8 @@ function restoreUnits(id: string): void {
               // blob: 临时 URL 跨重启无效，恢复时丢弃；server URL /uploads 正常保留
               msg: {
                 ...m,
-                image: m.image && !m.image.startsWith('blob:') ? m.image : undefined
+                image: m.image && !m.image.startsWith('blob:') ? m.image : undefined,
+                animate: false // 历史消息不重播打字机
               }
             })
           } else if (u.kind === 'timeline' && Array.isArray(u.steps)) {
@@ -372,6 +378,8 @@ async function send(): Promise<void> {
 
   // 只要用户打了字就继续发 /chat（识别成功走 current_herb；拒识/未就绪走服务端 upload_ctx 口径）
   if (q) {
+    const agentHint = pendingAgent // 一键讲解的 force_agent：本组请求用一次即清
+    pendingAgent = null
     const tl = addTimeline()
     streaming.value = true
     if (sendBtn.value) sendBtn.value.disabled = true
@@ -379,7 +387,7 @@ async function send(): Promise<void> {
     try {
       await postAndStream(
         '/chat',
-        { question: q, client_id: currentId.value },
+        { question: q, client_id: currentId.value, ...(agentHint ? { agent: agentHint } : {}) },
         (ev) => handleEvent(ev as StreamEvent, tl),
         abortCtrl.value.signal
       )
@@ -415,6 +423,18 @@ function onKeydown(e: KeyboardEvent): void {
 function focusInput(): void {
   chatInput.value?.focus()
 }
+
+// 识别卡「📖 讲解」入口：填入『讲讲X』并强制讲解子 Agent（确定性优先于 Router 关键词）
+function teachHerb(herb: string): void {
+  if (streaming.value || uploading.value || !herb) return
+  if (chatInput.value) {
+    chatInput.value.value = '讲讲' + herb
+    pendingAgent = '讲解'
+    void send()
+  }
+}
+
+defineExpose({ teachHerb })
 
 // ---- localStorage 保存（按当前会话分键）----
 
@@ -484,7 +504,8 @@ watch([units, stats], () => {
   <div class="chat-body" ref="chatBody">
     <template v-for="(u, i) in units" :key="'u' + i">
       <ChatMessage v-if="u.kind === 'msg'" :kind="u.msg!.kind" :text="u.msg!.text" :image="u.msg!.image"
-                   :refuse-reason="u.msg!.refuseReason" :evidence="u.msg!.evidence" />
+                   :refuse-reason="u.msg!.refuseReason" :evidence="u.msg!.evidence" :animate="u.msg!.animate"
+                   @tick="scrollBottom" />
       <TimelineItem v-else :steps="u.steps || []" />
     </template>
     <!-- 处理中指示：上传识别/思考期间（LLM 挂起/工具执行间隙）给用户持续可见的反馈，不再「看着卡死」 -->

@@ -1,15 +1,24 @@
 <script setup lang="ts">
 /* 单条消息：kind = user | assistant | error | system-note（main.js addMsg 原逻辑）
    二期 P2：assistant 消息附加 refuse_reason 标签 + 证据链（回答依据来源，溯源率 100% 验收可见）
-   2026-08-29：user 消息可带图片（/uploads server URL 或 blob: 临时 URL） */
-import { computed, ref } from 'vue'
+   2026-08-29：user 消息可带图片（/uploads server URL 或 blob: 临时 URL）
+   2026-08-30：assistant 打字机效果——animate 时逐字输出，播完切 markdown 渲染 */
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { renderMarkdown } from '../lib/markdown'
 
 interface Evidence {
   source: string
 }
 
-const props = defineProps<{ kind: string; text: string; image?: string; refuseReason?: string; evidence?: Evidence[] }>()
+const props = defineProps<{
+  kind: string
+  text: string
+  image?: string
+  refuseReason?: string
+  evidence?: Evidence[]
+  animate?: boolean // 打字机逐字播放（仅新答案；历史消息恢复为 false）
+}>()
+const emit = defineEmits<{ tick: [] }>() // 每 tick 通知父组件滚动（打字过程视图自动跟随）
 
 const who = computed(
   () =>
@@ -17,6 +26,36 @@ const who = computed(
 )
 // 仅智能体回答渲染 markdown（本地渲染器离线可用）；其余一律纯文本防 XSS
 const html = computed(() => (props.kind === 'assistant' ? renderMarkdown(props.text) : ''))
+
+// ---- 打字机：typed = 已显示字符数；步长自适应（step = 长度/100，任意长度总时长 ≈2.4s 封顶）----
+const typed = ref(0)
+const done = ref(true) // 无动画时直接完成态
+let timer: ReturnType<typeof setInterval> | undefined
+
+onMounted(() => {
+  if (!props.animate || !props.text) return
+  done.value = false
+  const step = Math.max(1, Math.ceil(props.text.length / 100))
+  timer = setInterval(() => {
+    typed.value = Math.min(props.text.length, typed.value + step)
+    emit('tick')
+    if (typed.value >= props.text.length) finishNow()
+  }, 24)
+})
+
+onUnmounted(() => {
+  if (timer) clearInterval(timer)
+})
+
+// 点击文字 → 立即显示全文（用户不耐烦可直接跳过动画）
+function finishNow(): void {
+  if (timer) {
+    clearInterval(timer)
+    timer = undefined
+  }
+  typed.value = props.text.length
+  done.value = true
+}
 // XSS 防护：图片 src 只放行合法来源——http(s)/blob:（本地预览）/server 相对路由 /uploads/
 // ⚠️ 上传成功后消息里的 image 是相对路径 /uploads/...，漏掉它图片会消失
 const safeImage = computed(() =>
@@ -37,11 +76,15 @@ const imgBroken = ref(false) // 服务端图被清理（保留 5 张策略/24h �
            @error="imgBroken = true">
       <span v-else class="chat-img-fallback">图片已清理</span>
     </template>
-    <div class="bubble" v-if="kind === 'assistant'" v-html="html"></div>
+    <!-- 打字机未播完：纯文本插值逐字显示（{{ }} 自动转义防 XSS，pre-wrap 保留换行）；点击立即显示全文 -->
+    <div v-if="kind === 'assistant' && !done" class="bubble typing" title="点击立即显示全文" @click="finishNow">
+      {{ props.text.slice(0, typed) }}<span class="caret">▍</span>
+    </div>
+    <div class="bubble" v-else-if="kind === 'assistant'" v-html="html"></div>
     <div class="bubble" v-else-if="text || kind !== 'user'">{{ text }}</div>
 
-    <!-- 二期 P2：拒识原因标签 + 证据链（仅智能体回答） -->
-    <template v-if="kind === 'assistant'">
+    <!-- 二期 P2：拒识原因标签 + 证据链（仅智能体回答；打字机播完后才展示，与「回答讲完」节奏一致） -->
+    <template v-if="kind === 'assistant' && done">
       <span class="refuse-tag" v-if="refuseReason">{{ refuseReason }}，未下结论</span>
       <div class="evidence" v-if="evidence && evidence.length">
         <div class="ev-ttl">证据链（回答依据来源）</div>
@@ -50,3 +93,22 @@ const imgBroken = ref(false) // 服务端图被清理（保留 5 张策略/24h �
     </template>
   </div>
 </template>
+
+<style scoped>
+/* 打字机：闪烁光标 + 可点击跳过提示 */
+.typing {
+  cursor: pointer;
+  user-select: none;
+}
+.caret {
+  display: inline-block;
+  width: 1px;
+  margin-left: 1px;
+  color: var(--green-dark, #2c7a4d);
+  animation: caret-blink 0.9s steps(2) infinite;
+}
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+</style>

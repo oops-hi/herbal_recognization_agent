@@ -10,6 +10,8 @@ agent/tools.py
   安全 Agent（check_compatibility + get_herb_profile）
   学习 Agent（record_feedback 新增）
 
+STUDY 二期（讲解子 Agent）：teach_query 新增（讲解知识库入口，kg/teach.py）。
+
 工具 → 底层映射：
   recognize_herb         → classifier.predictor.predict_topk
   get_herb_profile       → kg.query.get_profile
@@ -21,6 +23,7 @@ agent/tools.py
   search_herbs           → kg.query.search_herbs
   retrieve_doc           → kg.query.retrieve_doc（混合检索，药性 Agent 增强）
   record_feedback        → 学习台账 kg/data/feedback.json（错误样例入核对队列）
+  teach_query            → kg.teach.teach_query（讲解知识库：精确课文 / 向量召回）
 
 分发前必须经 REGISTRY 白名单校验（CLAUDE.md 关键设计 2）；core.py 按 AGENTS 过滤工具子集。
 """
@@ -92,6 +95,12 @@ def _search_herbs(keys: str) -> str:
 
 def _retrieve_doc(query: str) -> str:
     return kq.retrieve_doc(_must_str("query", query))
+
+
+def _teach_query(query: str) -> str:
+    """讲解知识库查询（STUDY 子 Agent 唯一入口）：精确课文优先，未覆盖开放问题向量召回。"""
+    from kg import teach as kteach  # 延迟导入：teach 依赖 retrieval（bge 模型），不进识药等路径
+    return kteach.teach_query(_must_str("query", query))
 
 
 def _vlm_verify(image_path: str) -> str:
@@ -328,6 +337,29 @@ TOOLS = [
         },
         "fn": _record_feedback,
     },
+    {
+        "name": "teach_query",
+        "agent": "讲解",
+        "description": (
+            "查询讲解知识库的课文内容（面向中草药学生/学徒的教学讲解）。"
+            "传药材名（含别名）返回该味 8 节全量课文（概览/基原与性状/性味归经/功效与主治/"
+            "应用举例/本草记载/用法用量与注意/易混与鉴别）；传开放问题（如『什么药润肺』）"
+            "做语义检索。返回内容已含档位标注（A 档药典/B 档教材/C 档古籍）与出处。"
+            "⚠️ 涉及古籍（本草记载）时只可原样转述工具给到的『原文摘录』quote 及其出处，"
+            "禁止自行引述任何古文。"
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "药材中文名/别名（要整节课），或教学问题（要语义检索）",
+                }
+            },
+            "required": ["query"],
+        },
+        "fn": _teach_query,
+    },
 ]
 
 # 白名单分发表：name → 实现
@@ -372,6 +404,12 @@ AGENTS = {
         "tools": ["record_feedback", "get_herb_profile"],
         "quota": 3,
         "trigger": "用户指出识别/知识错误（『不是X是Y』『识别错了』）",
+    },
+    "讲解": {
+        "tools": ["teach_query", "get_herb_profile", "search_herbs", "similar_compare"],
+        "quota": 4,
+        "max_tokens": 4096,  # 讲解长文（8 节课文组装）易被 1024/2048 截断在【本草记载】节之前，实测提到 4096
+        "trigger": "讲讲/科普/学习某味药、功效归纳（什么药X）、识别后一键讲解",
     },
 }
 

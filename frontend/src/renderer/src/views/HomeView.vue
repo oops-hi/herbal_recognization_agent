@@ -9,6 +9,7 @@ import ChatPanel, { type RecResultPayload } from '../components/ChatPanel.vue'
 // keep-alive :include 按组件 name 匹配（script setup 按文件名推断，显式声明最稳）
 defineOptions({ name: 'HomeView' })
 
+const chatRef = ref<InstanceType<typeof ChatPanel> | null>(null)
 const recData = ref<RecCardData | null>(null)
 const adviceData = ref<AdviceData | null>(null)
 const uploadError = ref('')
@@ -42,7 +43,7 @@ function onRecResult(p: RecResultPayload): void {
       <div class="empty-hint" v-if="!recData && !adviceData && !uploadError && !visionBadge">
         在右侧对话框 📎 添加或拖入图片开始识别
       </div>
-      <RecCard v-if="recData" :data="recData" />
+      <RecCard v-if="recData" :data="recData" @teach="(h) => chatRef?.teachHerb(h)" />
       <AdviceBox v-if="adviceData" :data="adviceData" />
       <div class="vision-badge" v-if="visionBadge" :data-state="visionBadge.state">
         {{ visionBadgeText(visionBadge) }}
@@ -52,7 +53,7 @@ function onRecResult(p: RecResultPayload): void {
 
     <!-- ============ 右：对话区（含图片上传入口） ============ -->
     <section class="card">
-      <ChatPanel @rec-result="onRecResult" />
+      <ChatPanel ref="chatRef" @rec-result="onRecResult" />
     </section>
   </main>
 </template>

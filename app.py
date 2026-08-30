@@ -391,6 +391,12 @@ def chat():
     if not question:
         return jsonify({"error": "提问内容为空"}), 400
 
+    # 前端一键入口可强制指定子 Agent（如识别卡「讲解」）；白名单校验，非法值回退 Router
+    from agent import tools as tools_mod
+    agent_hint = data.get("agent")
+    if not isinstance(agent_hint, str) or agent_hint not in tools_mod.AGENTS:
+        agent_hint = None
+
     sess = _get_session(client_id)
 
     def sse_event(obj: dict) -> str:
@@ -412,6 +418,7 @@ def chat():
                 current_herb=sess.get("current_herb"),
                 session_stats=sess.get("stats"),
                 upload_ctx=sess.get("upload_ctx"),
+                force_agent=agent_hint,
             ):
                 yield sse_event(ev)
         except GeneratorExit:

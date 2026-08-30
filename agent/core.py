@@ -74,13 +74,23 @@ SAFETY_KW = ("能一起", "一起用", "一起泡", "同用", "合用", "配伍"
              "同食", "能不能和", "能和", "十八反", "十九畏", "同时吃", "一起吃", "相畏")
 FORMULA_KW = ("方剂", "经典方", "什么方", "吃什么药", "方子", "成药", "杞菊地黄",
               "六味地黄", "保和丸", "香砂", "失眠", "咳嗽", "腹胀", "便秘", "补肾", "健脾")
+# STUDY 讲解子 Agent（面向学生/学徒的教学讲解）：显式触发词 + 教科书式功效问句
+TEACH_EXPLICIT_KW = ("讲讲", "讲一讲", "讲一下", "讲解", "科普", "想了解", "了解一下",
+                     "了解下", "介绍一下", "介绍下", "学一下", "学习一下", "备考", "考点",
+                     "课堂", "老师", "学生")
+TEACH_QUESTION_KW = ("什么药", "哪些药", "哪种药")
+# 教学问句挡回词：剂量/禁忌/配伍主题保持走安全/药性，不抢单（eval_safety 不回归）
+TEACH_BLOCK_KW = ("禁忌", "禁用", "有毒", "中毒", "孕妇", "能吃", "能喝", "吃法",
+                  "泡水", "用量", "多少克", "剂量")
 
 
 def classify_agent(question: str, image_path: str | None = None) -> str:
-    """意图分类：图片 → 识药；修正 → 学习；鉴别 → 鉴别；组合/禁忌 → 安全；方剂 → 方剂；默认药性。
+    """意图分类：图片 → 识药；修正 → 学习；讲解 → 讲解；鉴别 → 鉴别；组合/禁忌 → 安全；方剂 → 方剂；默认药性。
 
     规则优先（确定性、零成本）；无法分类走药性兜底（带 retrieve_doc 的开放问答）。
     快速失败原则：不无限级联——分类是单跳，子 Agent 内的工具调用链由模型决定。
+    定序注意：讲解分支在鉴别/安全/方剂之前（『讲讲X和Y怎么区分』→ 讲解，其工具集含 similar_compare 仍可答对比）；
+    『什么药』前缀问句在方剂之后（『吃什么药』→ 方剂），且被 TEACH_BLOCK_KW 挡回安全/药性主题。
     """
     if image_path:
         return "识药"
@@ -89,12 +99,17 @@ def classify_agent(question: str, image_path: str | None = None) -> str:
         return "药性"
     if LEARN_PAT.search(q):
         return "学习"
+    if any(k in q for k in TEACH_EXPLICIT_KW):
+        return "讲解"
     if any(k in q for k in DIFF_KW):
         return "鉴别"
     if any(k in q for k in SAFETY_KW):
         return "安全"
     if any(k in q for k in FORMULA_KW):
         return "方剂"
+    # 教科书式功效问句（『什么药润肺』）：不含剂量/禁忌等安全主题才路由讲解
+    if q.startswith(TEACH_QUESTION_KW) and not any(k in q for k in TEACH_BLOCK_KW):
+        return "讲解"
     return "药性"
 
 
@@ -186,7 +201,8 @@ def _chat_completion(messages: list[dict], agent: str | None = None) -> tuple[di
         "model": config.DEEPSEEK_MODEL,
         "messages": messages,
         "temperature": 0.3,   # 工具调用求稳，压低随机性
-        "max_tokens": 1024,
+        # 讲解 Agent 长文（8 节课文组装）需 2048；其余沿用 1024
+        "max_tokens": (tools.AGENTS.get(agent, {}) or {}).get("max_tokens", 1024),
         "stream": False,
         "tools": tools.schemas_for(agent),   # 子 Agent 工具子集（agent=None 全量）
         "tool_choice": "auto",
@@ -347,6 +363,7 @@ def stream_run(
     current_herb: str | None = None,
     session_stats: dict | None = None,
     upload_ctx: str | None = None,
+    force_agent: str | None = None,
 ):
     """ReAct 循环生成器：逐事件产出，messages 原地更新。
 
@@ -360,9 +377,13 @@ def stream_run(
 
     upload_ctx：拒识上传的上下文注记（如「判定为非中药饮片」），让追问时模型知道
                 「用户上传过一张图」及其判定；传 None 时清除旧的拒识注记。
+    force_agent：前端一键入口确定性强制指定子 Agent（白名单校验；有图片时忽略，仍走识药）。
     """
     # ---- Router：意图分类 → 子 Agent（工具子集 + System Prompt + 配额）----
-    agent = classify_agent(question, image_path)
+    agent = (
+        force_agent if (not image_path and force_agent in tools.AGENTS)
+        else classify_agent(question, image_path)
+    )
     quota = tools.AGENTS[agent]["quota"]
     max_turns = min(config.MAX_TURNS, quota)
 
@@ -482,10 +503,11 @@ def run(
     messages: list[dict],
     image_path: str | None = None,
     current_herb: str | None = None,
+    force_agent: str | None = None,
 ) -> dict:
     """stream_run 的收集包装（CLI/demo_agent 用）。messages 同样原地更新。"""
     result: dict = {"answer": "", "status": "error", "trace": [], "turns": 0}
-    for ev in stream_run(question, messages, image_path, current_herb):
+    for ev in stream_run(question, messages, image_path, current_herb, force_agent=force_agent):
         t = ev["type"]
         if t == "tool":
             result["trace"].append({

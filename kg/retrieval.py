@@ -20,6 +20,12 @@ chromadb 1.5.9 拖入 40+ 依赖（onnxruntime/kubernetes client/pydantic 2.x）
 用法：
     conda run -n task python -m kg.retrieval --ingest --force   # 重建向量库
     conda run -n task python -m kg.retrieval --query "哪种药能明目"
+    conda run -n task python -m kg.retrieval --teach-ingest      # 重建讲解向量库（STUDY）
+    conda run -n task python -m kg.retrieval --query "什么药润肺" --lib teach
+
+双库（参数化复用，全部默认参数向后兼容）：
+    kg   档案语料 data/tcm_docs → kg_rag/          （FIELDS，含 herb/section/text/source/source_edition/hash）
+    teach 讲解语料 data/teach_docs → teach_rag/     （FIELDS_TEACH，额外含 source_kind/title/quote/quote_loc）
 """
 import argparse
 import json
@@ -34,7 +40,13 @@ from config import BASE_DIR
 
 TCM_DOCS_DIR = BASE_DIR / "data" / "tcm_docs"
 KG_RAG_DIR = BASE_DIR / "kg_rag"
+TEACH_DOCS_DIR = BASE_DIR / "data" / "teach_docs"
+TEACH_RAG_DIR = BASE_DIR / "teach_rag"
 MODEL_DIR = BASE_DIR / "models" / "bge-small-zh"
+
+# 入库保留字段（kg 档案语料）；teach 讲解语料额外带 source_kind（档位）/title/quote/quote_loc
+FIELDS = ("herb", "section", "text", "source", "source_edition", "hash")
+FIELDS_TEACH = FIELDS + ("source_kind", "title", "quote", "quote_loc")
 
 DIM = 512
 MIN_SCORE = 0.45  # top-1 低于此分视为无证据（拒答走知识缺口，不硬答）
@@ -126,16 +138,18 @@ def _encode(texts: list[str]) -> np.ndarray | None:
     return mat
 
 
-def _doc_dir() -> Path:
-    """当前版本文档目录（读 MANIFEST.current）。"""
-    manifest = json.loads((TCM_DOCS_DIR / "MANIFEST.json").read_text(encoding="utf-8"))
-    return TCM_DOCS_DIR / manifest["current"] / "docs"
+def _doc_dir(docs_root: Path | None = None) -> Path:
+    """当前版本文档目录（读 MANIFEST.current；docs_root 默认 tcm 语料）。"""
+    root = docs_root or TCM_DOCS_DIR
+    manifest = json.loads((root / "MANIFEST.json").read_text(encoding="utf-8"))
+    return root / manifest["current"] / "docs"
 
 
-def _fingerprint(docs_dir: Path) -> dict | None:
-    """当前文档目录指纹：{dir, source_records_hash, file_hashes}（与 MANIFEST 比对用）。"""
+def _fingerprint(docs_root: Path | None = None) -> dict | None:
+    """当前文档目录指纹：{dir, source_records_hash}（与 MANIFEST 比对用）。"""
+    root = docs_root or TCM_DOCS_DIR
     try:
-        manifest = json.loads((TCM_DOCS_DIR / "MANIFEST.json").read_text(encoding="utf-8"))
+        manifest = json.loads((root / "MANIFEST.json").read_text(encoding="utf-8"))
         cur = manifest["current"]
         ver = next(v for v in manifest["versions"] if v["dir"] == cur)
         return {"dir": cur, "source_records_hash": ver["source_records_hash"]}
@@ -143,11 +157,14 @@ def _fingerprint(docs_dir: Path) -> dict | None:
         return None
 
 
-def ingest(force: bool = False) -> dict:
-    """data/tcm_docs → kg_rag/（向量库）。指纹一致且非 force → 跳过。"""
-    docs_dir = _doc_dir()
-    fp = _fingerprint(docs_dir)
-    index_path = KG_RAG_DIR / "index.json"
+def ingest(force: bool = False, docs_root: Path | None = None,
+           rag_dir: Path | None = None, fields: tuple = FIELDS) -> dict:
+    """文档目录 → 向量库（幂等：指纹一致且非 force → 跳过）。默认 kg 档案库。"""
+    root = docs_root or TCM_DOCS_DIR
+    rdir = rag_dir or KG_RAG_DIR
+    docs_dir = _doc_dir(root)
+    fp = _fingerprint(root)
+    index_path = rdir / "index.json"
     if not force and fp and index_path.exists():
         old = json.loads(index_path.read_text(encoding="utf-8"))
         if old.get("built_from") == fp:
@@ -159,11 +176,7 @@ def ingest(force: bool = False) -> dict:
     for path in sorted(docs_dir.glob("*.json")):
         payload = json.loads(path.read_text(encoding="utf-8"))
         for d in payload["docs"]:
-            docs.append({
-                "herb": d["herb"], "section": d["section"], "text": d["text"],
-                "source": d.get("source", ""), "source_edition": d.get("source_edition", ""),
-                "hash": d.get("hash", ""),
-            })
+            docs.append({k: d.get(k, "") for k in fields})
     if not docs:
         raise SystemExit(f"[FATAL] 文档目录为空：{docs_dir}")
 
@@ -175,23 +188,30 @@ def ingest(force: bool = False) -> dict:
         raise SystemExit("[FATAL] 模型不可用，无法入库（检查 models/bge-small-zh 是否完整）")
     print(f"[retrieval] {len(docs)} 条文档 embedding 完成（{time.time() - t0:.0f}s）", file=sys.stderr)
 
-    os.makedirs(KG_RAG_DIR, exist_ok=True)
-    np.save(KG_RAG_DIR / "vectors.npy", mat)
+    os.makedirs(rdir, exist_ok=True)
+    np.save(rdir / "vectors.npy", mat)
     index = {
         "schema_version": 1,
         "dim": DIM,
         "built_from": fp,
         "docs": docs,
     }
-    (KG_RAG_DIR / "index.json").write_text(
+    (rdir / "index.json").write_text(
         json.dumps(index, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     return {"skipped": False, "docs": len(docs)}
 
 
-def _load_index() -> tuple[list[dict], np.ndarray] | None:
-    index_path = KG_RAG_DIR / "index.json"
-    vec_path = KG_RAG_DIR / "vectors.npy"
+def ingest_teach(force: bool = False) -> dict:
+    """讲解语料库 data/teach_docs → teach_rag/（同 ingest，参数化复用）。"""
+    return ingest(force=force, docs_root=TEACH_DOCS_DIR, rag_dir=TEACH_RAG_DIR,
+                  fields=FIELDS_TEACH)
+
+
+def _load_index(rag_dir: Path | None = None) -> tuple[list[dict], np.ndarray] | None:
+    rdir = rag_dir or KG_RAG_DIR
+    index_path = rdir / "index.json"
+    vec_path = rdir / "vectors.npy"
     if not (index_path.exists() and vec_path.exists()):
         return None
     index = json.loads(index_path.read_text(encoding="utf-8"))
@@ -199,15 +219,16 @@ def _load_index() -> tuple[list[dict], np.ndarray] | None:
     return index["docs"], mat
 
 
-def search(query: str, top_k: int = 5, with_score: bool = True) -> list[dict] | None:
+def search(query: str, top_k: int = 5, with_score: bool = True,
+           rag_dir: Path | None = None) -> list[dict] | None:
     """向量召回：query（经同义词扩展）→ 归一化内积 → top-k（降序）。
     多扩展 query 时对每个文档取最大分（任一术语命中即提权）。
-    返回 None 表示检索服务不可用（调用方 fail-soft）。"""
+    返回 None 表示检索服务不可用（调用方 fail-soft）。默认 kg 档案库。"""
     qs = _expand_query(query)
     qv = _encode(qs)
     if qv is None:
         return None
-    idx = _load_index()
+    idx = _load_index(rag_dir)
     if idx is None:
         return None
     docs, mat = idx
@@ -221,6 +242,11 @@ def search(query: str, top_k: int = 5, with_score: bool = True) -> list[dict] | 
             d.pop("score", None)
         hits.append(d)
     return hits
+
+
+def search_teach(query: str, top_k: int = 5, with_score: bool = True) -> list[dict] | None:
+    """讲解向量召回（同 search，teach_rag 索引）。"""
+    return search(query, top_k=top_k, with_score=with_score, rag_dir=TEACH_RAG_DIR)
 
 
 def format_hits(hits: list[dict]) -> str:
@@ -237,19 +263,28 @@ def format_hits(hits: list[dict]) -> str:
 
 def main():
     ap = argparse.ArgumentParser(description="自研 numpy 向量检索（bge-small-zh 本地 embedding）")
-    ap.add_argument("--ingest", action="store_true", help="从 data/tcm_docs 重建向量库")
+    ap.add_argument("--ingest", action="store_true", help="从 data/tcm_docs 重建档案向量库")
+    ap.add_argument("--teach-ingest", action="store_true", help="从 data/teach_docs 重建讲解向量库")
     ap.add_argument("--force", action="store_true", help="忽略指纹强制重建")
     ap.add_argument("--query", help="检索测试")
+    ap.add_argument("--lib", choices=("kg", "teach"), default="kg",
+                    help="--query 检索哪个库（kg 档案语料 / teach 讲解语料）")
     ap.add_argument("--top-k", type=int, default=5)
     args = ap.parse_args()
 
     if args.ingest:
         r = ingest(force=args.force)
         print(json.dumps(r, ensure_ascii=False))
+    elif args.teach_ingest:
+        r = ingest_teach(force=args.force)
+        print(json.dumps(r, ensure_ascii=False))
     elif args.query:
-        hits = search(args.query, top_k=args.top_k)
+        if args.lib == "teach":
+            hits = search_teach(args.query, top_k=args.top_k)
+        else:
+            hits = search(args.query, top_k=args.top_k)
         if hits is None:
-            print("[FAIL] 检索服务不可用（模型或向量库缺失，先 --ingest）")
+            print("[FAIL] 检索服务不可用（模型或向量库缺失，先 --ingest / --teach-ingest）")
             sys.exit(1)
         print(format_hits(hits))
     else:

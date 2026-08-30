@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "note": "由 kg/build_teach_docs.py 从 data/teach_src/ 程序化生成，勿手改；重生成 = 重跑 build_teach_docs",
+  "current": "2026-09-01_v1",
+  "versions": [
+    {
+      "dir": "2026-09-01_v1",
+      "edition": "多源：《中国药典》2020 年版一部 / 教材 / 古籍（本草记载仅学术参考）",
+      "doc_count": 160,
+      "file_hashes": {
+        "乌梅.json": "87efd375f727903dfaefab15adc024a4fc9f9f999f499c4aa99194521fbb43a1",
+        "五味子.json": "02173133fda8816dfea456a10d08f35610655b0520d58647d4bebaba74931a80",
+        "地肤子.json": "cc92fd88d026615bfe348f8572cc919336a396208f268146f0c86d0517aeab81",
+        "小茴香.json": "84f4964d15e57a979d69663307201e9df12a3318277b24169d32a001cc6f43fa",
+        "山楂.json": "2cd27a93c674b7c0a6bc7d1f6022182c39922b6fa3c4fc9466bbed65158e04b5",
+        "山茱萸.json": "cd2b22b65af20982f72c1a7590c872e0656b84a25aaf04baec4dbd064d6fe72b",
+        "川楝子.json": "aa71338527819fbc24cfecaa2c9107fdba64242e6f17ca20383a429b9e4e26ab",
+        "木瓜.json": "1b2e04e852486d644a303ae4dec022179317f040194ad9a4ed0bd90e87e050eb",
+        "枸杞子.json": "4a3b68765761819148149ea68fe55a797c558bb07dbc3499f935e0983ffa57cf",
+        "栀子.json": "3e72fde29fff50178998a73cc6fe4812ef691a9fcc6db538dc2f7fa2042c3a29",
+        "桃仁.json": "c4e41ad01a136b31bba63c51f7745a3ebd1f5e54f20e73b6e21e0be25edb496d",
+        "瓜蒌皮.json": "f9c514305d6f71eb8fb36f0a80ae60bb5f27af4ba85a42e00e52d60e3b29f578",
+        "砂仁.json": "2e020fe3ac60cdc622670737e3beeece3818bc80745c9d7fec2f385beee80b71",
+        "苦杏仁.json": "fd2bac9e1e3d5174817af243d959e16579c0502b563e7abd69fd2415495b16b5",
+        "草豆蔻.json": "2a5737c6149393eac7ec869ebfeafe94d74dc174e62c949a68ce8ffd5cc2cd05",
+        "补骨脂.json": "532e0b640e04a2d6df2a37aa238c12de834d43fa125de7a650b7774f52c425b2",
+        "覆盆子.json": "de0da2e7b836195e82a8358d98878f0eb63a46b6a2457d5bf17d4a8fa04aa48e",
+        "豆蔻.json": "ebe9ea1148fbb851381d628f39e658fa61f2a34b846cd2a4a9bdc810250ff871",
+        "连翘.json": "8d1dba5f2baa2ff8641f629fadbda635ee1abee993815459b7172b85a7d041b2",
+        "金樱子.json": "225e7d080968f5f59386861c97c954ddb45c090f7b92926d508b4e7b4577070d"
+      },
+      "source_records_hash": "e238a5e3b926f6fc21c8c257c5ccdf5cb0a32f2ceb2bdd034d0447003e0c3ada"
+    }
+  ]
+}
