@@ -34,6 +34,10 @@ a = Analysis(
         ("models/best.pt", "models"),        # YOLO 权重（2.9MB）
         ("models/class_map.json", "models"), # 类别映射
         ("kg/data/kg.json", "kg/data"),      # 知识图谱单文件
+        ("kg/data/similar_guide.json", "kg/data"),  # 相似对鉴别资料库（disambiguate 运行时读）
+        # ⚠️ whitelist.json / records/ 不需要打包：仅 v2_merge/build_docs 构建期读，运行时只读 kg.json
+        # ⚠️ TODO(冻结模式 RAG)：data/tcm_docs + models/bge-small-zh 未打包，frozen exe 的
+        #   retrieve_doc/teach_query 走 fail-soft（知识缺口）；后续出包需一并打上
         ("frontend/out/renderer", "frontend_dist"),  # Vue 构建产物（HERB_SERVE_DIST=1 时托管）
     ] + dg,
     hiddenimports=dh + ["flask", "PIL._tkinter_finder"],

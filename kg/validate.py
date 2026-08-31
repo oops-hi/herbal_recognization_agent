@@ -35,6 +35,9 @@ KG_PATH       = BASE_DIR / "kg" / "data" / "kg.json"
 
 PENDING_RE = re.compile(r"（待人工核对）|\(待人工核对\)")
 
+GUIDE_PATH = BASE_DIR / "kg" / "data" / "similar_guide.json"
+GUIDE_SOURCE_ALLOWED = "《易混淆中药饮片鉴别汇总》"
+
 L2_KEYS   = ["性味", "归经", "功效", "主治", "用量", "毒性", "禁忌"]
 L1_TEXT_KEYS = ["性状", "炮制", "产地", "鉴别要点"]
 META_KEYS = ["version", "updated", "review_status", "reviewed_by", "review_date", "provenance_level"]
@@ -345,6 +348,42 @@ def validate_kg(data: dict, records: dict, manifest: dict, ledger: dict) -> Repo
     return rep
 
 
+def validate_guide() -> Report:
+    """similar_guide.json（外部鉴别资料库）结构校验：
+    独立于白名单（guide 可含白名单外药材），只查结构/非空/来源标签。"""
+    rep = Report()
+    if not GUIDE_PATH.exists():
+        rep.add_error(f"鉴别资料库缺失：{GUIDE_PATH.name}（鉴别闭环不可用）")
+        return rep
+    data = json.loads(GUIDE_PATH.read_text(encoding="utf-8"))
+    if not data.get("source", "").startswith(GUIDE_SOURCE_ALLOWED):
+        rep.add_error("guide.source 应以《易混淆中药饮片鉴别汇总》开头（来源标签）")
+    pairs = data.get("pairs", [])
+    if not isinstance(pairs, list) or not pairs:
+        rep.add_error("guide.pairs 必须为非空数组")
+        pairs = []
+    seen = set()
+    for i, p in enumerate(pairs):
+        a, b = p.get("a"), p.get("b")
+        if not a or not b:
+            rep.add_error(f"pairs[{i}] 缺 a/b")
+            continue
+        if a == b:
+            rep.add_error(f"pairs[{i}] a==b：{a}")
+        key = frozenset((a, b))
+        if key in seen:
+            rep.add_error(f"pairs[{i}] 重复对：{a}↔{b}")
+        seen.add(key)
+        if not isinstance(p.get("items", []), list) or not p.get("items"):
+            rep.add_error(f"pairs[{i}] {a}↔{b} items 必须为非空数组（可观察维度）")
+        if not p.get("how_to_distinguish"):
+            rep.add_error(f"pairs[{i}] {a}↔{b} 缺 how_to_distinguish（如何区分）")
+        if not p.get("category"):
+            rep.add_warning(f"pairs[{i}] {a}↔{b} 缺 category（药用部位分类）")
+    rep.counters["guide_pairs"] = len(pairs)
+    return rep
+
+
 def print_report(rep: Report) -> None:
     c = rep.counters
     lines = [
@@ -353,6 +392,7 @@ def print_report(rep: Report) -> None:
         f"L1 覆盖(4字段): {c.get('l1', '?')}",
         f"similar_herbs:  {c.get('similar', '?')} 味含相似对；必需对 {c.get('required_pairs', '?')}",
         f"source 带全率:  {c.get('source', '?')}",
+        f"guide 鉴别库:   {c.get('guide_pairs', '?')} 对（教材汇编 B 档）",
         f"nodes/edges:    {c.get('nodes', '?')} / {c.get('edges', '?')}",
     ]
     print("\n".join(lines))
@@ -381,6 +421,10 @@ def main():
         ledger = load_json(LEDGER_PATH) if LEDGER_PATH.exists() else {}
         rep = validate_kg(data, records, manifest, ledger)
         rep.counters["expected"] = manifest.get("expected_herb_count", len(manifest["herbs"]))
+        guide_rep = validate_guide()
+        rep.errors.extend(guide_rep.errors)
+        rep.warnings.extend(guide_rep.warnings)
+        rep.counters["guide_pairs"] = guide_rep.counters.get("guide_pairs", 0)
 
     print_report(rep)
     if not rep.ok():

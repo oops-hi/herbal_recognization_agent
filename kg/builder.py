@@ -5,6 +5,8 @@ kg.json（nodes[] + edges[]）→ networkx.MultiDiGraph。
 - 节点：herb（有档案）/ herb_minor（只存名字）/ formula（方剂）
 - 边：组成（formula→herb，attr.role=君臣佐使）/ 禁忌（herb_a↔herb_b，无向，双向各建一条，
   attr：verse / pharmacopoeia / source / note）
+- 相似边（2026-08-31）：由节点档案 L1.similar_herbs **派生**（数据不动 schema），无向，双向各建一条，
+  attr：reason / points（鉴别对照）
 - 别名解析：节点 aliases 全量索引，供 query.py 按别名查名
 - 图构建结果模块级缓存（Flask 多线程下只建一次）
 """
@@ -57,6 +59,25 @@ def load() -> nx.MultiDiGraph:
             }
             g.add_edge(edge["herb_a"], edge["herb_b"], **attrs)
             g.add_edge(edge["herb_b"], edge["herb_a"], **attrs)
+
+    # 相似边：从节点档案 L1.similar_herbs 派生（互录两方向去重为一条，双向各建一条）
+    seen_similar: set[frozenset[str]] = set()
+    for node in data["nodes"]:
+        for sim in node.get("profile", {}).get("L1", {}).get("similar_herbs", []):
+            target = _alias_index.get(sim.get("herb", ""))
+            if target is None or target == node["id"]:
+                continue
+            key = frozenset((node["id"], target))
+            if key in seen_similar:
+                continue
+            seen_similar.add(key)
+            attrs = {
+                "type": "相似",
+                "reason": sim.get("reason", ""),
+                "points": sim.get("points", []),
+            }
+            g.add_edge(node["id"], target, **attrs)
+            g.add_edge(target, node["id"], **attrs)
 
     _graph = g
     return g

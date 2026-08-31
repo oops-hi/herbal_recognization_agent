@@ -12,8 +12,8 @@ onMounted(() => {
 
 <template>
   <header>
-    <!-- 标题可点击返回对话首页（Electron 无浏览器返回按钮，导航必须显式可回） -->
-    <h1><router-link to="/" class="brand-link">🌿 多模态中草药识别智能体</router-link></h1>
+    <!-- 品牌 logo 可点击返回对话首页（Electron 无浏览器返回按钮，导航必须显式可回） -->
+    <h1><router-link to="/" class="brand-link"><img src="./assets/herb-child-logo.png" alt="多模态中草药识别智能体" class="brand-logo" /></router-link></h1>
     <div class="header-right">
       <span class="badge" :class="model.cls" :title="model.title">{{ model.text }}</span>
       <span class="badge" :class="api.cls">{{ api.text }}</span>

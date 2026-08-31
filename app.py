@@ -37,8 +37,8 @@ from config import (
     save_vision_config,
     vision_state,
 )
-from agent import core, vision as vmod
-from kg import builder, query as kq
+from agent import core, memory, vision as vmod
+from kg import builder, query as kq, disambiguate as kdg  # 相似对鉴别闭环：识别命中易混对检测
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MB * 1024 * 1024
@@ -78,6 +78,8 @@ def _get_session(client_id: str) -> dict:
         "last_active": time.time(),
         "stats": SESSION_STATS_DEFAULTS.copy(),
         "upload_ctx": None,
+        "digest_seen": 0,   # 跨对话记忆：已摘要过的 user 消息计数（memory.maybe_digest 节流）
+        "disambig_ctx": None,  # 相似对鉴别：识别命中易混对后的注记（追问特征 → 鉴别闭环）
     })
     sess["last_active"] = time.time()
     return sess
@@ -115,12 +117,20 @@ def _load_sessions() -> None:
             last = float(s.get("last_active", 0)) or time.time()
         except (TypeError, ValueError):
             last = time.time()
+        ds = s.get("digest_seen")
+        if not isinstance(ds, int) or ds < 0:
+            ds = 0
+        dc = s.get("disambig_ctx")
+        if dc is not None and not isinstance(dc, str):
+            dc = None
         restored[cid] = {
             "messages": [m for m in msgs if isinstance(m, dict)],
             "current_herb": cur,
             "last_active": last,
             "stats": {k: st.get(k, default) for k, default in SESSION_STATS_DEFAULTS.items()},
             "upload_ctx": uc,
+            "digest_seen": ds,
+            "disambig_ctx": dc,
         }
     if len(restored) > MAX_SESSIONS:
         for cid in sorted(restored, key=lambda k: restored[k]["last_active"])[:len(restored) - MAX_SESSIONS]:
@@ -281,6 +291,7 @@ def upload():
         hint = f"疑似「{cat}」照片" if cat else "图片可能不是中药饮片"
         # 拒识也要进上下文：后续追问『这是什么』时模型知道上传过一张非药材图（清掉旧药材上下文）
         sess["current_herb"] = None
+        sess["disambig_ctx"] = None   # 新图拒识：旧的相似对鉴别注记作废
         sess["upload_ctx"] = (
             f"用户上传过一张图片，但判定为非中药饮片（{hint}），已拒绝下结论。"
             "若用户追问这张图片，请如实告知判定结果，并建议补拍干燥饮片特写、光照均匀、纯色背景。"
@@ -303,6 +314,7 @@ def upload():
     if vision_meta["state"] == "none":
         # 云端无法确认 → 置信不足 + 补拍建议（不硬猜）
         sess["current_herb"] = None
+        sess["disambig_ctx"] = None
         sess["upload_ctx"] = (
             "用户上传过一张图片，但识别置信不足、未能确认药材（可能为非药材或拍摄条件不佳）。"
             "若用户追问这张图片，请如实告知，并建议补拍干燥饮片特写、光照均匀、纯色背景。"
@@ -326,6 +338,7 @@ def upload():
     # 被 VLM 误认药材后提信放行）；0.60~0.75 仅双通道一致（consistent）提信放行
     if conf < LOW_CONF_THRESHOLD and (conf < vmod.LOW_CONF_BOUND[0] or vision_meta["state"] != "consistent"):
         sess["current_herb"] = None
+        sess["disambig_ctx"] = None
         sess["upload_ctx"] = (
             "用户上传过一张图片，但识别置信度不足，未能确认药材（可能为非药材或拍摄条件不佳）。"
             "若用户追问这张图片，请如实告知，并建议补拍干燥饮片特写、光照均匀、纯色背景。"
@@ -348,6 +361,9 @@ def upload():
     # 识别成功（双通道一致提信 或 本地高置信云端未参与）→ 写入会话上下文（后续『这个/它』指代消解）
     sess["current_herb"] = top1
     sess["upload_ctx"] = None   # 成功识别新图：清掉旧的拒识注记
+    # 相似对鉴别闭环：Top-3 同现易混对 → 写鉴别注记 + 响应带 sim_pair（前端提示可追问特征）
+    sim_pairs = kdg.find_similar_pairs([n for n, _ in top3])
+    sess["disambig_ctx"] = sim_pairs[0]["tip"] if sim_pairs else None
     _save_sessions()
     return jsonify({
         "status": "ok",
@@ -358,6 +374,7 @@ def upload():
         "vision": vision_meta,
         "client_id": client_id,
         "image_url": image_url,
+        "sim_pair": sim_pairs[0] if sim_pairs else None,
     }), 200
 
 
@@ -418,7 +435,9 @@ def chat():
                 current_herb=sess.get("current_herb"),
                 session_stats=sess.get("stats"),
                 upload_ctx=sess.get("upload_ctx"),
+                disambig_ctx=sess.get("disambig_ctx"),   # 相似对鉴别：命中易混对后追问特征
                 force_agent=agent_hint,
+                memory_ctx=memory.build_context(),   # 跨对话记忆：拼进本轮 user 消息尾部（稳定前缀架构）
             ):
                 yield sse_event(ev)
         except GeneratorExit:
@@ -430,6 +449,7 @@ def chat():
             # 落盘历史：正常收尾与客户端断开（GeneratorExit）都执行；
             # 工具轮次两遍循环已保证历史完整，这里只把结果写入磁盘
             _save_sessions()
+            memory.maybe_digest(sess, client_id)   # 节流后后台自动摘要（fail-soft，绝不阻塞对话）
 
     return Response(
         stream_with_context(generate()),
@@ -472,7 +492,11 @@ def sessions_list():
         for m in s.get("messages", []):
             if m.get("role") == "user":
                 t = str(m.get("content", "")).strip()
-                if t and not t.startswith("[系统注入]"):
+                if not t or t.startswith("[系统注入]"):
+                    continue
+                # 稳定前缀架构：user 消息可能带 [系统指派] 头部，剥掉只留原问题（旧格式原样返回）
+                t = core.strip_user_wrapper(t)
+                if t:
                     title = t[:20]
                     break
         items.append({
@@ -649,6 +673,33 @@ def vision_config_test():
     if resp.status_code in hint:
         return jsonify({"error": hint[resp.status_code]}), 400
     return jsonify({"error": f"服务返回异常（{resp.status_code}）：{resp.text[:120]}"}), 400
+
+
+# ---------- 跨对话记忆（设置页「跨对话记忆」卡片 · LLM 自动摘要，agent/memory.py） ----------
+
+@app.get("/api/memory")
+def memory_get():
+    """当前记忆快照（开关 + 条目列表；设置页回显）。"""
+    return jsonify(memory.snapshot())
+
+
+@app.post("/api/memory")
+def memory_post():
+    """开关跨对话记忆（{enabled: bool}），立即生效并落盘（开启/关闭都不清已有条目）。"""
+    data = request.get_json(silent=True) or {}
+    memory.set_enabled(bool(data.get("enabled")))
+    return jsonify({"ok": True, **memory.snapshot()})
+
+
+@app.delete("/api/memory/<entry_id>")
+def memory_delete(entry_id: str):
+    """删除单条记忆（设置页逐条删除）；不存在返回 404。
+
+    entry_id 仅做内存 list 的 id 等值查找，不拼任何文件路径。
+    """
+    if not memory.delete_entry(entry_id):
+        return jsonify({"error": "记忆条目不存在"}), 404
+    return jsonify({"ok": True, **memory.snapshot()})
 
 
 # ---------- 图谱 / 档案 / 健康 ----------

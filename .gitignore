@@ -9,6 +9,9 @@ __pycache__/
 # 运行时数据：对话历史落盘（可重建）
 sessions.json
 sessions.json.tmp
+# 运行时数据：跨对话记忆用户画像（隐私数据 + 可重建，与 sessions 同待遇不入库）
+memory.json
+memory.json.tmp
 
 # 数据（体积大，手动下载）
 data/raw/

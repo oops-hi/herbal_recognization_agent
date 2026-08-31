@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /* 设置页：通用 OpenAI 兼容 LLM 配置（API 地址 / Key / 模型名）+ 视觉验证（二期 V2-A6 云端 VLM）
-   两卡独立：聊天配置（/api/config）与视觉验证（/api/vision-config）互不干扰，均写 exe 旁 .env 立即生效 */
+   + 跨对话记忆（LLM 自动摘要，/api/memory）
+   三卡独立：聊天配置 / 视觉验证 / 跨对话记忆 互不干扰，均写 exe 旁文件立即生效 */
 import { onMounted, ref } from 'vue'
 import { useHealth } from '../composables/useHealth'
 
@@ -197,9 +198,80 @@ async function test(): Promise<void> {
   }
 }
 
+// ---------- 跨对话记忆（GET/POST/DELETE /api/memory · LLM 自动画像提取） ----------
+const memEnabled = ref(false)
+const memUpdated = ref(0)
+const memEntries = ref<Array<{ id: string; ts: number; text: string; herbs: string[]; kind?: string }>>([])
+const memBusy = ref(false)
+const memMsg = ref<{ kind: 'ok' | 'err'; text: string } | null>(null)
+
+const MEM_KIND_LABELS: Record<string, string> = {
+  identity: '身份', goal: '目标', health: '健康', preference: '偏好', fact: '事实'
+}
+function memKindLabel(kind?: string): string {
+  return MEM_KIND_LABELS[kind || ''] || '偏好'
+}
+
+function memShowOk(text: string): void { memMsg.value = { kind: 'ok', text } }
+function memShowErr(text: string): void { memMsg.value = { kind: 'err', text } }
+
+async function loadMemory(): Promise<void> {
+  try {
+    const r = await fetch('/api/memory')
+    const j = await r.json()
+    memEnabled.value = !!j.enabled
+    memUpdated.value = j.updated || 0
+    memEntries.value = Array.isArray(j.entries) ? j.entries : []
+  } catch (e) {
+    memShowErr('无法读取记忆（后端服务不可用）')
+  }
+}
+
+async function saveMemory(): Promise<void> {
+  memBusy.value = true
+  try {
+    const r = await fetch('/api/memory', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enabled: memEnabled.value })
+    })
+    const j = await r.json()
+    if (!r.ok) { memShowErr(j.error || '保存失败'); return }
+    memEnabled.value = !!j.enabled
+    memUpdated.value = j.updated || 0
+    memEntries.value = Array.isArray(j.entries) ? j.entries : []
+    memShowOk(memEnabled.value
+      ? '已开启：连续对话几轮后自动整理您的偏好与常问主题'
+      : '已关闭：不再自动整理，已有条目保留')
+  } catch (e) {
+    memShowErr('保存失败：网络异常')
+  } finally {
+    memBusy.value = false
+  }
+}
+
+async function removeEntry(id: string): Promise<void> {
+  memBusy.value = true
+  try {
+    const r = await fetch('/api/memory/' + encodeURIComponent(id), { method: 'DELETE' })
+    const j = await r.json()
+    if (!r.ok) { memShowErr(j.error || '删除失败'); return }
+    memEntries.value = Array.isArray(j.entries) ? j.entries : []
+  } catch (e) {
+    memShowErr('删除失败：网络异常')
+  } finally {
+    memBusy.value = false
+  }
+}
+
+function fmtMemTime(ts: number): string {
+  return ts ? new Date(ts * 1000).toLocaleString() : '—'
+}
+
 onMounted(() => {
   void loadConfig()
   void loadVisionConfig()
+  void loadMemory()
 })
 </script>
 
@@ -322,6 +394,53 @@ onMounted(() => {
         断网 / 超时 / 余额不足自动跳过（回退本地结论），不影响识别、图谱与对话。默认关闭更省。
       </p>
     </div>
+
+    <!-- ============ 第三卡：跨对话记忆（LLM 自动摘要，默认开启） ============ -->
+    <div class="card">
+      <h2>跨对话记忆</h2>
+      <p class="sub">智能体在连续对话后自动整理您的偏好与常问主题（如「常问枸杞子搭配」「中医学生备考」），
+        新对话时自动带入。只记用户偏好，不记任何药性结论。</p>
+
+      <!-- 当前状态快照 -->
+      <div class="state-row">
+        <span class="kv">
+          <b>当前状态：</b>
+          <span class="pill" :class="memEnabled ? 'ok' : 'warn'">
+            {{ memEnabled ? '已开启' : '已关闭' }}
+          </span>
+        </span>
+        <span class="kv"><b>记忆条数：</b>{{ memEntries.length }}/20</span>
+        <span class="kv"><b>最后更新：</b>{{ fmtMemTime(memUpdated) }}</span>
+      </div>
+
+      <!-- 操作行 -->
+      <div class="actions">
+        <label class="toggle">
+          <input v-model="memEnabled" type="checkbox">
+          开启跨对话记忆
+        </label>
+        <button class="btn primary" :disabled="memBusy" @click="saveMemory">保存</button>
+      </div>
+
+      <!-- 条目列表 -->
+      <div v-if="memEntries.length" class="mem-list">
+        <div v-for="e in memEntries" :key="e.id" class="mem-item">
+          <span class="mem-kind" :class="'k-' + (e.kind || 'preference')">{{ memKindLabel(e.kind) }}</span>
+          <span class="mem-text">{{ e.text }}</span>
+          <span v-if="e.herbs && e.herbs.length" class="mem-herbs">{{ e.herbs.join('、') }}</span>
+          <button class="mem-del" :disabled="memBusy" title="删除该条记忆" @click="removeEntry(e.id)">删除</button>
+        </div>
+      </div>
+      <p v-else class="mem-empty">暂无记忆条目。连续对话几轮后，智能体会自动整理您的偏好与常问主题。</p>
+
+      <!-- 反馈条 -->
+      <div v-if="memMsg" class="feedback" :class="memMsg.kind">{{ memMsg.text }}</div>
+
+      <p class="foot-note">
+        <b>说明：</b>记忆仅存「用户偏好 / 常问主题」等用户层面信息（保存在本机 memory.json，不上传）；
+        药性 / 功效 / 用量 / 禁忌一律实时查询知识图谱，记忆不作为药性依据。
+      </p>
+    </div>
   </div>
 </template>
 
@@ -391,4 +510,47 @@ onMounted(() => {
 .feedback.ok { background: var(--green-soft); color: var(--green-dark); border: 1px solid var(--green); }
 .feedback.err { background: #fbeae7; color: #b3402f; border: 1px solid #d8a59c; }
 .foot-note { font-size: 12px; color: var(--gray); }
+
+/* ---------- 跨对话记忆卡 ---------- */
+.mem-list {
+  margin: 4px 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.mem-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+}
+.mem-item:last-child { border-bottom: none; }
+.mem-kind {
+  flex-shrink: 0;
+  padding: 0 8px;
+  border-radius: 9px;
+  font-size: 11px;
+  color: #fff;
+}
+.mem-kind.k-identity { background: #3d8b5f; }
+.mem-kind.k-goal { background: #6b5bb5; }
+.mem-kind.k-health { background: #b8863f; }
+.mem-kind.k-preference { background: #4a7ba6; }
+.mem-kind.k-fact { background: #8b5f3d; }
+.mem-text { flex: 1; color: var(--green-dark); }
+.mem-herbs { color: var(--gray); font-size: 12px; flex-shrink: 0; }
+.mem-del {
+  flex-shrink: 0;
+  padding: 2px 10px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  color: #b3402f;
+  cursor: pointer;
+}
+.mem-del:disabled { opacity: 0.6; cursor: not-allowed; }
+.mem-empty { font-size: 13px; color: var(--gray); margin: 0 0 14px; }
 </style>

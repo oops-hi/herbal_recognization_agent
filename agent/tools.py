@@ -17,6 +17,7 @@ STUDY 二期（讲解子 Agent）：teach_query 新增（讲解知识库入口�
   get_herb_profile       → kg.query.get_profile
   similar_herbs          → kg.query.similar_herbs
   similar_compare        → kg.query.similar_compare
+  disambiguate_similar   → kg.disambiguate.disambiguate_material（相似对鉴别：提问清单/研判材料）
   check_compatibility    → kg.query.check_compatibility
   find_formulas_by_herb  → kg.query.formulas_by_herb
   find_formulas_by_symptom → kg.query.formulas_by_symptom
@@ -33,6 +34,7 @@ from pathlib import Path
 
 from config import BASE_DIR
 from kg import query as kq
+from kg import disambiguate as kdg  # 相似对鉴别闭环（外部鉴别资料库 similar_guide.json）
 from classifier import predictor
 from . import vision  # 二期 V2-A6：云端 VLM 辅助验证（可选增强，默认关闭）
 
@@ -73,6 +75,18 @@ def _similar_compare(herb_a: str, herb_b: str) -> str:
     return kq.similar_compare(
         _must_str("herb_a", herb_a), _must_str("herb_b", herb_b)
     )
+
+
+def _disambiguate_similar(candidates: list[str], desc: str = "") -> str:
+    """相似对鉴别（识别命中易混候选后追问特征用）：提问清单 / 研判材料两模式。
+
+    代码只组织材料（维度对照/档案/来源档位），不评分不裁决——结论等级由 LLM 综合给出。
+    """
+    if not isinstance(candidates, list) or len(candidates) < 2:
+        return "disambiguate_similar 需要至少两个候选药材名（list）。"
+    cands = [_must_str("candidates[i]", c) for c in candidates]
+    desc = desc if isinstance(desc, str) else ""
+    return kdg.disambiguate_material(cands, desc)
 
 
 def _check_compatibility(herbs: list[str]) -> str:
@@ -238,6 +252,33 @@ TOOLS = [
         "fn": _similar_compare,
     },
     {
+        "name": "disambiguate_similar",
+        "agent": "鉴别",
+        "description": (
+            "相似对鉴别（识别命中易混候选、需向用户追问特征时用）："
+            "不传 desc = 返回该对候选的维度对照提问清单（按『一看二摸三闻四尝』组织可观察特征，"
+            "用于逐项询问用户，信息不足不强答）；"
+            "传 desc（用户描述的特征）= 返回研判材料（对照表 + 档案节选 + 来源档位），"
+            "供综合给出结论等级（可判定/部分信息/需人工）与依据。"
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "candidates": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "待区分的候选药材名（2 个以上，通常来自识别 Top-3）",
+                },
+                "desc": {
+                    "type": "string",
+                    "description": "用户描述的可观察特征（可选：省略 = 提问清单模式，提供 = 研判材料模式）",
+                },
+            },
+            "required": ["candidates"],
+        },
+        "fn": _disambiguate_similar,
+    },
+    {
         "name": "check_compatibility",
         "agent": "安全",
         "description": (
@@ -381,9 +422,9 @@ AGENTS = {
         "trigger": "用户上传图片时",
     },
     "鉴别": {
-        "tools": ["similar_herbs", "similar_compare"],
+        "tools": ["similar_herbs", "similar_compare", "disambiguate_similar"],
         "quota": 4,
-        "trigger": "『怎么区分/有什么不同/容易混淆/相似』类问题",
+        "trigger": "『怎么区分/有什么不同/容易混淆/相似』类问题 + 识别命中易混对后的追问（disambig_ctx 激活）",
     },
     "药性": {
         "tools": ["get_herb_profile", "search_herbs", "retrieve_doc"],

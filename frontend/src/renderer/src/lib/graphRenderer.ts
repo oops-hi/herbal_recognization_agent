@@ -3,7 +3,7 @@
  * 知识图谱 v2：D3 手写力导向交互图（Obsidian 双向链接视图风格，浅色画布融入米色主题）。
  * —— static/js/graph.js 1:1 移植：IIFE → ES module，DOM 依赖参数化，新增 destroy() 清理钩子。
  *
- * 数据源：GET /api/graph（kg.query.graph_dataset()，84 节点 + 84 边）
+ * 数据源：GET /api/graph（kg.query.graph_dataset()，98 节点 + 105 边：禁忌 9 + 组成 75 + 相似 21）
  * 交互：拖拽 / 缩放平移 / 悬停邻接高亮 / 点击节点聚焦 + 档案联动 / 图例筛选 / 复位
  * 断网可用：d3 由 npm 打包进 bundle，页面 0 外部请求
  */
@@ -24,11 +24,13 @@ export interface GraphNode {
 export interface GraphEdge {
   source: string
   target: string
-  type: string // 禁忌 | 组成
+  type: string // 禁忌 | 组成 | 相似
   role?: string
   verse?: string
   pharmacopoeia?: string
   note?: string
+  reason?: string // 相似边：相似点
+  points?: string[] // 相似边：本品/对比药鉴别对照（互录 points）
   source_?: { name_cn: string }
   target_?: { name_cn: string }
 }
@@ -116,7 +118,9 @@ export function renderForce(data: GraphData, opts: RenderOpts): RenderHandle {
     .selectAll('path')
     .data(edges)
     .join('path')
-    .attr('class', (d) => 'link ' + (d.type === '禁忌' ? 'link-taboo' : 'link-composition'))
+    .attr('class', (d) =>
+      'link ' + (d.type === '禁忌' ? 'link-taboo' : d.type === '相似' ? 'link-similar' : 'link-composition')
+    )
     .attr('fill', 'none')
 
   // ---------- 力模拟 ----------
@@ -127,8 +131,8 @@ export function renderForce(data: GraphData, opts: RenderOpts): RenderHandle {
       d3
         .forceLink(edges as never[])
         .id((d: GraphNode) => d.id)
-        .distance((d: GraphEdge) => (d.type === '禁忌' ? 95 : 62))
-        .strength((d: GraphEdge) => (d.type === '禁忌' ? 0.25 : 0.55))
+        .distance((d: GraphEdge) => (d.type === '禁忌' ? 95 : d.type === '相似' ? 78 : 62))
+        .strength((d: GraphEdge) => (d.type === '禁忌' ? 0.25 : d.type === '相似' ? 0.3 : 0.55))
     )
     .force('charge', d3.forceManyBody().strength(-170))
     .force('collide', d3.forceCollide().radius(collideR))
@@ -142,23 +146,25 @@ export function renderForce(data: GraphData, opts: RenderOpts): RenderHandle {
   //（graph.js 原为 JS 无类型，此处 1:1 移植，D3 运行时行为不变）
   type LinkedEdge = GraphEdge & { source: GraphNode; target: GraphNode }
 
+  // 二次贝塞尔：中点 + 法向偏移（禁忌/相似用，与组成直线区分）
+  function curvePath(d: LinkedEdge, off: number): string {
+    const sx = d.source.x!
+    const sy = d.source.y!
+    const tx = d.target.x!
+    const ty = d.target.y!
+    const mx = (sx + tx) / 2
+    const my = (sy + ty) / 2
+    const dx = tx - sx
+    const dy = ty - sy
+    const len = Math.sqrt(dx * dx + dy * dy) || 1
+    return (
+      'M' + sx + ',' + sy + 'Q' + (mx + (-dy / len) * off) + ',' + (my + (dx / len) * off) + ' ' + tx + ',' + ty
+    )
+  }
+
   function linkPath(d: LinkedEdge): string {
-    if (d.type === '禁忌') {
-      // 二次贝塞尔：中点 + 法向偏移，与组成直线区分
-      const sx = d.source.x!
-      const sy = d.source.y!
-      const tx = d.target.x!
-      const ty = d.target.y!
-      const mx = (sx + tx) / 2
-      const my = (sy + ty) / 2
-      const dx = tx - sx
-      const dy = ty - sy
-      const len = Math.sqrt(dx * dx + dy * dy) || 1
-      const off = 20
-      return (
-        'M' + sx + ',' + sy + 'Q' + (mx + (-dy / len) * off) + ',' + (my + (dx / len) * off) + ' ' + tx + ',' + ty
-      )
-    }
+    if (d.type === '禁忌') return curvePath(d, 20)
+    if (d.type === '相似') return curvePath(d, 14)
     return 'M' + d.source.x + ',' + d.source.y + 'L' + d.target.x + ',' + d.target.y
   }
 
@@ -264,6 +270,15 @@ export function renderForce(data: GraphData, opts: RenderOpts): RenderHandle {
         '<b>' + d.source.name_cn + ' × ' + d.target.name_cn + '</b>（配伍禁忌）<br>' +
           '歌诀依据：' + (d.verse || '') + '<br>' +
           '药典依据：' + pharma + note
+      )
+    } else if (d.type === '相似') {
+      // 外形相似易混：相似点 + 本品/对比药鉴别对照（数据源 = 互录 points，药典【性状】归纳）
+      const points =
+        d.points && d.points.length ? '<br>—— ' + d.points.join('<br>—— ') : ''
+      showTooltip(
+        '<b>' + d.source.name_cn + ' × ' + d.target.name_cn + '</b>（外形相似易混）<br>' +
+          '相似点：' + (d.reason || '') + points +
+          '<br><span class="tt-hint">鉴别对照出自药典【性状】归纳</span>'
       )
     } else {
       showTooltip(d.source.name_cn + ' → ' + d.target.name_cn + '（方剂组成，本品为「' + d.role + '」）')

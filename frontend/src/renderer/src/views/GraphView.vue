@@ -17,7 +17,8 @@ const chips: Chip[] = [
   { key: 'herb_minor', label: '次要节点', kind: 'dot', color: '#bdbdbd' },
   { key: 'formula', label: '经典方剂', kind: 'sq', color: '#42a5f5' },
   { key: '禁忌', label: '配伍禁忌（十八反 / 十九畏）', kind: 'line', color: '#c62828', edge: true },
-  { key: '组成', label: '方剂组成', kind: 'line', color: '#b9b2a3', edge: true }
+  { key: '组成', label: '方剂组成', kind: 'line', color: '#b9b2a3', edge: true },
+  { key: '相似', label: '外形相似易混', kind: 'line', color: '#f9a825', edge: true }
 ]
 const chipOff = ref<Record<string, boolean>>({})
 
@@ -28,7 +29,7 @@ function legendChips(): { node: Record<string, boolean>; edge: Record<string, bo
       herb_minor: !chipOff.value['herb_minor'],
       formula: !chipOff.value['formula']
     },
-    edge: { 组成: !chipOff.value['组成'], 禁忌: !chipOff.value['禁忌'] }
+    edge: { 组成: !chipOff.value['组成'], 禁忌: !chipOff.value['禁忌'], 相似: !chipOff.value['相似'] }
   }
 }
 function toggleChip(key: string): void {
@@ -84,6 +85,11 @@ interface ProfileJson {
 
 function herbProfile(j: ProfileJson): string {
   const p = j.profile!
+  // 相似药材块（2026-08-31）：L1.similar_herbs 互录对 → 名称（相似点）；无对不渲染
+  const l1 = p['L1'] as { similar_herbs?: Array<{ herb: string; reason: string }> } | undefined
+  const simBlock = l1?.similar_herbs?.length
+    ? '相似药材：' + l1.similar_herbs.map((s) => s.herb + '（' + s.reason + '）').join('；') + '\n'
+    : ''
   return (
     '【' + j.name_cn + '】' + (j.latin || '') + '\n' +
     '性味：' + p['性味'] + '\n' +
@@ -93,6 +99,7 @@ function herbProfile(j: ProfileJson): string {
     '用量：' + p['用量'] + '\n' +
     '毒性：' + p['毒性'] + '\n' +
     '禁忌：' + p['禁忌'] + '\n' +
+    simBlock +
     '出处：' + (j.source || '')
   )
 }
@@ -174,7 +181,7 @@ onBeforeUnmount(() => {
             :title="'点击显隐'" @click="toggleChip(c.key)">
         <span v-if="c.kind === 'dot'" class="dot" :style="{ background: c.color }"></span>
         <span v-else-if="c.kind === 'sq'" class="sq" :style="{ background: c.color }"></span>
-        <span v-else class="line" :style="c.edge && c.key === '组成' ? { borderColor: c.color } : {}"></span>
+        <span v-else class="line" :style="c.edge ? { borderColor: c.color } : {}"></span>
         {{ c.label }}
       </span>
       <span id="graph-stats" style="color: var(--gray)">{{ statsText }}</span>

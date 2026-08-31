@@ -350,6 +350,7 @@ def graph_dataset() -> dict:
         })
     node_ids = {n["id"] for n in nodes}
     seen_tabu = set()
+    seen_similar = set()
     for u, v, attrs in g.edges(data=True):
         if u not in node_ids or v not in node_ids:
             continue
@@ -363,6 +364,16 @@ def graph_dataset() -> dict:
                 "verse": attrs.get("verse", ""),
                 "pharmacopoeia": attrs.get("pharmacopoeia", ""),
                 "note": attrs.get("note", ""),
+            })
+        elif attrs.get("type") == "相似":
+            key = frozenset((u, v))
+            if key in seen_similar:
+                continue  # 相似边同禁忌模式：双向两条只渲染一条
+            seen_similar.add(key)
+            edges.append({
+                "source": u, "target": v, "type": "相似",
+                "reason": attrs.get("reason", ""),
+                "points": attrs.get("points", []),
             })
         elif attrs.get("type") == "组成":
             edges.append({"source": u, "target": v, "type": "组成", "role": attrs.get("role", "")})

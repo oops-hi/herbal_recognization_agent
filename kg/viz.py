@@ -3,7 +3,7 @@ kg/viz.py
 知识图谱静态可视化 → PNG（matplotlib，离线可用，不依赖任何 CDN）。
 
 - 节点：herb（绿色圆）/ herb_minor（浅灰圆）/ formula（蓝色方框）
-- 边：组成（灰色细线，标君臣佐使）/ 禁忌（红色虚线，标十八反/十九畏）
+- 边：组成（灰色细线，标君臣佐使）/ 禁忌（红色虚线，标十八反/十九畏）/ 相似（琥珀点线，外形易混对）
 - Windows 中文：Microsoft YaHei / SimHei + unicode_minus=False，否则全方框
 - 输出：static/kg_graph.png（Flask /graph 页引用）
 """
@@ -53,13 +53,16 @@ def render(output: str | None = None) -> str:
             alpha=0.9, ax=ax,
         )
 
-    # 边：组成（灰实线，标注角色）/ 禁忌（红虚线）
+    # 边：组成（灰实线，标注角色）/ 禁忌（红虚线）/ 相似（琥珀点线，外形易混对）
     comp = [(u, v) for u, v, a in g.edges(data=True) if a.get("type") == "组成"]
     taboo = [(u, v) for u, v, a in g.edges(data=True) if a.get("type") == "禁忌"]
+    similar = [(u, v) for u, v, a in g.edges(data=True) if a.get("type") == "相似"]
     if comp:
         nx.draw_networkx_edges(g, pos, edgelist=comp, edge_color="#9e9e9e", width=1.0, ax=ax)
     if taboo:
         nx.draw_networkx_edges(g, pos, edgelist=taboo, edge_color="#e53935", width=1.6, style="dashed", ax=ax)
+    if similar:
+        nx.draw_networkx_edges(g, pos, edgelist=similar, edge_color="#f9a825", width=1.4, style="dotted", ax=ax)
 
     # 禁忌边标签：十八反/十九畏
     labels = {
@@ -84,6 +87,7 @@ def render(output: str | None = None) -> str:
         plt.Line2D([0], [0], marker="s", color="w", markerfacecolor="#42a5f5", markersize=12, label="经典方剂"),
         plt.Line2D([0], [0], color="#e53935", lw=1.6, ls="--", label="配伍禁忌（十八反/十九畏）"),
         plt.Line2D([0], [0], color="#9e9e9e", lw=1.0, label="方剂组成"),
+        plt.Line2D([0], [0], color="#f9a825", lw=1.4, ls=":", label="外形相似易混"),
     ]
     ax.legend(handles=legend_items, loc="lower left", fontsize=11, framealpha=0.9)
 

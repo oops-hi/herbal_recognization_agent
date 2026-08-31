@@ -40,6 +40,16 @@ def print_evidence(evidence: list[dict], refuse_reason: str | None) -> None:
     print()
 
 
+def print_cache(stats: dict) -> None:
+    """KV 前缀缓存命中统计（稳定前缀架构验证用；累计口径与前端状态栏一致）。"""
+    hit, miss = stats.get("cache_hit", 0), stats.get("cache_miss", 0)
+    tot = hit + miss
+    if tot:
+        print(f"  [KV缓存] hit={hit} miss={miss} 命中率={hit / tot:.1%}（累计）")
+    else:
+        print("  [KV缓存] 无数据")
+
+
 def main():
     ap = argparse.ArgumentParser(description="中草药识别智能体 · 命令行演示")
     ap.add_argument("--image", help="中药饮片图片路径（可选，注入识别上下文）")
@@ -56,12 +66,14 @@ def main():
     print(prompts.get_graph_stats())
     # 会话消息由 core.run 原地更新（含 system/assistant/tool 全量消息，支持指代消解）
     messages: list[dict] = []
+    stats: dict = core._new_stats()   # 会话级上下文统计（跨轮次累计，含 KV 缓存命中）
 
     if args.q:
-        result = core.run(args.q, messages, image_path=args.image)
+        result = core.run(args.q, messages, image_path=args.image, session_stats=stats)
         print_trace(result["trace"])
         print(result["answer"])
         print_evidence(result.get("evidence", []), result.get("refuse_reason"))
+        print_cache(stats)
         if result["status"] != "ok":
             print(f"\n[状态: {result['status']}]")
         return
@@ -78,10 +90,15 @@ def main():
         if q.lower() in ("exit", "quit", "q"):
             print("再见。")
             break
-        result = core.run(q, messages, image_path=args.image)
+        # 图片只在首轮注入（messages 首轮为空，run 后原地填充）；每轮重复注入会
+        # 追加一条 [系统注入] user 消息破坏稳定前缀（KV 缓存架构）
+        result = core.run(q, messages,
+                          image_path=args.image if not messages else None,
+                          session_stats=stats)
         print_trace(result["trace"])
         print(result["answer"])
         print_evidence(result.get("evidence", []), result.get("refuse_reason"))
+        print_cache(stats)
         if result["status"] != "ok":
             print(f"\n[状态: {result['status']}]")
 

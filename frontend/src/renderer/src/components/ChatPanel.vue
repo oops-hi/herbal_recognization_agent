@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /* 智能体对话区：SSE 流式工具链实时展示 + 图片消息（📎内联上传，点发送才识别）
    持久化（2026-08-29）：localStorage 存 units/stats，重启恢复；timeline 必须 reactive 包装（代理坑） */
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onActivated, onDeactivated, onMounted, reactive, ref, watch } from 'vue'
 import ChatMessage from './ChatMessage.vue'
 import TimelineItem, { type ToolStep } from './TimelineItem.vue'
 import ContextStatsBar, { type SessionStats } from './ContextStatsBar.vue'
@@ -61,6 +61,7 @@ interface UploadResp {
   error?: string
   vision?: RecResultPayload['visionBadge']
   image_url?: string
+  sim_pair?: { candidates: string[]; tip: string } | null  // 相似对鉴别：Top-3 命中易混对
 }
 
 const emit = defineEmits<{ 'rec-result': [payload: RecResultPayload] }>()
@@ -74,6 +75,11 @@ const currentId = ref('')
 
 const chatBody = ref<HTMLElement>()
 const chatInput = ref<HTMLTextAreaElement>()
+
+// keep-alive 滚动位置补偿：切换路由时 Chromium 把移出文档容器的 scrollTop 清零 → 切回停顶部
+// deactivate 记录位置，activate 恢复；离开时近底部（≤60px）则吸底，翻历史则原位恢复
+let savedScrollTop = 0
+let leaveNearBottom = true
 const sendBtn = ref<HTMLButtonElement>()
 const fileInput = ref<HTMLInputElement>()
 
@@ -102,6 +108,25 @@ function scrollBottom(): void {
     if (chatBody.value) chatBody.value.scrollTop = chatBody.value.scrollHeight
   })
 }
+
+onDeactivated(() => {
+  const el = chatBody.value
+  if (!el) return
+  savedScrollTop = el.scrollTop
+  leaveNearBottom = el.scrollTop >= el.scrollHeight - el.clientHeight - 60
+})
+
+onActivated(() => {
+  nextTick(() => {
+    const el = chatBody.value
+    if (!el) return
+    if (leaveNearBottom) {
+      el.scrollTop = el.scrollHeight
+    } else {
+      el.scrollTop = savedScrollTop
+    }
+  })
+})
 
 function addMsg(kind: string, text: string, extra?: Partial<ChatMsg>): ChatMsg {
   const msg: ChatMsg = { kind, text, ...extra }
@@ -355,8 +380,16 @@ async function send(): Promise<void> {
       }
       emit('rec-result', buildRecResult(j))
       if (j.status === 'ok') {
-        addMsg('system-note', '已识别：' + j.top1 + '（置信度 ' + (j.confidence! * 100).toFixed(1) +
-          '%）—— 可直接提问，如『这个能和菊花一起泡水吗？』')
+        // 识别成功以智能体回复样式输出（用户要求：不用小字 system-note）
+        addMsg('assistant', '已识别：' + j.top1 + '（置信度 ' + (j.confidence! * 100).toFixed(1) +
+          '%）。你可以直接提问，比如『这个能和菊花一起泡水吗？』', { animate: true })
+        if (j.sim_pair) {
+          // 相似对鉴别闭环：Top-3 命中易混对 → 以智能体回复样式主动引导（用户要求：不用小字 system-note）
+          addMsg('assistant',
+            '识别候选中「' + j.sim_pair.candidates.join('、') +
+            '」为外形易混淆药材。你可以问『这是什么？』，我会逐项与你确认可观察特征后再作判断。',
+            { animate: true })
+        }
         if (!q) addMsg('system-note', '识别完成，可在下方输入框直接提问（如『这个怎么用？』）')
       } else if (j.status === 'low_confidence') {
         const nonHerb = j.vision?.state === 'non_herb'

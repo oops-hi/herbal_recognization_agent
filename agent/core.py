@@ -20,6 +20,12 @@ SSE 事件协议（一期兼容 + 二期扩展）：
   {"type": "answer", "text", "refuse_reason"(str|None), "evidence": [{source}]}
   {"type": "error",  "text", "status": no_key|quota|rate_limited|offline|error}
   {"type": "turn",   "count"}
+
+稳定前缀架构（2026-08-30，KV 缓存优化）：
+- DeepSeek 前缀缓存锚定字节 0（tools→system→messages 渲染顺序），前缀匹配命中即终止
+- tools 恒定全量 TOOL_SCHEMAS（不按子 Agent 过滤）；system#0 恒定 prompts.BASE（冻结）；历史 append-only
+- 每轮变化的上下文（子 Agent 职责段 + 跨对话记忆概要）由 compose_user_message 拼进本轮新 user 消息
+- 契约单一来源：ASSIGN_TMPL / QUESTION_MARKER 只在本文件定义，app.py/memory 引用
 """
 import json
 import os
@@ -35,6 +41,12 @@ from . import prompts, tools
 
 HERB_CTX_PREFIX = "【当前识别上下文】"
 UPLOAD_CTX_PREFIX = "【上传识别上下文】"   # 拒识/低置信上传：不让模型带药材上下文，但仍告知「上传过一张图」
+DISAMBIG_PREFIX = "【相似对鉴别】"          # 识别命中易混对（两者同现）：追问特征 → 细节鉴别闭环
+
+# ---------- 稳定前缀架构（KV 缓存优化）：system#0 恒定，子 Agent 段拼进每轮新 user 消息尾部 ----------
+# 三方契约（app.py title 剥离 / memory 取料共用），只在本文件定义，禁止别处复制字符串。
+ASSIGN_TMPL = "[系统指派：本轮由「{agent}」子智能体负责]"
+QUESTION_MARKER = "----- 用户问题 -----"
 
 # ---------- 五道闸门：输出闸门（refuse_reason 四类 + 证据链） ----------
 
@@ -83,20 +95,51 @@ TEACH_QUESTION_KW = ("什么药", "哪些药", "哪种药")
 TEACH_BLOCK_KW = ("禁忌", "禁用", "有毒", "中毒", "孕妇", "能吃", "能喝", "吃法",
                   "泡水", "用量", "多少克", "剂量")
 
+# 画像驱动路由（Doubao 式）：跨对话记忆里的身份/目标信号（学生/备考/考研/学医/复习/考试）
+_STUDY_BOOST_PAT = re.compile(r"学生|备考|考研|学医|医学生|考试|复习")
+# 画像路由挡回：剂量/诊断类问题不抢（保持药性/安全语义，eval_safety 口径不变）
+_DIAG_QUESTION_PAT = re.compile(r"是不是|肾虚|阴虚|阳虚|脾虚|肝虚|得了|是什么病|什么病|确诊")
 
-def classify_agent(question: str, image_path: str | None = None) -> str:
-    """意图分类：图片 → 识药；修正 → 学习；讲解 → 讲解；鉴别 → 鉴别；组合/禁忌 → 安全；方剂 → 方剂；默认药性。
+
+def _has_study_profile(memory_ctx: str) -> bool:
+    """画像驱动路由的信号源：只扫画像条目行（-[身份]/-[目标] 开头）。
+
+    ⚠️ 不能对整个 memory_ctx 全文匹配——build_context 的使用指引样板文本里
+    有「如身份为学生」示例字样，全文匹配会导致任何画像都命中学生 boost
+    （实测：换成老年人身份后路由仍走讲解）。信号必须来自画像内容本身。
+    """
+    for line in (memory_ctx or "").splitlines():
+        if line.startswith("- [身份]") or line.startswith("- [目标]"):
+            if _STUDY_BOOST_PAT.search(line):
+                return True
+    return False
+
+
+def classify_agent(question: str, image_path: str | None = None, memory_ctx: str | None = None,
+                   disambig_ctx: str | None = None) -> str:
+    """意图分类：图片 → 识药；相似对鉴别激活 → 鉴别；修正 → 学习；讲解 → 讲解；鉴别 → 鉴别；组合/禁忌 → 安全；方剂 → 方剂；默认药性。
 
     规则优先（确定性、零成本）；无法分类走药性兜底（带 retrieve_doc 的开放问答）。
     快速失败原则：不无限级联——分类是单跳，子 Agent 内的工具调用链由模型决定。
     定序注意：讲解分支在鉴别/安全/方剂之前（『讲讲X和Y怎么区分』→ 讲解，其工具集含 similar_compare 仍可答对比）；
     『什么药』前缀问句在方剂之后（『吃什么药』→ 方剂），且被 TEACH_BLOCK_KW 挡回安全/药性主题。
+
+    相似对鉴别分支（disambig_ctx，识别命中易混对后激活）：位于学习分支之前——
+    用户『不是X是Y』『这是什么』类追问多为鉴别流程的一部分（回答提问/给特征），
+    走鉴别 Agent 拿提问清单/研判材料；安全/方剂主题仍走原路由不抢单。
+
+    画像驱动路由（memory_ctx，Doubao 式）：跨对话画像显示学生/备考身份时，无关键词命中的
+    单药知识问题偏好讲解 Agent（考点化讲解）；剂量（含「多少」「几克」）/诊断/禁忌类问题
+    不抢（保持药性/安全语义，eval_safety 口径不变）。
     """
     if image_path:
         return "识药"
     q = (question or "").strip()
     if not q:
         return "药性"
+    if (disambig_ctx
+            and not any(k in q for k in SAFETY_KW + FORMULA_KW + TEACH_EXPLICIT_KW)):
+        return "鉴别"
     if LEARN_PAT.search(q):
         return "学习"
     if any(k in q for k in TEACH_EXPLICIT_KW):
@@ -110,6 +153,13 @@ def classify_agent(question: str, image_path: str | None = None) -> str:
     # 教科书式功效问句（『什么药润肺』）：不含剂量/禁忌等安全主题才路由讲解
     if q.startswith(TEACH_QUESTION_KW) and not any(k in q for k in TEACH_BLOCK_KW):
         return "讲解"
+    # 画像驱动兜底：学生/备考身份 → 默认路由从药性抬到讲解（剂量/诊断类挡回）
+    if memory_ctx and _has_study_profile(memory_ctx):
+        blocked = (any(k in q for k in TEACH_BLOCK_KW)
+                   or "多少" in q or "几克" in q
+                   or bool(_DIAG_QUESTION_PAT.search(q)))
+        if not blocked:
+            return "讲解"
     return "药性"
 
 
@@ -187,7 +237,12 @@ def _sanitize_history(messages: list[dict]) -> None:
 
 
 def _chat_completion(messages: list[dict], agent: str | None = None) -> tuple[dict, dict, float]:
-    """调用 DeepSeek chat/completions（tools 按子 Agent 过滤）。
+    """调用 DeepSeek chat/completions。
+
+    稳定前缀架构（KV 缓存）：tools 位于 DeepSeek 缓存前缀字节 0（tools→system→messages
+    渲染顺序）——tools 数组任何增删/换序都会打穿整轮前缀，故**恒定全量 TOOL_SCHEMAS
+    （不再按子 Agent 过滤）**；工具纪律由 AGENT_SECTIONS 职责段白名单约束。
+    agent 参数保留仅用于 max_tokens（讲解 4096，其余 1024）。
 
     返回 (choices[0].message, usage, 墙钟秒数)；429 单次退避重试；402/非 2xx 抛 RuntimeError；断网抛 ConnectionError。
     """
@@ -204,7 +259,7 @@ def _chat_completion(messages: list[dict], agent: str | None = None) -> tuple[di
         # 讲解 Agent 长文（8 节课文组装）需 2048；其余沿用 1024
         "max_tokens": (tools.AGENTS.get(agent, {}) or {}).get("max_tokens", 1024),
         "stream": False,
-        "tools": tools.schemas_for(agent),   # 子 Agent 工具子集（agent=None 全量）
+        "tools": tools.TOOL_SCHEMAS,   # 恒定全量（缓存锚点字节 0，禁止按 agent 过滤）
         "tool_choice": "auto",
     }
 
@@ -289,15 +344,87 @@ def _clear_upload_context(messages: list[dict]) -> None:
     ]
 
 
-def _set_agent_system(messages: list[dict], agent: str) -> None:
-    """按子 Agent 替换/注入 system prompt（HERB_CTX 独立消息不受影响）。"""
-    new_prompt = prompts.build_system_prompt(agent)
+def _set_disambig_context(messages: list[dict], payload: str) -> None:
+    """写入/更新【相似对鉴别】上下文——识别命中易混对（两者同现）时激活。
+
+    硬规则（与 _set_herb_context/_set_upload_context 同款：前缀原位替换 + append，
+    稳定前缀红线安全）：
+    ① 用户未描述特征（只问『这是什么/哪个』）→ 先调用 disambiguate_similar 取提问清单，
+       按『一看二摸三闻四尝』维度逐项询问，信息不足不强答；
+    ② 用户描述了特征 → 立即调用 disambiguate_similar（desc=用户描述）取研判材料，
+       综合给出结论等级（可判定/部分信息/需人工）+ 依据；
+    ③ 与这对鉴别无关的问题正常回答，不强行鉴别；
+    ④ 本条优先于【当前识别上下文】：候选名单以此为准，不得仅凭识别结果直接下结论。
+    """
+    full = (
+        f"{DISAMBIG_PREFIX}{payload}。"
+        f"鉴别流程：① 用户未描述特征（如只问『这是什么』）→ 先调用 disambiguate_similar 获取提问清单，"
+        f"按可观察特征逐项询问用户，信息不足时明确说明、不强答；"
+        f"② 用户描述了特征 → 调用 disambiguate_similar 并传入用户描述，依据返回的研判材料"
+        f"综合给出结论等级（可判定/部分信息/需人工）与依据；"
+        f"③ 与鉴别无关的问题正常回答；"
+        f"④ 本条优先于【当前识别上下文】：候选名单以此为准，用户询问图片是什么时"
+        f"必须先确认可观察特征再下结论，不得仅凭识别结果直接作答。"
+    )
     for m in messages:
-        if (m.get("role") == "system"
-                and not m["content"].startswith(HERB_CTX_PREFIX)):
-            m["content"] = new_prompt
+        if m.get("role") == "system" and m["content"].startswith(DISAMBIG_PREFIX):
+            m["content"] = full
             return
-    messages.insert(0, {"role": "system", "content": new_prompt})
+    messages.append({"role": "system", "content": full})
+
+
+def _clear_disambig_context(messages: list[dict]) -> None:
+    """清除旧鉴别上下文（新图/拒识/会话重置时清掉）。"""
+    messages[:] = [
+        m for m in messages
+        if not (m.get("role") == "system" and m["content"].startswith(DISAMBIG_PREFIX))
+    ]
+
+
+def _ensure_stable_base(messages: list[dict]) -> None:
+    """保证 messages[0] 是恒定稳定底座 system prompt（KV 缓存前缀锚点）。
+
+    稳定前缀架构：system#0 内容每轮请求必须字节一致（= prompts.BASE 冻结）；
+    旧 sessions.json 里的旧 system#0（含子 Agent 段）首次运行时被原位替换
+    （一次性 cache miss 可接受），同字符串重写为 no-op 不伤缓存。
+    首位若是注记类 system（仅防御性）则在最前插入 BASE。
+    """
+    if not messages or messages[0].get("role") != "system":
+        messages.insert(0, {"role": "system", "content": prompts.BASE})
+        return
+    c0 = str(messages[0].get("content", ""))
+    if (c0.startswith(HERB_CTX_PREFIX) or c0.startswith(UPLOAD_CTX_PREFIX)
+            or c0.startswith(DISAMBIG_PREFIX)):
+        messages.insert(0, {"role": "system", "content": prompts.BASE})
+        return
+    if c0 != prompts.BASE:
+        messages[0]["content"] = prompts.BASE
+
+
+def compose_user_message(agent: str, question: str, memory_ctx: str | None = None) -> str:
+    """组装本轮 user 消息：指派头部 + 子 Agent 职责段 +（可选）跨对话记忆 + 用户问题。
+
+    稳定前缀架构核心：所有每轮变化的上下文都拼在**本轮新 user 消息**里，
+    system#0 与全部历史只追加不改 → 历史部分前缀缓存全命中。
+    """
+    section = prompts.AGENT_SECTIONS.get(agent, prompts.AGENT_SECTIONS["药性"])
+    parts = [ASSIGN_TMPL.format(agent=agent), section]
+    if memory_ctx:
+        parts.append(memory_ctx)
+    parts.append(f"{QUESTION_MARKER}\n{question}")
+    return "\n\n".join(parts)
+
+
+def strip_user_wrapper(text: str) -> str:
+    """剥掉 compose_user_message 的头部（指派+职责段+记忆块），只留用户原问题。
+
+    仅当「开头是 [系统指派」且「含 QUESTION_MARKER」才剥离；旧格式/纯问题原样返回
+    （防用户问题恰好含标记时误剥）。app.py title 与 memory 取料共用此单一来源。
+    """
+    t = (text or "").strip()
+    if t.startswith("[系统指派") and QUESTION_MARKER in t:
+        return t.split(QUESTION_MARKER, 1)[1].strip()
+    return t
 
 
 def _inject_image_context(messages: list[dict], image_path: str) -> None:
@@ -363,7 +490,9 @@ def stream_run(
     current_herb: str | None = None,
     session_stats: dict | None = None,
     upload_ctx: str | None = None,
+    disambig_ctx: str | None = None,
     force_agent: str | None = None,
+    memory_ctx: str | None = None,
 ):
     """ReAct 循环生成器：逐事件产出，messages 原地更新。
 
@@ -377,19 +506,24 @@ def stream_run(
 
     upload_ctx：拒识上传的上下文注记（如「判定为非中药饮片」），让追问时模型知道
                 「用户上传过一张图」及其判定；传 None 时清除旧的拒识注记。
+    disambig_ctx：相似对鉴别上下文（识别命中易混对后激活，如「候选中『桃仁、苦杏仁』易混」），
+                  追问特征 → 细节鉴别闭环；传 None 时清除旧的鉴别注记。
     force_agent：前端一键入口确定性强制指定子 Agent（白名单校验；有图片时忽略，仍走识药）。
+    memory_ctx：跨对话记忆概要（agent/memory.build_context() 产物；拼进本轮 user 消息尾部，
+                不进 system、不改历史——稳定前缀架构）。
     """
     # ---- Router：意图分类 → 子 Agent（工具子集 + System Prompt + 配额）----
+    # memory_ctx 参与画像驱动路由（学生/备考身份 → 兜底偏好讲解）；disambig_ctx 触发鉴别路由
     agent = (
         force_agent if (not image_path and force_agent in tools.AGENTS)
-        else classify_agent(question, image_path)
+        else classify_agent(question, image_path, memory_ctx, disambig_ctx)
     )
     quota = tools.AGENTS[agent]["quota"]
     max_turns = min(config.MAX_TURNS, quota)
 
     stats = session_stats if session_stats is not None else _new_stats()
 
-    _set_agent_system(messages, agent)
+    _ensure_stable_base(messages)
     if current_herb:
         _set_herb_context(messages, current_herb)
     else:
@@ -399,9 +533,16 @@ def stream_run(
         _set_upload_context(messages, upload_ctx)
     else:
         _clear_upload_context(messages)
+    if disambig_ctx:
+        _set_disambig_context(messages, disambig_ctx)
+    else:
+        _clear_disambig_context(messages)
     if image_path:
         _inject_image_context(messages, image_path)
-    messages.append({"role": "user", "content": question})
+    messages.append({
+        "role": "user",
+        "content": compose_user_message(agent, question, memory_ctx),
+    })
 
     if not _api_key():
         yield {"type": "error", "text": "未配置 API 密钥，对话服务不可用。请点击右上角 ⚙️ 设置页配置。", "status": "no_key"}
@@ -504,10 +645,18 @@ def run(
     image_path: str | None = None,
     current_herb: str | None = None,
     force_agent: str | None = None,
+    session_stats: dict | None = None,
+    upload_ctx: str | None = None,
+    disambig_ctx: str | None = None,
+    memory_ctx: str | None = None,
 ) -> dict:
     """stream_run 的收集包装（CLI/demo_agent 用）。messages 同样原地更新。"""
     result: dict = {"answer": "", "status": "error", "trace": [], "turns": 0}
-    for ev in stream_run(question, messages, image_path, current_herb, force_agent=force_agent):
+    for ev in stream_run(
+        question, messages, image_path, current_herb,
+        force_agent=force_agent, session_stats=session_stats,
+        upload_ctx=upload_ctx, disambig_ctx=disambig_ctx, memory_ctx=memory_ctx,
+    ):
         t = ev["type"]
         if t == "tool":
             result["trace"].append({

@@ -28,6 +28,14 @@ else:
 # 运行时数据（对话历史，可持久写；_MEIPASS 是退出即删的临时目录，不能放）
 SESSION_FILE = EXE_DIR / "sessions.json" if FROZEN else BASE_DIR / "sessions.json"
 
+# ---- 跨对话记忆（LLM 自动摘要；落盘策略与 SESSION_FILE 同源） ----
+MEMORY_FILE = EXE_DIR / "memory.json" if FROZEN else BASE_DIR / "memory.json"
+MEMORY_MAX_ENTRIES     = 20     # 记忆条目上限
+MEMORY_CTX_MAX_CHARS   = 400    # build_context 注入正文长度上限（字符）
+MEMORY_DIGEST_MIN_NEW  = 2      # 触发摘要：累计 user 消息 − 上次摘要计数 ≥ 此值
+MEMORY_DIGEST_MAX_TOKENS = 800  # 摘要调用 max_tokens
+MEMORY_DIGEST_TEMP     = 0.2    # 摘要调用 temperature
+
 # 加载 .env（统一在此加载一次；agent/core.py 不再自管）。
 # 幂等：已有系统环境变量优先（load_dotenv 默认 override=False）。
 load_dotenv(ENV_PATH)

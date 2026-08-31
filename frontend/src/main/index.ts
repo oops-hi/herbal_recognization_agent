@@ -13,7 +13,8 @@ function createWindow(port: number): void {
     minWidth: 1000,
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    // Windows/Linux 窗口与任务栏图标（win32 打包后 exe 图标由 electron-builder 从 build/icon.ico 写入）
+    ...(process.platform === 'win32' || process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
